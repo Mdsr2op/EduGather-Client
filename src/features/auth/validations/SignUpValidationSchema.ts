@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const SignUpValidationSchema = z.object({
+export const SignUpValidationSchema = z.object({
   username: z.string()
     .min(3, "Username must be at least 3 characters long")
     .max(20, "Username must be less than 20 characters")
@@ -28,5 +28,3 @@ const SignUpValidationSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[@$!%*?&#]/, "Password must contain at least one special character"),
 });
-
-export default SignUpValidationSchema;
