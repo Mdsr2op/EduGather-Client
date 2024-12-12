@@ -1,10 +1,10 @@
 import { Button } from "./components/ui/button";
+import { SignUpForm } from "./features/auth/components/SignUpForm";
 
 function App() {
   return (
     <div>
-      <div className="text-3xl font-bold underline">Hello world</div>
-      <Button>Click me</Button>
+      <SignUpForm />
     </div>
   );
 }
