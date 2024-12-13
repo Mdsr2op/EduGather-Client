@@ -64,7 +64,7 @@ export function Hero() {
           {/* Replace with an actual image or illustration */}
           <div className="relative w-full max-w-md aspect-video bg-dark-4 rounded-lg overflow-hidden">
             <img
-              src="https://www.dreamstime.com/collaborative-learning-students-work-together-group-project-assignment-using-online-tools-resources-collaborative-image276267181"
+              src="public\Hero.png"
               alt="Students collaborating online"
               className="w-full h-full object-cover rounded-lg"
             />
