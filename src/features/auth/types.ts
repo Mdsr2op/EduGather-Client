@@ -1,3 +1,4 @@
+// types.ts
 export interface SignUpFormValues {
   username: string;
   email: string;
@@ -7,10 +8,19 @@ export interface SignUpFormValues {
   password: string;
 }
 
-  
-  // Types for SignIn
-  export interface SignInFormValues {
-    usernameOrEmail: string;
-    password: string;
-  }
-  
+// Types for SignIn
+export interface SignInFormValues {
+  usernameOrEmail: string;
+  password: string;
+}
+
+// User type based on your backend
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  fullname: string;
+  avatarUrl?: string;
+  coverImageUrl?: string;
+  // Add other user fields as needed
+}
