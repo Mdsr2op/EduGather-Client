@@ -1,11 +1,12 @@
 export interface SignUpFormValues {
-    username: string;
-    email: string;
-    fullname: string;
-    avatar?: string;
-    coverImage?: string;
-    password: string;
-  }
+  username: string;
+  email: string;
+  fullname: string;
+  avatar: File | null;
+  coverImage: File | null;
+  password: string;
+}
+
   
   // Types for SignIn
   export interface SignInFormValues {

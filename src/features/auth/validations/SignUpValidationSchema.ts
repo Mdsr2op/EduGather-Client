@@ -13,13 +13,21 @@ export const SignUpValidationSchema = z.object({
     .min(2, "Full name must be at least 2 characters long")
     .max(50, "Full name must be less than 50 characters"),
   
-  avatar: z.string()
-    .url("Avatar must be a valid URL")
-    .optional(),
+  avatar: z
+    .instanceof(File)
+    .optional()
+    .refine(
+      (file) => !file || file.type.startsWith("image/"),
+      "Avatar must be an image file"
+    ),
   
-  coverImage: z.string()
-    .url("Cover image must be a valid URL")
-    .optional(), // Cover image is optional
+  coverImage: z
+    .instanceof(File)
+    .optional()
+    .refine(
+      (file) => !file || file.type.startsWith("image/"),
+      "Cover image must be an image file"
+    ),
   
   password: z.string()
     .min(8, "Password must be at least 8 characters long")

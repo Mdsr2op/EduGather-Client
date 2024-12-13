@@ -58,7 +58,6 @@ export function SignUpForm() {
   };
 
   return (
-    <section className="flex flex-1 justify-center items-center flex-col py-6 pb-0 px-4 overflow-hidden">
       <Form {...form}>
         <div className="w-full max-w-4xl">
           <div className="text-center">
@@ -223,6 +222,5 @@ export function SignUpForm() {
           </form>
         </div>
       </Form>
-    </section>
   );
 }
