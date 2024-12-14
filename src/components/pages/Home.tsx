@@ -1,7 +1,7 @@
-import { Features } from "@/features/Home/components/Features";
-import { Header } from "@/features/Home/components/Header";
-import { Hero } from "@/features/Home/components/Hero";
-import { HowItWorks } from "@/features/Home/components/HowItWorks";
+import { Features } from "@/features/root/Home/components/Features";
+import { Header } from "@/features/root/Home/components/Header";
+import { Hero } from "@/features/root/Home/components/Hero";
+import { HowItWorks } from "@/features/root/Home/components/HowItWorks";
 
 const Home = () => {
   return (

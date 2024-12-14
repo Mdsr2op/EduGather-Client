@@ -18,8 +18,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          dispatch(setCredentials({ user: data.user, accessToken: data.accessToken }));
+          const { data: result } = await queryFulfilled;
+          console.log(result)
+          dispatch(setCredentials({ user: result.data.user, accessToken: result.data.accessToken }));
         } catch (err) {
           console.error("Login error:", err);
         }
@@ -33,8 +34,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          dispatch(setCredentials({ user: data.user, accessToken: data.accessToken }));
+          const { data: result } = await queryFulfilled;
+          dispatch(setCredentials({ user: result.data.user, accessToken: result.data.accessToken }));
         } catch (err) {
           console.error("Signup error:", err);
         }
