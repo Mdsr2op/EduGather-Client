@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SignInValidationSchema = z.object({
-  identifier: z
+  usernameOrEmail: z
     .string()
     .nonempty("Username or Email is required")
     .refine(
