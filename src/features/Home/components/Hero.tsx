@@ -61,8 +61,7 @@ export function Hero() {
 
         {/* Right Content: Hero Image/Illustration */}
         <div className="flex-1 flex justify-center items-center">
-          {/* Replace with an actual image or illustration */}
-          <div className="relative w-full max-w-md aspect-video bg-dark-4 rounded-lg overflow-hidden">
+          <div className="relative w-full max-w-md aspect-video lg:aspect-auto  bg-dark-4 rounded-xl overflow-hidden">
             <img
               src="public\Hero.png"
               alt="Students collaborating online"

@@ -5,7 +5,7 @@ import { HowItWorks } from "@/features/Home/components/HowItWorks";
 
 const Home = () => {
   return (
-    <div className="">
+    <div className="w-full">
       <Header />
       <Hero />
       <Features />
