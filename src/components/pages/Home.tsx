@@ -1,3 +1,4 @@
+import { CallToAction } from "@/features/root/Home/components/CallToAction";
 import { Features } from "@/features/root/Home/components/Features";
 import { Header } from "@/features/root/Home/components/Header";
 import { Hero } from "@/features/root/Home/components/Hero";
@@ -6,12 +7,14 @@ import { SecurityAndReliability } from "@/features/root/Home/components/Security
 
 const Home = () => {
   return (
-    <div className="">
+    <div className="w-full overflow-x-hidden custom-scrollbar">
       <Header />
       <Hero />
       <Features />
       <HowItWorks />
       <SecurityAndReliability />
+      <CallToAction />
+
     </div>
   );
 };
