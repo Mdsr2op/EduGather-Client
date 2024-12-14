@@ -5,7 +5,7 @@ import { HowItWorks } from "@/features/Home/components/HowItWorks";
 
 const Home = () => {
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden custom-scrollbar">
       <Header />
       <Hero />
       <Features />
