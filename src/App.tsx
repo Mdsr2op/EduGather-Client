@@ -5,6 +5,7 @@ import AuthLayout from "./features/auth/layout/AuthLayout";
 import RootLayout from "./features/root/layout/RootLayout";
 import { Toaster } from "./components/ui/toaster";
 import Home from "./components/pages/Home";
+import { Button } from "./components/ui/button";
 
 function App() {
   return (
@@ -13,9 +14,10 @@ function App() {
         <Route element={<RootLayout />}>
           <Route path="/sign-up" element={<SignUpForm />} />
           <Route path="/sign-in" element={<SignInForm />} />
+          <Route path="/home" element={<Home />} />
         </Route>
         <Route element={<AuthLayout />}>
-          <Route index element={<Home />} />
+          <Button className="">Click me</Button>
         </Route>
       </Routes>
       <Toaster />
