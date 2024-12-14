@@ -1,6 +1,9 @@
-import React from "react";
+// SignInForm.tsx
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInValidationSchema } from "../validations";
+import { useNavigate } from 'react-router-dom';
+
 import {
   Form,
   FormControl,
@@ -11,34 +14,44 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FiLock, FiMail } from "react-icons/fi";
-import { SignInValidationSchema } from "../validations";
 import IconInput from "@/components/ui/icon-input";
+import { useToast } from "@/hooks/use-toast";
+import { useSignInMutation } from "../slices/authApiSlice";
+import { SignInFormValues } from "../types";
+import { Link } from "react-router-dom";
 
-interface SignInFormValues {
-  identifier: string; // Username or Email
-  password: string;
-}
 
 export function SignInForm() {
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(SignInValidationSchema),
     defaultValues: {
-      identifier: "",
+      usernameOrEmail: "",
       password: "",
     },
   });
 
-  const onSubmit: SubmitHandler<SignInFormValues> = (data) => {
-    const formData = new FormData();
-    formData.append("identifier", data.identifier);
-    formData.append("password", data.password);
+  const { toast } = useToast();
+  const [signIn, { isLoading, isError, error }] = useSignInMutation();
+  const navigate = useNavigate();
 
-    // For demonstration: log FormData entries
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
+  const onSubmit: SubmitHandler<SignInFormValues> = async (data) => {
+    try {
+      await signIn(data).unwrap();
+      toast({
+        title: "Success",
+        description: "Signed in successfully!",
+        variant: "default",
+      });
+      navigate("/")
+      
+    } catch (err) {
+      console.error("Signin failed:", err);
+      toast({
+        title: "Error",
+        description: "Signin failed. Please try again.",
+        variant: "destructive",
+      });
     }
-
-    // TODO: Handle sign-in logic (e.g., API call)
   };
 
   return (
@@ -53,14 +66,13 @@ export function SignInForm() {
               Welcome back! Please enter your credentials to sign in.
             </p>
           </div>
-          {/* Use the form element separately to apply onSubmit */}
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full mt-10 grid grid-cols-1 gap-6"
           >
             {/* Identifier Field: Username or Email */}
             <FormField
-              name="identifier"
+              name="usernameOrEmail"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -106,28 +118,29 @@ export function SignInForm() {
             <div>
               <Button
                 type="submit"
+                disabled={isLoading}
                 className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 rounded-md shad-button_primary"
               >
-                Sign In
+                {isLoading ? "Processing..." : "Sign In"}
               </Button>
             </div>
 
             {/* Additional Links */}
             <div className="flex flex-col justify-between items-center gap-6">
-              <a
-                href="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-primary-500 hover:underline"
               >
                 Forgot Password?
-              </a>
+              </Link>
               <span className="text-sm text-gray-600">
-                Don't have an account?
-                <a
-                  href="/sign-up"
+                Don&apos;t have an account?
+                <Link
+                  to="/sign-up"
                   className="text-primary-500 font-semibold ml-1 hover:underline"
                 >
                   Sign Up
-                </a>
+                </Link>
               </span>
             </div>
           </form>
