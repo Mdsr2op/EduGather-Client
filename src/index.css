@@ -110,3 +110,46 @@
     @apply invert brightness-0 transition;
   }
 }
+
+
+.custom-scrollbar {
+  scrollbar-width: none; /* Hides scrollbar by default in Firefox */
+  -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
+}
+
+.custom-scrollbar:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.5) transparent; /* Adjust colors for Firefox */
+}
+
+/* WebKit Browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.3s ease;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  opacity: 1; /* Show on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px; /* Fully rounded */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); /* Base color */
+  border-radius: 999px; /* Fully rounded */
+  opacity: 0; /* Initially hidden */
+  transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Show thumb on hover and while scrolling */
+.custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.8); /* Darker on hover */
+  transform: scale(1.1); /* Slight enlargement for visual feedback */
+}

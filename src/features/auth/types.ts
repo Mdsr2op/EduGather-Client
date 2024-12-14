@@ -24,6 +24,9 @@ export interface SignInFormValues {
 
 // The auth response from the backend
 export interface AuthResponse {
-  user: User;
-  accessToken: string;
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken:string
+  }
 }

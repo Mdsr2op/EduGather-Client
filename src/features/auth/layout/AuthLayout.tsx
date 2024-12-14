@@ -1,20 +1,15 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { useLocation, Navigate, Outlet } from "react-router-dom"
+import { useAppSelector } from "@/redux/hook"
+import { selectCurrentToken } from "../slices/authSlice"
 
 const AuthLayout = () => {
-  const isAuthenticated = false;
+    const token = useAppSelector(selectCurrentToken)
+    const location = useLocation()
 
-  return (
-    <>
-      {isAuthenticated ? (
-        <Navigate to="/" />
-      ) : (
-        <section className='flex flex-1 justify-center items-center flex-col py-5'>
-          <Outlet />
-        </section>
-      )}
-    </>
-  );
-};
-
-export default AuthLayout;
+    return (
+        token
+            ? <Outlet />
+            : <Navigate to="/sign-in" state={{ from: location }} replace />
+    )
+}
+export default AuthLayout
