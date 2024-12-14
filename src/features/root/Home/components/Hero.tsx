@@ -6,10 +6,10 @@ import { CheckCircle } from "lucide-react";
 export function Hero() {
   return (
     <section
-      className="w-full bg-dark-3 text-light-1 py-16"
+      className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="hero-heading"
     >
-      <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-8 px-4 sm:px-6 lg:flex-row lg:gap-16 lg:px-8">
+      <div className="lg:mx-5 flex w-full flex-col-reverse justify-between items-center gap-8 px-4 sm:px-6 lg:flex-row lg:px-8  ">
         {/* Left Content: Headline, Subheadline, CTA, Features */}
         <div className="flex-1 flex flex-col items-start">
           <h1
@@ -28,7 +28,7 @@ export function Hero() {
           <div className="mt-8">
             <Button
               asChild
-              className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-8 py-3"
+              className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-8 py-3 rounded-xl"
             >
               <Link to="/signup">Sign Up Now</Link>
             </Button>
@@ -60,7 +60,7 @@ export function Hero() {
         </div>
 
         {/* Right Content: Hero Image/Illustration */}
-        <div className="flex-1 flex justify-center items-center">
+        <div className="flex-1 flex justify-end items-center">
           <div className="relative w-full max-w-md aspect-video lg:aspect-auto  bg-dark-4 rounded-xl overflow-hidden">
             <img
               src="public\Hero.png"

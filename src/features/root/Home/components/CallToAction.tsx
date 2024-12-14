@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 export function CallToAction() {
   return (
     <section
-      className="w-full bg-dark-3 text-light-1 py-16"
+      className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="cta-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
@@ -23,7 +23,7 @@ export function CallToAction() {
 
         <Button
           asChild
-          className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-8 py-3"
+          className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-8 py-3 rounded-xl"
         >
           <Link to="/signup">Sign Up Now</Link>
         </Button>

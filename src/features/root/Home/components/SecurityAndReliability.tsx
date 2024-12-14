@@ -23,7 +23,7 @@ export function SecurityAndReliability() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Encryption & Privacy Info */}
           <article
-            className="flex flex-col space-y-6 p-6 bg-dark-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
+            className="flex flex-col space-y-6 p-6 bg-dark-4 rounded-xl shadow-md transition-transform transform hover:scale-105"
             aria-labelledby="encryption-privacy-heading"
           >
             <div className="flex items-start space-x-4">
@@ -44,7 +44,7 @@ export function SecurityAndReliability() {
 
           {/* Scalability & Cross-Communication */}
           <article
-            className="flex flex-col space-y-6 p-6 bg-dark-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
+            className="flex flex-col space-y-6 p-6 bg-dark-4 rounded-xl shadow-md transition-transform transform hover:scale-105"
             aria-labelledby="scalability-communication-heading"
           >
             <div className="flex items-start space-x-4">

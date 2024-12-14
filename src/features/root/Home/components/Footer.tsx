@@ -1,71 +1,106 @@
-
-
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer
-      className="w-full bg-dark-3 text-light-1 py-10"
-      aria-labelledby="footer-heading"
-    >
+    <footer className="w-full bg-dark-1 text-light-1 py-12 border-t border-light-3 ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 id="footer-heading" className="sr-only">
-          Footer
-        </h2>
-        
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-8 lg:space-y-0">
-          {/* Navigation Links */}
-          <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 text-sm font-medium">
-            <Link to="/about" className="text-light-1 hover:text-primary-500 transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-light-1 hover:text-primary-500 transition-colors">
-              Contact
-            </Link>
-            <Link to="/terms-of-service" className="text-light-1 hover:text-primary-500 transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/privacy-policy" className="text-light-1 hover:text-primary-500 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/help-center" className="text-light-1 hover:text-primary-500 transition-colors">
-              Help Center
-            </Link>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          {/* About Us */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">About EduGather</h3>
+            <p className="text-light-3 text-sm">
+              EduGather is committed to facilitating seamless collaboration and communication among students and educators. Our platform offers tools for effective study group management, ensuring equal participation and balanced speaking time.
+            </p>
           </div>
-
-          {/* Social Media Icons */}
-          <div className="flex space-x-4">
-            <a
-              href="#"
-              className="text-light-1 hover:text-primary-500 transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="h-5 w-5" />
-            </a>
-            <a
-              href="#"
-              className="text-light-1 hover:text-primary-500 transition-colors"
-              aria-label="Twitter"
-            >
-              <Twitter className="h-5 w-5" />
-            </a>
-            <a
-              href="#"
-              className="text-light-1 hover:text-primary-500 transition-colors"
-              aria-label="Facebook"
-            >
-              <Facebook className="h-5 w-5" />
-            </a>
+          
+          {/* Quick Links */}
+          <nav aria-label="Quick Links">
+            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/features" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-light-3 hover:text-primary-500 transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          
+          {/* Contact Information */}
+          <address className="not-italic">
+            <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
+            <p className="text-light-3 text-sm">
+              123 EduGather Lane<br />
+              Knowledge City, EDU 45678<br />
+              Email: <a href="mailto:support@edugather.com" className="text-primary-500 hover:underline">support@edugather.com</a><br />
+              Phone: <a href="tel:+1234567890" className="text-primary-500 hover:underline">+1 (234) 567-890</a>
+            </p>
+          </address>
+          
+          {/* Social Media Links */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
+            <div className="flex space-x-4">
+              <a href="https://facebook.com/edugather" aria-label="Facebook" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Facebook className="h-6 w-6" />
+              </a>
+              <a href="https://twitter.com/edugather" aria-label="Twitter" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Twitter className="h-6 w-6" />
+              </a>
+              <a href="https://instagram.com/edugather" aria-label="Instagram" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Instagram className="h-6 w-6" />
+              </a>
+              <a href="https://linkedin.com/company/edugather" aria-label="LinkedIn" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Linkedin className="h-6 w-6" />
+              </a>
+            </div>
           </div>
         </div>
-
-        {/* Copyright */}
-        <div className="mt-8 border-t border-dark-5 pt-4 text-sm text-light-3">
-          © {currentYear} EduGather. All rights reserved.
+        
+        {/* Optional: Newsletter Subscription */}
+        <div className="mt-12 border-t border-dark-3 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <p className="text-light-3 text-sm mb-4 md:mb-0">
+              © {new Date().getFullYear()} EduGather. All rights reserved.
+            </p>
+            <form className="flex space-x-2" aria-label="Subscribe to our newsletter">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="w-full px-4 py-2 rounded-md bg-dark-3 text-light-1 placeholder-light-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                aria-label="Email address"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-4 py-2 rounded-md transition-colors"
+              >
+                Subscribe
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </footer>

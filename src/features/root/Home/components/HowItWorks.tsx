@@ -38,7 +38,7 @@ const steps: Step[] = [
 export function HowItWorks() {
   return (
     <section
-      className="w-full bg-dark-3 text-light-1 py-16"
+      className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="how-it-works-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

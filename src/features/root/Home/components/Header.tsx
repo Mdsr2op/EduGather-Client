@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
 export function Header() {
   return (
     <header
-      className="sticky top-0 z-50 w-full bg-dark-3 text-light-1 border-b border-dark-5"
+      className="sticky top-0 z-50 w-full bg-dark-1 text-light-1 border-b border-dark-5"
       aria-label="Main Navigation"
     >
       <div className="mx-5 flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@ export function Header() {
           </Link>
           <Button
             asChild
-            className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium"
+            className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium rounded-xl"
           >
             <Link to="/sign-up">Sign Up</Link>
           </Button>

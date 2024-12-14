@@ -33,7 +33,7 @@ const features: Feature[] = [
 export function Features() {
   return (
     <section
-      className="w-full bg-dark-3 text-light-1 py-16"
+      className="w-full bg-dark-3 text-light-1 py-16 border-t border-dark-1"
       aria-labelledby="features-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -48,7 +48,7 @@ export function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex flex-col items-start p-6 bg-dark-4 rounded-lg hover:bg-dark-5 transition-colors"
+              className="flex flex-col items-start p-6 bg-dark-4 rounded-xl transition-transform transform hover:scale-110"
             >
               <div className="mb-4">
                 {feature.icon}
