@@ -17,7 +17,7 @@ function App() {
           <Route path="/home" element={<Home />} />
         </Route>
         <Route element={<AuthLayout />}>
-          <Button className="">Click me</Button>
+          <Route path="/" element={<Button>Click me</Button>} />
         </Route>
       </Routes>
       <Toaster />
