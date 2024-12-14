@@ -3,11 +3,6 @@ import { Header } from "@/features/root/Home/components/Header";
 import { Hero } from "@/features/root/Home/components/Hero";
 import { HowItWorks } from "@/features/root/Home/components/HowItWorks";
 import { SecurityAndReliability } from "@/features/root/Home/components/SecurityAndReliability";
-<<<<<<< HEAD
-
-;
-=======
->>>>>>> 32ff22dafcaaa7dd82929f41455dcc8e9b7ea244
 
 const Home = () => {
   return (
