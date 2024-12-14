@@ -1,6 +1,7 @@
 import { CallToAction } from "@/features/root/Home/components/CallToAction";
 import { FAQ } from "@/features/root/Home/components/FAQ";
 import { Features } from "@/features/root/Home/components/Features";
+import { Footer } from "@/features/root/Home/components/Footer";
 import { Header } from "@/features/root/Home/components/Header";
 import { Hero } from "@/features/root/Home/components/Hero";
 import { HowItWorks } from "@/features/root/Home/components/HowItWorks";
@@ -16,6 +17,7 @@ const Home = () => {
       <SecurityAndReliability />
       <CallToAction />
       <FAQ />
+      <Footer />
 
     </div>
   );
