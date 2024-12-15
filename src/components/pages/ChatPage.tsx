@@ -71,7 +71,7 @@ function ChatPage() {
         selectedChannel={selectedChannel}
         onSelectChannel={handleSelectChannel}
       />
-      <div className="flex flex-col flex-grow p-4 bg-dark-4 rounded-xl">
+      <div className="flex flex-col flex-grow w-full p-4 bg-dark-4 rounded-xl">
         <ChatHeader channelName={selectedChannel} membersCount={2} />
       </div>
 
