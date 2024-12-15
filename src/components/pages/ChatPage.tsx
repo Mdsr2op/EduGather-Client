@@ -64,10 +64,8 @@ function ChatPage() {
     setSelectedChannel(channelName);
   };
 
-
-
   return (
-    <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark3 text-white ">
+    <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-3 text-white ">
       <ChannelSidebar
         channels={channels}
         selectedChannel={selectedChannel}
