@@ -1,4 +1,5 @@
 import ChannelSidebar from '@/features/root/channels/components/ChannelSidebar';
+import ChatHeader from '@/features/root/chats/components/ChatHeader';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -72,8 +73,8 @@ function ChatPage() {
         selectedChannel={selectedChannel}
         onSelectChannel={handleSelectChannel}
       />
-      <div className="flex flex-col flex-grow p-4 bg-dark4 rounded-xl">
-        Messages
+      <div className="flex flex-col flex-grow p-4 bg-dark-4 rounded-xl">
+        <ChatHeader channelName={selectedChannel} membersCount={2} />
       </div>
 
     </div>
