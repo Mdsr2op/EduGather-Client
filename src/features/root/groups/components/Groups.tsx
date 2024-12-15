@@ -14,7 +14,7 @@ interface SidebarGroupProps {
   onGroupContextMenu?: (event: React.MouseEvent<HTMLDivElement>, group: Group) => void;
 }
 
-const SidebarGroup: React.FC<SidebarGroupProps> = ({
+const Groups: React.FC<SidebarGroupProps> = ({
   groups,
   selectedGroupId,
   setSelectedGroupId,
@@ -52,4 +52,4 @@ const SidebarGroup: React.FC<SidebarGroupProps> = ({
   );
 };
 
-export default SidebarGroup;
+export default Groups;

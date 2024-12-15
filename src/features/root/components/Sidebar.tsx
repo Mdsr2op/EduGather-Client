@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import SidebarGroup from "../groups/components/SidebarGroup";
 import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
+import Groups from "../groups/components/Groups";
 
 // Group and icon data
 const groups = [
@@ -35,11 +35,11 @@ const Sidebar = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>("1");
 
   return (
-    <div className="w-20 bg-dark-3 h-full p-3 flex flex-col items-center overflow-hidden">
+    <div className="w-20 bg-dark-6 h-full p-3 flex flex-col items-center overflow-hidden">
       <SidebarLogo onClick={() => setSelectedGroupId(null)} />
       <SidebarDivider />
 
-      <SidebarGroup
+      <Groups
         groups={groups}
         selectedGroupId={selectedGroupId}
         setSelectedGroupId={setSelectedGroupId}

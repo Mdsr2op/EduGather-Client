@@ -6,6 +6,7 @@ import RootLayout from "./features/root/layout/RootLayout";
 import { Toaster } from "./components/ui/toaster";
 import Home from "./components/pages/Home";
 import { Button } from "./components/ui/button";
+import ChatPage from "./components/pages/ChatPage";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route index path="/home" element={<Home />} />
         </Route>
         <Route element={<RootLayout />}>
-          <Route path="/" element={<Button>Click me</Button>} />
+          <Route path="/" element={<ChatPage />} />
         </Route>
       </Routes>
       <Toaster />
