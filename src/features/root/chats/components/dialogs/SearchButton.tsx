@@ -1,4 +1,4 @@
-import React, { useState,  useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,18 @@ import { FiSearch, FiX } from "react-icons/fi";
 // import { useNavigate } from "react-router-dom";
 
 const SearchButton = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   // const navigate = useNavigate();
   const inputRef = useRef(null);
 
   const handleSearch = () => {
-   console.log(query);
+    console.log(query);
   };
 
   // Focus the input when the dialog opens
-  const handleOpenChange = (open:boolean) => {
+  const handleOpenChange = (open: boolean) => {
     if (open && inputRef.current) {
-      // inputRef.current.focus();
+      inputRef.current.focus();
     }
   };
 
@@ -31,7 +31,7 @@ const SearchButton = () => {
         <DialogTrigger>
           <FiSearch size={20} className="text-light-3 cursor-pointer" />
         </DialogTrigger>
-        <DialogContent className="fixed inset-0 flex items-center justify-center w-full max-w-lg p-6 bg-dark-2 text-light-1 rounded-2xl shadow-xl">
+        <DialogContent className="flex items-center justify-center w-full max-w-lg p-6 bg-dark-2 text-light-1 rounded-2xl shadow-xl">
           {/* Close Button */}
           <button
             className="absolute top-3 right-3 text-light-3 hover:text-light-1 focus:outline-none"
