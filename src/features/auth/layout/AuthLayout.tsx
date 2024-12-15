@@ -8,8 +8,11 @@ const AuthLayout = () => {
 
     return (
         token
-            ? <Outlet />
-            : <Navigate to="/sign-in" state={{ from: location }} replace />
+            ? <Navigate to="/" state={{ from: location }} replace />
+            : (
+            <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden">
+                <Navigate to="/sign-in" state={{ from: location }} replace />
+            </section>)
     )
 }
 export default AuthLayout

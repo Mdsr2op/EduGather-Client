@@ -11,12 +11,12 @@ function App() {
   return (
     <main className="h-screen flex">
       <Routes>
-        <Route element={<RootLayout />}>
+        <Route element={<AuthLayout />}>
           <Route path="/sign-up" element={<SignUpForm />} />
           <Route path="/sign-in" element={<SignInForm />} />
           <Route index path="/home" element={<Home />} />
         </Route>
-        <Route element={<AuthLayout />}>
+        <Route element={<RootLayout />}>
           <Route path="/" element={<Button>Click me</Button>} />
         </Route>
       </Routes>
