@@ -21,7 +21,7 @@ const SearchButton = () => {
   // Focus the input when the dialog opens
   const handleOpenChange = (open: boolean) => {
     if (open && inputRef.current) {
-      inputRef.current.focus();
+      // inputRef.current.focus();
     }
   };
 
