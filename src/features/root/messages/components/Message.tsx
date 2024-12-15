@@ -26,8 +26,8 @@ const Message = ({message, isUserMessage}: MessageProps) => {
         <MessageAvatar senderName={message.senderName} />
         <div className="mx-2">
           <div
-            className={`p-3 rounded-lg cursor-pointer transition-transform transform hover:scale-105 ${
-              isUserMessage ? "bg-primary text-light1" : "bg-dark5 text-light1"
+            className={`p-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
+              isUserMessage ? "bg-primary-500 text-light1" : "bg-dark-3 text-light1"
             }`}
           >
               <p className="text-sm">{message.text}</p>
