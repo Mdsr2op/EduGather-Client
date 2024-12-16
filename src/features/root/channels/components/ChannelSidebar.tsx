@@ -1,18 +1,22 @@
+import AddChannelButton from "../../chats/components/dialogs/AddChannelButton";
 import ChannelList from "./ChannelList";
 
-
 interface Channel {
-    id: string;
-    name: string;
-  }
-  
-  interface ChannelSidebarProps {
-    channels: Channel[];
-    selectedChannel: string;
-    onSelectChannel: (channelName: string) => void;
-  }
-  
-  const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ channels, selectedChannel, onSelectChannel }) => {
+  id: string;
+  name: string;
+}
+
+interface ChannelSidebarProps {
+  channels: Channel[];
+  selectedChannel: string;
+  onSelectChannel: (channelName: string) => void;
+}
+
+const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
+  channels,
+  selectedChannel,
+  onSelectChannel,
+}) => {
   return (
     <div className="bg-dark-3 text-light-2 w-64 h-full p-4 pt-0 flex flex-col relative border-r-[2px] border-dark-1 shadow-dark-1 shadow-2xl">
       {/* Header */}
@@ -27,7 +31,7 @@ interface Channel {
         onSelectChannel={onSelectChannel}
       />
 
-
+      <AddChannelButton />
     </div>
   );
 };
