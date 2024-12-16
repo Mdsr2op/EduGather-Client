@@ -30,7 +30,7 @@ const Groups: React.FC<SidebarGroupProps> = ({
         >
           <div
             className={`rounded-full ${
-              selectedGroupId === group.id ? "ring-2 ring-primary" : ""
+              selectedGroupId === group.id ? "ring-2 ring-primary-500" : ""
             }`}
             style={{ padding: "2px" }}
           >
@@ -42,7 +42,7 @@ const Groups: React.FC<SidebarGroupProps> = ({
           </div>
           {selectedGroupId === group.id && (
             <FaCircle
-              className="absolute bottom-0 right-0 text-primary"
+              className="absolute bottom-0 right-0 text-primary-500"
               size={10}
             />
           )}

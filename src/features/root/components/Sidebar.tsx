@@ -35,7 +35,7 @@ const Sidebar = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>("1");
 
   return (
-    <div className="w-20 bg-dark-6 h-full p-3 flex flex-col items-center overflow-hidden">
+    <div className="w-20 bg-dark-5 h-full p-3 flex flex-col items-center overflow-hidden">
       <SidebarLogo onClick={() => setSelectedGroupId(null)} />
       <SidebarDivider />
 

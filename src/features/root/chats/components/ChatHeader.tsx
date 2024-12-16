@@ -12,7 +12,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   return (
     <>
-      <div className="bg-dark-4 pb-1 flex justify-between items-center border-b-[1px] border-dark3 -mx-4 relative">
+      <div className="bg-dark-3 pt-3 pb-1 flex justify-between border-b-[2px] border-light-4 shadow-dark-1 shadow-2xl  relative">
         <ChatHeaderTitle
           channelName={channelName}
           membersCount={membersCount}
