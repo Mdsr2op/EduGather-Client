@@ -21,19 +21,20 @@ import { useToast } from "@/hooks/use-toast";
 interface SignUpFormValues {
   username: string;
   email: string;
-  fullname: string;
+  fullName: string;
   avatar: File | null;
   coverImage: File | null;
   password: string;
 }
 
 export function SignUpForm() {
+ 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(SignUpValidationSchema),
     defaultValues: {
       username: "",
       email: "",
-      fullname: "",
+      fullName: "",
       avatar: null,
       coverImage: null,
       password: "",
@@ -44,10 +45,11 @@ export function SignUpForm() {
   const [signup, { isLoading, isError, error }] = useSignupMutation();
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
+     console.log("clicked")
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("email", data.email);
-    formData.append("fullname", data.fullname);
+    formData.append("fullName", data.fullName);
     if (data.avatar) {
       formData.append("avatar", data.avatar);
     }
@@ -106,7 +108,7 @@ export function SignUpForm() {
                       className="shad-input w-full"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message" />
                 </FormItem>
               )}
             />
@@ -127,14 +129,14 @@ export function SignUpForm() {
                       className="shad-input w-full"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message"/>
                 </FormItem>
               )}
             />
 
             {/* Full Name Field */}
             <FormField
-              name="fullname"
+              name="fullName"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -148,7 +150,7 @@ export function SignUpForm() {
                       className="shad-input w-full"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message" />
                 </FormItem>
               )}
             />
@@ -169,7 +171,7 @@ export function SignUpForm() {
                       className="shad-input w-full"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message" />
                 </FormItem>
               )}
             />
@@ -196,7 +198,7 @@ export function SignUpForm() {
                       icon={<FiUser size={24} className="text-gray-500" />}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message"/>
                 </FormItem>
               )}
             />
@@ -220,7 +222,7 @@ export function SignUpForm() {
                       icon={<FiImage size={24} className="text-gray-500" />}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="shad-form_message" />
                 </FormItem>
               )}
             />

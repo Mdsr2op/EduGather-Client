@@ -3,7 +3,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  fullname: string;
+  fullName: string;
   avatarUrl?: string;
   coverImageUrl?: string;
 }
