@@ -22,12 +22,20 @@ function App() {
         {/* Protected Routes */}
         <Route element={<RequireAuth />}>
           <Route element={<RootLayout />}>
-            <Route path="/" element={<ChatPage />} />
-
+            {/* ChatPage Route with groupId and channelId */}
+            <Route
+              path="/:groupId/:channelId"
+              element={<ChatPage />}
+            />
+            {/* Optional: Redirect root path to a default group and channel */}
+            <Route
+              path="/"
+              element={<Navigate to="/defaultGroupId/defaultChannelId" replace />}
+            />
           </Route>
         </Route>
 
-        {/* Fallback Route (Optional) */}
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
       <Toaster />
