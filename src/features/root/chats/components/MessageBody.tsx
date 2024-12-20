@@ -16,7 +16,7 @@ const MessageBody = ({ messages, userId }: MessageBodyProps) => {
 //   }, [messages]);
 
   return (
-    <div className=" p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-4 rounded-lg">
+    <div className=" bg-dark-3 p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-4 rounded-lg">
       {messages.map((message) => (
         <div key={message.id} className="space-y-2">
             <Message

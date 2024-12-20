@@ -10,7 +10,7 @@ const PinnedMessagesButton = () => {
       >
         <PushPinOutlinedIcon className="text-light3" />
         {pinnedMessagesCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-secondary text-black font-bold text-base rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-2 -right-2 bg-secondary-500 text-black font-bold text-base rounded-full w-5 h-5 flex items-center justify-center">
             {pinnedMessagesCount}
           </span>
         )}
