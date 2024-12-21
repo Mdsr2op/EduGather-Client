@@ -2,7 +2,7 @@
 import React from "react";
 import { FaCircle } from "react-icons/fa";
 
-type Group = {
+export type Group = {
   id: number;
   name: string;
   image: string;

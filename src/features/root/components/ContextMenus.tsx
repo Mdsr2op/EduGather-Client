@@ -1,7 +1,14 @@
 import React from "react";
 import GroupMenu from "../groups/menus/GroupMenu";
+import SidebarGroupMenu from "../groups/components/SideBarGroupMenu";
 
-
+type Group = {
+  id: number;
+  name: string;
+  image: string;
+  createdBy: number;
+  currentUserId: number;
+};
 interface ContextMenusProps {
   contextMenu: {
     position: { x: number; y: number };
@@ -11,7 +18,7 @@ interface ContextMenusProps {
   handleCreateGroup: () => void;
   handleJoinGroup: () => void;
   groupMenu: {
-    group: any | null; // Replace `any` with the appropriate type for `group` if available
+    group: Group | null; // Replace `any` with the appropriate type for `group` if available
     position: { x: number; y: number };
     visible: boolean;
   };

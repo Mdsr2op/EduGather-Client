@@ -5,6 +5,7 @@ import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import SidebarGroup from "../groups/components/Groups";
 import AddGroupButton from "../groups/components/AddGroupButton";
+import ContextMenus from "./ContextMenus";
 
 
 type Group = {
@@ -166,7 +167,7 @@ const Sidebar: React.FC = () => {
 
       <SidebarDivider />
 
-      <SidebarActions icons={sidebarIcons} onIconClick={handleIconClick} />
+      {/* <SidebarActions icons={sidebarIcons} onIconClick={handleIconClick} /> */}
 
       <ModalsManager
         isJoinGroupModalOpen={isJoinGroupModalOpen}
