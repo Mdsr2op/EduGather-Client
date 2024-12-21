@@ -6,6 +6,9 @@ import SidebarDivider from "../groups/components/SidebarDivider";
 import SidebarGroup from "../groups/components/Groups";
 import AddGroupButton from "../groups/components/AddGroupButton";
 import ContextMenus from "./ContextMenus";
+import ModalsManager from "./ModalsManager";
+import CreateChannelDialog from "../chats/components/dialogs/CreateChannelDialog";
+import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
 
 
 type Group = {
@@ -112,7 +115,8 @@ const Sidebar: React.FC = () => {
   };
 
   const handleGroupAction = (action: string) => {
-    if (!groupMenu.group) return;
+    if (!groupMenu.group) return () => {};
+
     switch (action) {
       case "edit":
         console.log("Edit group:", groupMenu.group);
@@ -129,7 +133,14 @@ const Sidebar: React.FC = () => {
       default:
         break;
     }
+
     closeGroupMenu();
+    return () => {};
+  };
+
+  const handleDeleteGroup = (groupName: string) => {
+    console.log(`Deleting group: ${groupName}`);
+    // Add delete logic here
   };
 
   const handleIconClick = (route: string) => navigate(route);
@@ -186,6 +197,7 @@ const Sidebar: React.FC = () => {
       )}
       {isDeleteGroupDialogOpen && (
         <DeleteGroupDialog
+          onDelete={(groupName: string) => handleDeleteGroup(groupName)}
           isOpen={isDeleteGroupDialogOpen}
           setIsOpen={setIsDeleteGroupDialogOpen}
         />

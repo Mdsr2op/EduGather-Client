@@ -1,6 +1,7 @@
 import React from "react";
 import JoinGroupDialog from "../groups/dialogs/JoinGroupDialog";
 import CreateGroupDialog from "../groups/dialogs/CreateGroupDialog";
+import ViewGroupDetails from "../groups/dialogs/ViewGroupDetails";
 
 
 type ModalsManagerProps = {

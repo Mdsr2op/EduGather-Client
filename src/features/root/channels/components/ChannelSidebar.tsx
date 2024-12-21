@@ -1,4 +1,4 @@
-import AddChannelDialog from "../../chats/components/dialogs/AddChannelDialog";
+import AddChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
 import ChannelList from "./ChannelList";
 
 interface Channel {
