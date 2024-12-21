@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaCalendarAlt, FaVideo } from "react-icons/fa";
 import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import SidebarGroup from "../groups/components/Groups";
@@ -9,7 +7,7 @@ import ContextMenus from "./ContextMenus";
 import ModalsManager from "./ModalsManager";
 import CreateChannelDialog from "../chats/components/dialogs/CreateChannelDialog";
 import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
-
+import LeaveGroupDialog from "../groups/dialogs/LeaveGroupDialog";
 
 type Group = {
   id: number;
@@ -19,12 +17,12 @@ type Group = {
   currentUserId: number;
 };
 
-type SidebarIcon = {
-  id: string;
-  name: string;
-  icon: JSX.Element;
-  route: string;
-};
+// type SidebarIcon = {
+//   id: string;
+//   name: string;
+//   icon: JSX.Element;
+//   route: string;
+// };
 
 const groups: Group[] = [
   {
@@ -53,20 +51,20 @@ const groups: Group[] = [
   },
 ];
 
-const sidebarIcons: SidebarIcon[] = [
-  {
-    id: "meetings",
-    name: "Upcoming Meetings",
-    icon: <FaCalendarAlt size={20} />,
-    route: "/meetings",
-  },
-  {
-    id: "recordings",
-    name: "Recordings",
-    icon: <FaVideo size={20} />,
-    route: "/recordings",
-  },
-];
+// const sidebarIcons: SidebarIcon[] = [
+//   {
+//     id: "meetings",
+//     name: "Upcoming Meetings",
+//     icon: <FaCalendarAlt size={20} />,
+//     route: "/meetings",
+//   },
+//   {
+//     id: "recordings",
+//     name: "Recordings",
+//     icon: <FaVideo size={20} />,
+//     route: "/recordings",
+//   },
+// ];
 
 const Sidebar: React.FC = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
@@ -81,12 +79,14 @@ const Sidebar: React.FC = () => {
     position: { x: 0, y: 0 },
     group: null as Group | null,
   });
-  const [isViewGroupDetailsModalOpen, setIsViewGroupDetailsModalOpen] = useState(false);
-  const [isChannelDialogOpen, setIsChannelDialogOpen] = useState(false);
+  const [isViewGroupDetailsModalOpen, setIsViewGroupDetailsModalOpen] =
+    useState(false);
+  const [isChannelDialogOpen, setIsChannelDialogOpen] =
+    useState<boolean>(false);
   const [isDeleteGroupDialogOpen, setIsDeleteGroupDialogOpen] = useState(false);
   const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const openContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -102,7 +102,11 @@ const Sidebar: React.FC = () => {
 
   const openGroupMenu = (e: React.MouseEvent, group: Group) => {
     e.preventDefault();
-    setGroupMenu({ visible: true, position: { x: e.pageX, y: e.pageY }, group });
+    setGroupMenu({
+      visible: true,
+      position: { x: e.pageX, y: e.pageY },
+      group,
+    });
   };
 
   const closeGroupMenu = () =>
@@ -142,11 +146,15 @@ const Sidebar: React.FC = () => {
     console.log(`Deleting group: ${groupName}`);
     // Add delete logic here
   };
+  const handleLeaveGroup = (groupName: string) => {
+    console.log(`Deleting group: ${groupName}`);
+    // Add delete logic here
+  };
 
-  const handleIconClick = (route: string) => navigate(route);
+  // const handleIconClick = (route: string) => navigate(route);
 
   return (
-    <div className="w-20 bg-dark1 h-full p-3 flex flex-col items-center overflow-hidden">
+    <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center overflow-hidden">
       <SidebarLogo onClick={() => setSelectedGroupId(null)} />
       <SidebarDivider />
 
@@ -204,6 +212,7 @@ const Sidebar: React.FC = () => {
       )}
       {isLeaveGroupDialogOpen && (
         <LeaveGroupDialog
+          onLeave={(groupName: string) => handleLeaveGroup(groupName)}
           isOpen={isLeaveGroupDialogOpen}
           setIsOpen={setIsLeaveGroupDialogOpen}
         />

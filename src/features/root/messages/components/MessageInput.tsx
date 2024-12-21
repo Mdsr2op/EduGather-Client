@@ -16,7 +16,7 @@ const MessageInput = ({ message, setMessage, onEmojiSelect, onKeyPress }: Messag
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={onKeyPress}
-        className="flex-grow bg-transparent text-light1 placeholder-light-3 focus:outline-none"
+        className="flex-grow bg-transparent text-light-1 placeholder-light-3 focus:outline-none"
       />
       <div className="mt-1">
         <EmojiPicker onSelectEmoji={onEmojiSelect} />

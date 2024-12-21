@@ -8,7 +8,7 @@ interface SidebarLogoProps {
 const SidebarLogo: React.FC<SidebarLogoProps> = ({ onClick }) => {
   return (
     <div
-      className="mb-4 cursor-pointer text-light2 hover:text-primary transition-colors duration-200"
+      className="mb-4 cursor-pointer text-light-2 hover:text-primary transition-colors duration-200"
       onClick={onClick}
       title="Home"
     >

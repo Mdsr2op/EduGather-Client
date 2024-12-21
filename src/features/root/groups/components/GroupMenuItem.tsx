@@ -10,7 +10,7 @@ type GroupMenuItemProps = {
 const GroupMenuItem: React.FC<GroupMenuItemProps> = ({ icon: Icon, label, onClick }) => {
   return (
     <li
-      className="flex items-center px-4 py-2 hover:bg-dark5 cursor-pointer"
+      className="flex items-center px-4 py-2 hover:bg-dark-5 cursor-pointer"
       onClick={onClick}
     >
       <Icon className="mr-2" />

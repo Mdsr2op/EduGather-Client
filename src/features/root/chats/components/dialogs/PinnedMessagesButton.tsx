@@ -5,8 +5,8 @@ const PinnedMessagesButton = () => {
   const [pinnedMessagesCount, setPinnedMessagesCount] = useState(4);
   return (
     <div className="relative group">
-      <button className="relative hover:text-light1">
-        <PushPinOutlinedIcon className="text-light3" />
+      <button className="relative hover:text-light-1">
+        <PushPinOutlinedIcon className="text-light-3" />
         {pinnedMessagesCount > 0 && (
           <span className="absolute -top-2 -right-2 mr-5 bg-secondary-500 text-black font-bold text-base rounded-full w-5 h-5 flex items-center justify-center">
             {pinnedMessagesCount}

@@ -27,7 +27,7 @@ const Message = ({message, isUserMessage}: MessageProps) => {
         <div className="mx-2">
           <div
             className={`p-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
-              isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light1" : "bg-dark-4 text-light1"
+              isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
             }`}
           >
               <p className="text-sm">{message.text}</p>

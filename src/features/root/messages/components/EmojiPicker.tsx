@@ -19,7 +19,7 @@ const EmojiPicker = ({ onSelectEmoji }: EmojiPickerProps) => {
   return (
     <div className="relative">
       <button
-        className="text-light-3 hover:text-light1 focus:outline-none"
+        className="text-light-3 hover:text-light-1 focus:outline-none"
         onClick={() => setShowEmojiPicker((prev) => !prev)}
         aria-label="Toggle Emoji Picker"
       >

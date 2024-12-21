@@ -9,7 +9,7 @@ type AddGroupButtonProps = {
 
 const AddGroupButton: React.FC<AddGroupButtonProps> = ({ onClick, onContextMenu, title }) => (
   <div
-    className="mt-2 mb-2 cursor-pointer text-primary bg-dark4 p-3 rounded-lg hover:bg-dark5 hover:shadow-lg transition duration-200 ease-in-out"
+    className="mt-2 mb-2 cursor-pointer text-primary bg-dark-4 p-3 rounded-lg hover:bg-dark-5 hover:shadow-lg transition duration-200 ease-in-out"
     onClick={onClick}
     onContextMenu={onContextMenu}
     title={title}

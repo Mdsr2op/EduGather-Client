@@ -61,27 +61,27 @@ const DeleteGroupDialog: React.FC<DeleteGroupDialogProps> = ({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-4"
           >
-            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-dark2 shadow-xl rounded-2xl">
+            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-dark-2 shadow-xl rounded-2xl">
               {/* Dialog Title */}
-              <Dialog.Title as="h3" className="text-2xl font-bold text-light1 mb-4">
+              <Dialog.Title as="h3" className="text-2xl font-bold text-light-1 mb-4">
                 Delete {groupName}
               </Dialog.Title>
 
               {/* Dialog Message */}
               <div className="mt-2">
-                <p className="text-light3">
+                <p className="text-light-3">
                   Are you sure you want to delete the group '{groupName}'? This action cannot be undone.
                 </p>
               </div>
 
               {/* Confirmation Input */}
               <div className="mt-4">
-                <label className="block text-light3 mb-1">
+                <label className="block text-light-3 mb-1">
                   Type '{groupName}' to confirm.
                 </label>
                 <input
                   type="text"
-                  className="mt-2 w-full px-4 py-2 bg-dark3 text-light1 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder-light4"
+                  className="mt-2 w-full px-4 py-2 bg-dark-3 text-light-1 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder-light-4"
                   placeholder={`Enter '${groupName}'`}
                   value={confirmationText}
                   onChange={(e) => setConfirmationText(e.target.value)}
@@ -92,7 +92,7 @@ const DeleteGroupDialog: React.FC<DeleteGroupDialogProps> = ({
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-dark6 text-light1 rounded-md hover:bg-opacity-80"
+                  className="px-4 py-2 bg-dark-6 text-light-1 rounded-md hover:bg-opacity-80"
                   onClick={closeDialog}
                 >
                   Cancel

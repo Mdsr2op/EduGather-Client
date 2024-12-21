@@ -6,7 +6,7 @@ const OptionsButton = () => {
 
   return (
     <div className="relative group">
-      <button className="hover:text-light1">
+      <button className="hover:text--1">
         <FiMoreVertical size={20} className="text-light-3" />
       </button>
     </div>

@@ -14,7 +14,7 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
   const isAdmin = true; // Set this as true since you are the group admin
 
   return (
-    <div className="p-8 bg-dark3 rounded-lg shadow-md">
+    <div className="p-8 bg-dark-3 rounded-lg shadow-md">
       {/* Header */}
       <div className="flex items-center mb-6">
         <img
@@ -24,11 +24,11 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
         />
         <div className="flex items-center w-full justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-light1 mb-1">{channelName}</h2>
-            <p className="text-xs text-light3">{createdAt}</p>
+            <h2 className="text-2xl font-bold text-light-1 mb-1">{channelName}</h2>
+            <p className="text-xs text-light-3">{createdAt}</p>
           </div>
           {isAdmin && (
-            <MdEdit className="text-light1 ml-4 cursor-pointer text-xl" /> /* Aligned edit icon for channel name */
+            <MdEdit className="text-light-1 ml-4 cursor-pointer text-xl" /> /* Aligned edit icon for channel name */
           )}
         </div>
       </div>
@@ -36,25 +36,25 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
       {/* Description */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-light1 mb-2">Description</h3>
+          <h3 className="text-xl font-semibold text-light-1 mb-2">Description</h3>
           {isAdmin && (
-            <MdEdit className="text-light1 cursor-pointer text-xl" /> /* Aligned edit icon for description */
+            <MdEdit className="text-light-1 cursor-pointer text-xl" /> /* Aligned edit icon for description */
           )}
         </div>
-        <p className="text-sm text-light3">{description}</p>
+        <p className="text-sm text-light-3">{description}</p>
       </div>
 
       {/* Created By */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-light1 mb-2">Created By</h3>
+          <h3 className="text-xl font-semibold text-light-1 mb-2">Created By</h3>
         </div>
-        <p className="text-sm text-light3">{createdBy}</p>
+        <p className="text-sm text-light-3">{createdBy}</p>
       </div>
 
       {/* Members */}
       <div>
-        <h3 className="text-xl font-semibold text-light1 mb-3">Members</h3>
+        <h3 className="text-xl font-semibold text-light-1 mb-3">Members</h3>
         <div className="grid grid-cols-3 gap-4 h-48 overflow-y-auto custom-scrollbar pr-4"> {/* Changed to grid layout */}
           {members.map((member, index) => (
             <div key={index} className="flex items-center">
@@ -63,11 +63,11 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
                 alt={member}
                 className="w-10 h-10 rounded-full object-cover mr-3 border-2 border-primary"
               />
-              <span className="text-sm text-light3">{member}</span>
+              <span className="text-sm text-light-3">{member}</span>
             </div>
           ))}
         </div>
-        <p className="text-xs text-light3 mt-2">Total Members: {members.length}</p>
+        <p className="text-xs text-light-3 mt-2">Total Members: {members.length}</p>
       </div>
     </div>
   );

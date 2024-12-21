@@ -12,7 +12,7 @@ type ChatHeaderActionsProps = {
 
 const ChatHeaderActions: React.FC<ChatHeaderActionsProps> = (
 ) => (
-  <div className="flex items-center space-x-4 text-light3 mr-4">
+  <div className="flex items-center space-x-4 text-light-3 mr-4">
     <PinnedMessagesButton  />
     <SearchDialog  />
     <StartVideoCallDialog  />

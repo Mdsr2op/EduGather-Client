@@ -50,7 +50,7 @@ const ViewGroupDetails: React.FC<ViewGroupDetailsProps> = ({ isOpen, onClose, gr
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-dark6 bg-opacity-80 transition-opacity"></div>
+          <div className="fixed inset-0 bg-dark-6 bg-opacity-80 transition-opacity"></div>
         </Transition.Child>
 
         {/* Modal Content */}
@@ -64,12 +64,12 @@ const ViewGroupDetails: React.FC<ViewGroupDetailsProps> = ({ isOpen, onClose, gr
           leaveTo="opacity-0 translate-y-4 scale-95"
         >
           <div
-            className="w-full max-w-3xl p-6 bg-dark3 text-light1 rounded-2xl shadow-xl transform transition-all relative overflow-auto max-h-full"
+            className="w-full max-w-3xl p-6 bg-dark-3 text-light-1 rounded-2xl shadow-xl transform transition-all relative overflow-auto max-h-full"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
-              className="absolute top-3 right-3 text-light3 hover:text-light1 focus:outline-none"
+              className="absolute top-3 right-3 text-light-3 hover:text-light-1 focus:outline-none"
               onClick={onClose}
               aria-label="Close View Group Details Modal"
             >

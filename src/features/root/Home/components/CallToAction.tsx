@@ -18,7 +18,7 @@ export function CallToAction() {
         </h2>
         <p className="max-w-2xl text-light-3 text-base sm:text-lg mb-8">
           Experience seamless study group collaboration with equal participation 
-          and balanced speaking time—ensuring everyone’s voice is heard.
+          and balanced speaking time—ensuring everyone&apos;s voice is heard.
         </p>
 
         <Button
