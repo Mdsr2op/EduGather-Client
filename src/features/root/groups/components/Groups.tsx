@@ -1,23 +1,27 @@
+// SidebarGroup.tsx
 import React from "react";
 import { FaCircle } from "react-icons/fa";
 
-interface Group {
-  id: string;
+type Group = {
+  id: number;
   name: string;
   image: string;
-}
+  createdBy: number;
+  currentUserId: number;
+};
 
-interface SidebarGroupProps {
+type SidebarGroupProps = {
   groups: Group[];
-  selectedGroupId: string | null;
-  setSelectedGroupId: (id: string | null) => void;
-  onGroupContextMenu?: (event: React.MouseEvent<HTMLDivElement>, group: Group) => void;
-}
+  selectedGroupId: number | null;
+  setSelectedGroupId: (id: number | null) => void;
+  onGroupContextMenu: (e: React.MouseEvent, group: Group) => void;
+};
 
-const Groups: React.FC<SidebarGroupProps> = ({
+const SidebarGroup: React.FC<SidebarGroupProps> = ({
   groups,
   selectedGroupId,
   setSelectedGroupId,
+  onGroupContextMenu,
 }) => {
   return (
     <div className="flex flex-col space-y-2 w-full">
@@ -26,11 +30,12 @@ const Groups: React.FC<SidebarGroupProps> = ({
           key={group.id}
           className="relative flex items-center justify-center cursor-pointer transition-transform transform hover:scale-110"
           onClick={() => setSelectedGroupId(group.id)}
+          onContextMenu={(e) => onGroupContextMenu(e, group)}
           title={group.name}
         >
           <div
             className={`rounded-full ${
-              selectedGroupId === group.id ? "ring-2 ring-primary-500" : ""
+              selectedGroupId === group.id ? "ring-2 ring-primary" : ""
             }`}
             style={{ padding: "2px" }}
           >
@@ -42,7 +47,7 @@ const Groups: React.FC<SidebarGroupProps> = ({
           </div>
           {selectedGroupId === group.id && (
             <FaCircle
-              className="absolute bottom-0 right-0 text-primary-500"
+              className="absolute bottom-0 right-0 text-primary"
               size={10}
             />
           )}
@@ -52,4 +57,4 @@ const Groups: React.FC<SidebarGroupProps> = ({
   );
 };
 
-export default Groups;
+export default SidebarGroup;

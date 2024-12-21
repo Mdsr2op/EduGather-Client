@@ -1,10 +1,21 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 
-const AddGroupButton = () => {
-  <div className="mt-2 mb-2 cursor-pointer rounded-xl text-primary-500 bg-dark-3 p-3 hover:bg-dark-4 hover:shadow-lg transition duration-200 ease-in-out">
-    <FaPlus size={20} />
-  </div>;
+type AddGroupButtonProps = {
+  onClick: () => void;
+  onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  title: string;
 };
+
+const AddGroupButton: React.FC<AddGroupButtonProps> = ({ onClick, onContextMenu, title }) => (
+  <div
+    className="mt-2 mb-2 cursor-pointer text-primary bg-dark4 p-3 rounded-lg hover:bg-dark5 hover:shadow-lg transition duration-200 ease-in-out"
+    onClick={onClick}
+    onContextMenu={onContextMenu}
+    title={title}
+  >
+    <FaPlus size={20} />
+  </div>
+);
 
 export default AddGroupButton;
