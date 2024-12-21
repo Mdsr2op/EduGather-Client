@@ -7,7 +7,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -24,9 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FaPlus } from "react-icons/fa";
 
-// Define the validation schema using Zod
 const groupSchema = z.object({
   groupName: z
     .string()
@@ -39,13 +36,21 @@ const groupSchema = z.object({
     .or(z.literal("")),
 });
 
-// Type for the form data
 type GroupFormValues = z.infer<typeof groupSchema>;
 
-const CreateGroupDialog: React.FC = () => {
+interface CreateGroupDialogProps {
+  isOpen?: boolean;
+  setIsOpen?: (open: boolean) => void;
+  onClose?: () => void;
+}
+
+const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
+  isOpen = false,
+  setIsOpen,
+  onClose,
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialize React Hook Form
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupSchema),
     defaultValues: {
@@ -54,30 +59,35 @@ const CreateGroupDialog: React.FC = () => {
     },
   });
 
-  // Handle form submission
+  // Handle dialog open state changes
+  const handleOpen = (open: boolean) => {
+    if (setIsOpen) {
+      setIsOpen(open);
+    }
+    if (!open && onClose) {
+      onClose();
+    }
+  };
+
   const onSubmit: SubmitHandler<GroupFormValues> = async (data) => {
     setIsSubmitting(true);
     try {
-      // Your create-group logic here.
       console.log("Creating group with data:", data); // Simulated API call
       form.reset();
-      // Optionally, close the dialog after creation if desired.
+      if (onClose) onClose();
     } catch (error) {
       console.error("Error creating group:", error);
       // Optionally, handle error feedback to the user.
     } finally {
       setIsSubmitting(false);
+      if (setIsOpen) {
+        setIsOpen(false);
+      }
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="mt-2 mb-2 cursor-pointer rounded-xl text-primary-500 bg-dark-3 p-3 hover:bg-dark-4 hover:shadow-lg transition duration-200 ease-in-out">
-          <FaPlus size={20} />
-        </div>
-      </DialogTrigger>
-
+    <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">

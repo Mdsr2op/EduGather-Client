@@ -1,10 +1,12 @@
+// Sidebar.tsx
 import React, { useState } from "react";
 import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import Groups from "../groups/components/Groups";
 import CreateGroupDialog from "../groups/dialogs/CreateGroupDialog";
+import AddGroupMenu from "../groups/menus/AddGroupMenu";
+import { FaPlus } from "react-icons/fa";
 
-// Group and icon data
 const groups = [
   {
     id: "1",
@@ -34,9 +36,36 @@ const groups = [
 
 const Sidebar = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>("1");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const handleLeftClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleRightClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setIsMenuOpen(true);
+    setMenuPosition({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleCloseMenu = () => {
+    setIsMenuOpen(false);
+    setMenuPosition(null);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   return (
-    <div className="w-20 bg-dark-5 h-full p-3 flex flex-col items-center overflow-hidden">
+    <div className="w-20 bg-dark-5 h-full p-3 flex flex-col items-center overflow-hidden relative">
       <SidebarLogo onClick={() => setSelectedGroupId(null)} />
       <SidebarDivider />
 
@@ -48,7 +77,34 @@ const Sidebar = () => {
 
       <SidebarDivider />
 
-      <CreateGroupDialog />
+      {/* Combined Trigger */}
+      <div
+        className="mt-2 mb-2 cursor-pointer rounded-xl text-primary-500 bg-dark-3 p-3 hover:bg-dark-4 hover:shadow-lg transition duration-200 ease-in-out relative"
+        onClick={handleLeftClick}
+        onContextMenu={handleRightClick}
+      >
+        <FaPlus size={20} />
+      </div>
+
+      {/* Create Group Dialog */}
+      {isDialogOpen && (
+        <CreateGroupDialog
+          isOpen={isDialogOpen}
+          setIsOpen={setIsDialogOpen}
+          onClose={handleCloseDialog}
+        />
+      )}
+
+      {/* Add Group Menu */}
+      {isMenuOpen && menuPosition && (
+        <AddGroupMenu
+          position={menuPosition}
+          isOpen={isMenuOpen}
+          setIsCreateGroupDialog={setIsDialogOpen}
+          setIsOpen={setIsMenuOpen}
+          onClose={handleCloseMenu}
+        />
+      )}
     </div>
   );
 };
