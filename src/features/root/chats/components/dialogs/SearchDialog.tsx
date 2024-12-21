@@ -59,11 +59,8 @@ export function SearchDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          className="flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl p-2 shadow-md"
-        >
-          <FiSearch size={20} className="text-light-1 mr-2" />
-          Search
+        <Button className="flex items-center justify-center  text-primary-500 rounded-xl p-2 shadow-md">
+          <FiSearch size={20} className="text-primary-500 mr-2" />
         </Button>
       </DialogTrigger>
 
@@ -93,7 +90,9 @@ export function SearchDialog() {
               )}
             />
             {errors.search && (
-              <p className="text-sm text-red-500 mt-1">{errors.search.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.search.message}
+              </p>
             )}
           </div>
 
