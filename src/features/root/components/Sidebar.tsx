@@ -1,4 +1,5 @@
-// Sidebar.tsx
+"use client";
+
 import React, { useState } from "react";
 import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
@@ -43,10 +44,20 @@ const Sidebar = () => {
     y: number;
   } | null>(null);
 
-  const handleLeftClick = () => {
-    setIsDialogOpen(true);
+  // State for "Join Group" dialog
+  const [isJoinGroupDialogOpen, setIsJoinGroupDialogOpen] =
+    useState<boolean>(false);
+
+  // Only open Create Group dialog on left-click
+  const handleLeftClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (event.button === 0) {
+      setIsDialogOpen(true);
+    }
   };
 
+  // Open custom context menu on right-click
   const handleRightClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -77,7 +88,7 @@ const Sidebar = () => {
 
       <SidebarDivider />
 
-      {/* Combined Trigger */}
+      {/* Combined Trigger (Left-Click vs. Right-Click) */}
       <div
         className="mt-2 mb-2 cursor-pointer rounded-xl text-primary-500 bg-dark-3 p-3 hover:bg-dark-4 hover:shadow-lg transition duration-200 ease-in-out relative"
         onClick={handleLeftClick}
@@ -95,12 +106,14 @@ const Sidebar = () => {
         />
       )}
 
-      {/* Add Group Menu */}
+      {/* Add Group Menu / Context Menu */}
       {isMenuOpen && menuPosition && (
         <AddGroupMenu
           position={menuPosition}
           isOpen={isMenuOpen}
           setIsCreateGroupDialog={setIsDialogOpen}
+          isJoinGroupDialogOpen={isJoinGroupDialogOpen}
+          setIsJoinGroupDialogOpen={setIsJoinGroupDialogOpen}
           setIsOpen={setIsMenuOpen}
           onClose={handleCloseMenu}
         />
