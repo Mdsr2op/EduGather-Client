@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SidebarLogo from "../groups/components/SidebarLogo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import Groups from "../groups/components/Groups";
-import AddGroupButton from "../groups/components/AddGroupButton";
+import CreateGroupDialog from "../groups/dialogs/CreateGroupDialog";
 
 // Group and icon data
 const groups = [
@@ -48,8 +48,7 @@ const Sidebar = () => {
 
       <SidebarDivider />
 
-    <AddGroupButton />
-
+      <CreateGroupDialog />
     </div>
   );
 };

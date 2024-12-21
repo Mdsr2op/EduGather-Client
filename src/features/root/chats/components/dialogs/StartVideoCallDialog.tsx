@@ -5,7 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { FiPlus, FiCalendar, FiVideo } from "react-icons/fi";
+import { FiCalendar, FiVideo } from "react-icons/fi";
 import {
   Dialog,
   DialogTrigger,
