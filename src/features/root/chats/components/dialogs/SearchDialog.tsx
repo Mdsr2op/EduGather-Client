@@ -60,7 +60,7 @@ export function SearchDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="flex items-center justify-center  text-primary-500 rounded-xl p-2 shadow-md">
-          <FiSearch size={20} className="text-primary-500 mr-2" />
+          <FiSearch size={24} className="text-primary-500" />
         </Button>
       </DialogTrigger>
 

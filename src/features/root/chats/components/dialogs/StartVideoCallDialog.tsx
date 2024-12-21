@@ -5,7 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { FiPlus, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiCalendar, FiVideo } from "react-icons/fi";
 import {
   Dialog,
   DialogTrigger,
@@ -32,12 +32,14 @@ import "react-datepicker/dist/react-datepicker.css";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
-  meetingTitle: z.string().min(1, "Meeting title is required").max(100, "Meeting title is too long"),
-  dateTime: z
-    .date({
-      required_error: "Date and time are required",
-      invalid_type_error: "Invalid date format",
-    }),
+  meetingTitle: z
+    .string()
+    .min(1, "Meeting title is required")
+    .max(100, "Meeting title is too long"),
+  dateTime: z.date({
+    required_error: "Date and time are required",
+    invalid_type_error: "Invalid date format",
+  }),
   agenda: z.string().max(500, "Agenda is too long").optional(),
 });
 
@@ -88,11 +90,8 @@ const StartVideoCallDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          className="flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl p-2 shadow-md"
-        >
-          <FiPlus size={20} className="text-light-1 mr-2" />
-          Start Video Call
+        <Button className="flex items-center justify-center text-light-1 rounded-xl shadow-md">
+          <FiVideo size={20} className="text-primary-500 mr-2" />
         </Button>
       </DialogTrigger>
 
@@ -107,7 +106,10 @@ const StartVideoCallDialog: React.FC = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-4 space-y-4"
+          >
             {/* Meeting Title Field */}
             <FormField
               control={form.control}
@@ -142,7 +144,8 @@ const StartVideoCallDialog: React.FC = () => {
                         dateFormat="dd/MM/yyyy hh:mm aa"
                         className={cn(
                           "mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl p-2 pl-10",
-                          form.formState.errors.dateTime && "border-red-500 focus:ring-red-500"
+                          form.formState.errors.dateTime &&
+                            "border-red-500 focus:ring-red-500"
                         )}
                       />
                       <FiCalendar
