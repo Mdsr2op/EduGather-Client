@@ -1,11 +1,13 @@
 // groupApiSlice.ts
 import { apiSlice } from "@/redux/api/apiSlice";
 import { UserJoinedGroups } from "./groupSlice";
+import { Member } from "../types";
 
 interface GetJoinedGroupsResponse {
   groups: {
     _id: string;
     name: string;
+    members: Member[];
     description: string;
     avatar?: string;
     coverImage?: string;
@@ -25,6 +27,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           name: group.name,
           description: group.description,
           avatar: group.avatar,
+          members: group.members,
           coverImage: group.coverImage,
           createdBy: group.createdBy,
           createdAt: group.createdAt,
