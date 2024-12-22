@@ -1,3 +1,4 @@
+import CreateChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
 import AddChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
 import ChannelList from "./ChannelList";
 
@@ -31,7 +32,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({
         onSelectChannel={onSelectChannel}
       />
 
-      <AddChannelDialog />
+      <CreateChannelDialog isOpen={false} setIsOpen={() => {}} />
     </div>
   );
 };
