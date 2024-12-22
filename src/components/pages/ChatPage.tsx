@@ -11,7 +11,7 @@ interface Channel {
   }
 
 function ChatPage() {
-  const groupParam = useParams().group;
+  const groupId = useParams().groupId || "";
   const [channels] = useState<Channel[]>([
     { id: "1", name: "General" },
     { id: "2", name: "Random" },
@@ -48,22 +48,14 @@ function ChatPage() {
     },
   ]);
   
-  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
   const userId = "1"; // Assuming current user has ID 1
-  const navigate = useNavigate(); // Use navigate for route navigation
 
 
-  const handleSelectChannel = (channelName: string) => {
-    setSelectedChannel(channelName);
-  };
+
 
   return (
     <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 text-white ">
-      <ChannelSidebar
-        channels={channels}
-        selectedChannel={selectedChannel}
-        onSelectChannel={handleSelectChannel}
-      />
+      <ChannelSidebar groupId={groupId} />
       <div className="flex flex-col flex-grow p-4 bg-dark-3 rounded-xl">
         <ChatHeader channelName={selectedChannel} membersCount={2} />
         <div className="flex flex-col flex-grow justify-between overflow-hidden">

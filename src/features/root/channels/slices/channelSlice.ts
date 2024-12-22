@@ -73,10 +73,10 @@ export const {
 
 // Selectors
 export const selectSelectedChannelId = (state: { channel: ChannelState }) =>
-  state.channel.selectedChannelId;
+  state.channel?.selectedChannelId;
 
 export const selectChannelContextMenu = (state: { channel: ChannelState }) =>
-  state.channel.contextMenu;
+  state.channel?.contextMenu;
 
 // Reducer
 export default channelSlice.reducer;

@@ -1,38 +1,25 @@
-// ChannelList.js
-import React from 'react';
-import Channel from './Channel';
+// ChannelList.tsx
+import React from "react";
+import Channel from "./Channel";
 
-interface Channel {
-    id: string;
-    name: string;
-  }
-  
-  interface ChannelListProps {
-    channels: Channel[];
-    selectedChannel: string;
-    onSelectChannel: (channelName: string) => void;
-  }
-const ChannelList: React.FC<ChannelListProps> = ({
-  channels,
-  selectedChannel,
-  onSelectChannel,
-}) => {
-  if (channels.length === 0) {
-    return (
-      <li className="text-ligh-t3 italic text-center mt-4">
-        No channels available
-      </li>
-    );
-  }
+type Channels = {
+  id: string,
+  name: string
+}
+interface ChannelListProps {
+  channels: Channels[];
+  selectedChannelId: string | null;
+}
 
+const ChannelList: React.FC<ChannelListProps> = ({ channels, selectedChannelId }) => {
   return (
-    <ul className="flex-grow overflow-y-auto">
+    <ul className="flex flex-col space-y-1 overflow-y-auto">
       {channels.map((channel) => (
         <Channel
-          key={channel.id || channel.name}
+          key={channel.id}
+          id={channel.id}
           name={channel.name}
-          isSelected={selectedChannel === channel.name}
-          onSelect={() => onSelectChannel(channel.name)}
+          isSelected={channel.id === selectedChannelId}
         />
       ))}
     </ul>

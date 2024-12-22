@@ -4,11 +4,13 @@ import { Transition } from "@headlessui/react";
 type CreateChannelDialogProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  onConfirm: (channelName: string, description: string) => Promise<void>
 };
 
 const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
   isOpen = false,
   setIsOpen,
+  onConfirm,
 }) => {
   const [channelName, setChannelName] = useState<string>("");
   const [channelDescription, setChannelDescription] = useState<string>("");
@@ -17,14 +19,6 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
     setIsOpen(false);
   };
 
-  const handleCreateChannel = (): void => {
-    // Logic to create a new channel
-    console.log("Channel Created:", {
-      name: channelName,
-      description: channelDescription,
-    });
-    closeDialog();
-  };
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -89,7 +83,7 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               <button
                 type="button"
                 className="px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-80"
-                onClick={handleCreateChannel}
+                onClick={() => onConfirm(channelName, channelDescription)}
               >
                 Create Channel
               </button>

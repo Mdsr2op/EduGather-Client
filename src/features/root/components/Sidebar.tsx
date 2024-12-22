@@ -25,10 +25,12 @@ import {
 import { AuthState } from "@/features/auth/slices/authSlice";
 import Groups from "../groups/components/Groups";
 import GroupContextMenu from "../groups/components/GroupContextMenu";
+import { useCreateChannelMutation } from "../channels/slices/channelApiSlice";
 
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const groupId = useSelector(selectSelectedGroupId) ?? "";
 
   const userId = useSelector(
     (state: { auth: AuthState }) => state.auth.user?._id ?? ""
@@ -43,6 +45,8 @@ const Sidebar: React.FC = () => {
     isError,
     error,
   } = useGetJoinedGroupsQuery(userId, { skip: !userId });
+
+  const [createChannel] = useCreateChannelMutation();
 
   // -------------------------
   // Local states 
@@ -81,6 +85,14 @@ const Sidebar: React.FC = () => {
   const handleCreateGroup = () => setCreateGroupModalOpen(true);
   const handleJoinGroup = () => setJoinGroupModalOpen(true);
 
+  const handleCreateChannelConfirm = async (channelName: string, description: string) => {
+    try {
+      await createChannel({ groupId, channelName, description }).unwrap();
+      console.log("Channel created successfully!");
+    } catch (err) {
+      console.error("Error creating channel: ", err);
+    }
+  };
 
   const handleContextMenuAction = (action: string, groupId: string) => {
     switch (action) {
@@ -106,7 +118,7 @@ const Sidebar: React.FC = () => {
     handleCloseContextMenu();
   };
 
-  // (Example) confirm delete group
+
   const handleDeleteGroup = (groupName: string) => {
     console.log(`Deleting group: ${groupName}`);
     // Add your actual delete logic or thunk here
@@ -206,11 +218,11 @@ const Sidebar: React.FC = () => {
         closeViewGroupDetailsModal={() => {}}
       />
 
-      {/* Dialog for creating a channel */}
       {isChannelDialogOpen && (
         <CreateChannelDialog
           isOpen={isChannelDialogOpen}
           setIsOpen={setIsChannelDialogOpen}
+          onConfirm={handleCreateChannelConfirm}
         />
       )}
 
