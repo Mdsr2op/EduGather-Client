@@ -6,7 +6,6 @@ import { AuthResponse, SignInFormValues } from "../types";
 
 
 
-// We'll use FormData for signup, as you're uploading files
 // The `SignUpFormValues` should be turned into `FormData` before calling this mutation.
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

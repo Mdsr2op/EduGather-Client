@@ -3,7 +3,7 @@ import ChatHeader from '@/features/root/chats/components/ChatHeader';
 import ChatInput from '@/features/root/chats/components/ChatInput';
 import ChatWindow from '@/features/root/chats/components/ChatWindow';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Channel {
     id: string;
@@ -11,6 +11,7 @@ interface Channel {
   }
 
 function ChatPage() {
+  const groupParam = useParams().group;
   const [channels] = useState<Channel[]>([
     { id: "1", name: "General" },
     { id: "2", name: "Random" },

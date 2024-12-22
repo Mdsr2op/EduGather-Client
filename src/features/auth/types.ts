@@ -1,6 +1,6 @@
 // Example types from your project references
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   fullName: string;
