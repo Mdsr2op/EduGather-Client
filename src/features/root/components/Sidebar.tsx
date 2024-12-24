@@ -1,8 +1,16 @@
 // Sidebar.tsx
-
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
+import {
+  FiHome,
+  FiUsers,
+  FiCalendar,
+  FiCpu,
+  FiVideo,
+  FiPlusCircle,
+  FiMoreVertical,
+} from "react-icons/fi";
 
 // UI components
 import SidebarLogo from "../groups/components/SidebarLogo";
@@ -12,7 +20,7 @@ import ModalsManager from "./ModalsManager";
 import CreateChannelDialog from "../chats/components/dialogs/CreateChannelDialog";
 import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
 import LeaveGroupDialog from "../groups/dialogs/LeaveGroupDialog";
-import EditGroupDialog from "../groups/dialogs/EditGroupDialog"; // <-- Import your EditGroupDialog
+import EditGroupDialog from "../groups/dialogs/EditGroupDialog";
 
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
@@ -24,7 +32,6 @@ import {
   openContextMenu,
   closeContextMenu,
   selectGroupContextMenu,
-  // If you want "View Details" via Redux:
   openViewGroupDetailsModal,
   selectIsViewGroupDetailsModalOpen,
   closeViewGroupDetailsModal,
@@ -48,7 +55,9 @@ const Sidebar: React.FC = () => {
   const groupContextMenu = useSelector(selectGroupContextMenu);
 
   // For "View Group Details" if using Redux-based approach
-  const isViewGroupDetailsModalOpen = useSelector(selectIsViewGroupDetailsModalOpen);
+  const isViewGroupDetailsModalOpen = useSelector(
+    selectIsViewGroupDetailsModalOpen
+  );
   const viewGroupDetailsData = useSelector(selectViewGroupDetailsData);
 
   // Fetch joined groups
@@ -65,12 +74,12 @@ const Sidebar: React.FC = () => {
   // ----------------------------------
   // Local state for modals
   // ----------------------------------
-  const [isCreateGroupModalOpen, setCreateGroupModalOpen] = useState(false);
-  const [isJoinGroupModalOpen, setJoinGroupModalOpen] = useState(false);
-  const [isChannelDialogOpen, setIsChannelDialogOpen] = useState(false);
-  const [isDeleteGroupDialogOpen, setIsDeleteGroupDialogOpen] = useState(false);
-  const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false);
-  const [isEditGroupDialogOpen, setIsEditGroupDialogOpen] = useState(false);
+  const [isCreateGroupModalOpen, setCreateGroupModalOpen] = React.useState(false);
+  const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
+  const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
+  const [isDeleteGroupDialogOpen, setIsDeleteGroupDialogOpen] = React.useState(false);
+  const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = React.useState(false);
+  const [isEditGroupDialogOpen, setIsEditGroupDialogOpen] = React.useState(false);
 
   // ----------------------------------
   // Handlers
@@ -100,7 +109,10 @@ const Sidebar: React.FC = () => {
   const handleJoinGroup = () => setJoinGroupModalOpen(true);
 
   // Create channel confirm
-  const handleCreateChannelConfirm = async (channelName: string, description: string) => {
+  const handleCreateChannelConfirm = async (
+    channelName: string,
+    description: string
+  ) => {
     try {
       if (!selectedGroupId) return;
       await createChannel({ groupId: selectedGroupId, channelName, description }).unwrap();
@@ -162,7 +174,7 @@ const Sidebar: React.FC = () => {
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
         <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
         <SidebarDivider />
-        <div>Loading your groups...</div>
+        <div className="text-light-3 mt-4">Loading your groups...</div>
       </div>
     );
   }
@@ -173,7 +185,7 @@ const Sidebar: React.FC = () => {
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
         <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
         <SidebarDivider />
-        <div>Error loading groups</div>
+        <div className="text-red mt-4">Error loading groups</div>
       </div>
     );
   }
@@ -184,9 +196,74 @@ const Sidebar: React.FC = () => {
     : null;
 
   return (
-    <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center overflow-hidden">
+    <div className="w-32 bg-dark-1 h-full p-3 flex flex-col items-center overflow-y-auto">
       {/* Logo: reset selection if clicked */}
       <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
+
+      <SidebarDivider />
+
+      {/* Navigation Links */}
+      <nav className="flex flex-col w-full">
+        <NavLink
+          to="/home"
+          className={({ isActive }) =>
+            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
+              isActive ? "bg-dark-6" : ""
+            }`
+          }
+          title="Home"
+        >
+          <FiHome size={20} className="text-light-3" />
+        </NavLink>
+
+        <NavLink
+          to="/discover-groups"
+          className={({ isActive }) =>
+            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
+              isActive ? "bg-dark-6" : ""
+            }`
+          }
+          title="Discover Groups"
+        >
+          <FiUsers size={20} className="text-light-3" />
+        </NavLink>
+
+        <NavLink
+          to="/scheduled-meetings"
+          className={({ isActive }) =>
+            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
+              isActive ? "bg-dark-6" : ""
+            }`
+          }
+          title="Scheduled Meetings"
+        >
+          <FiCalendar size={20} className="text-light-3" />
+        </NavLink>
+
+        <NavLink
+          to="/ai-quiz-generation"
+          className={({ isActive }) =>
+            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
+              isActive ? "bg-dark-6" : ""
+            }`
+          }
+          title="AI Quiz Generation"
+        >
+          <FiCpu size={20} className="text-light-3" />
+        </NavLink>
+
+        <NavLink
+          to="/meeting-recordings"
+          className={({ isActive }) =>
+            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
+              isActive ? "bg-dark-6" : ""
+            }`
+          }
+          title="Meeting Recordings"
+        >
+          <FiVideo size={20} className="text-light-3" />
+        </NavLink>
+      </nav>
 
       <SidebarDivider />
 

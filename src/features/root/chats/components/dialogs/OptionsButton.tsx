@@ -23,7 +23,6 @@ const OptionsButton = () => {
         <FiMoreVertical size={20} className="text-light-3" />
       </button>
 
-      {/* Conditionally render OptionsDialog */}
       {openDialog && <OptionsDialog onClose={handleCloseDialog} />}
     </div>
   );

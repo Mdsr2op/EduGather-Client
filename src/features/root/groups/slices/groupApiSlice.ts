@@ -1,5 +1,4 @@
-// groupApiSlice.ts
-
+// src/features/groups/slices/groupApiSlice.ts
 import { apiSlice } from "@/redux/api/apiSlice";
 import { UserJoinedGroups } from "./groupSlice";
 import { Member } from "../types";
