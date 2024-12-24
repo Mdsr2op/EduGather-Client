@@ -39,6 +39,8 @@ function App() {
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/home" replace />} />
+        
+
       </Routes>
       <Toaster />
     </main>
