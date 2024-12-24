@@ -5,7 +5,7 @@ interface Step {
   icon: React.ReactNode;
   title: string;
   description: string;
-  gifSrc: string;
+  imageSrc: string;
 }
 
 const steps: Step[] = [
@@ -13,25 +13,25 @@ const steps: Step[] = [
     icon: <UserPlus className="h-8 w-8 text-primary-500" />,
     title: "Create an Account",
     description: "Simple registration with secure password encryption.",
-    gifSrc: "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif", // User typing on a form
+    imageSrc: "public/CreateANewAccount.png", // Replace with actual image URL
   },
   {
     icon: <Users className="h-8 w-8 text-primary-500" />,
     title: "Join or Create a Study Group",
     description: "Connect with peers and form learning communities.",
-    gifSrc: "https://media.giphy.com/media/j5WLMTn9nVbCbgpKaL/giphy.gif", // Group collaboration
+    imageSrc: "public/NewGroup.png", // Replace with actual image URL
   },
   {
     icon: <MessageCircle className="h-8 w-8 text-primary-500" />,
     title: "Collaborate in Real-Time",
     description: "Use messaging, video calls, and file sharing to study effectively.",
-    gifSrc: "https://media.giphy.com/media/3ohzdYJK1wAdPWVk88/giphy.gif", // Real-time chat animation
+    imageSrc: "public/RealTimeCollaboration.png", // Replace with actual image URL
   },
   {
     icon: <Calendar className="h-8 w-8 text-primary-500" />,
     title: "Organize & Manage",
     description: "Assign roles, schedule events, and streamline communication.",
-    gifSrc: "https://media.giphy.com/media/3o7abldj0b3rxrZUxW/giphy.gif", // Calendar scheduling
+    imageSrc: "public/organize and manage.jpg", // Replace with actual image URL
   },
 ];
 
@@ -75,12 +75,12 @@ export function HowItWorks() {
                 </p>
               </div>
 
-              {/* GIF */}
+              {/* Image */}
               <div className="flex-1">
                 <div className="relative w-full max-w-md mx-auto lg:mx-0 aspect-video bg-dark-4 rounded-lg overflow-hidden shadow-lg">
                   <img
-                    src={step.gifSrc}
-                    alt={`${step.title} GIF`}
+                    src={step.imageSrc}
+                    alt={`${step.title} Image`}
                     className="w-full h-full object-cover"
                   />
                 </div>
