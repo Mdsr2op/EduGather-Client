@@ -4,18 +4,12 @@ import SearchDialog from "./dialogs/SearchDialog";
 import StartVideoCallDialog from "./dialogs/StartVideoCallDialog";
 import OptionsButton from "./dialogs/OptionsButton";
 
-type ChatHeaderActionsProps = {
-  pinnedMessagesCount: number;
-  openSearchDialog: () => void;
-  openCreateMeetingDialog: () => void;
-};
 
-const ChatHeaderActions: React.FC<ChatHeaderActionsProps> = (
-) => (
+const ChatHeaderActions= () => (
   <div className="flex items-center space-x-4 text-light-3 mr-4">
-    <PinnedMessagesButton  />
-    <SearchDialog  />
-    <StartVideoCallDialog  />
+    <PinnedMessagesButton />
+    <SearchDialog />
+    <StartVideoCallDialog />
     <OptionsButton />
   </div>
 );
