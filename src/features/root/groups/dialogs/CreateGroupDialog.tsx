@@ -1,3 +1,5 @@
+// CreateGroupDialog.tsx
+
 "use client";
 
 import React, { useState } from "react";
@@ -23,17 +25,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useCreateGroupMutation } from "../slices/groupApiSlice";
 
+// Zod schema consistent with your group.model.js and createGroup controller
 const groupSchema = z.object({
-  groupName: z
-    .string()
-    .min(1, "Group name is required")
-    .max(100, "Group name is too long"),
-  groupImageUrl: z
-    .string()
-    .url("Invalid URL format")
-    .optional()
-    .or(z.literal("")),
+  name: z.string().min(1, "Group name is required").max(100),
+  description: z.string().min(1, "Description is required").max(500),
+  isJoinableExternally: z.boolean().optional(), // default = true
+  avatar: z.any().optional(), // We'll handle as file
+  coverImage: z.any().optional(), // We'll handle as file
 });
 
 type GroupFormValues = z.infer<typeof groupSchema>;
@@ -50,16 +50,20 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
   onClose,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createGroup] = useCreateGroupMutation();
 
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupSchema),
     defaultValues: {
-      groupName: "",
-      groupImageUrl: "",
+      name: "",
+      description: "",
+      isJoinableExternally: true,
+      avatar: null,
+      coverImage: null,
     },
   });
 
-  // Handle dialog open state changes
+  // Handle dialog open/close
   const handleOpen = (open: boolean) => {
     if (setIsOpen) {
       setIsOpen(open);
@@ -71,13 +75,30 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 
   const onSubmit: SubmitHandler<GroupFormValues> = async (data) => {
     setIsSubmitting(true);
+
+    // Build the FormData
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append(
+      "isJoinableExternally",
+      String(data.isJoinableExternally ?? true)
+    );
+    if (data.avatar && data.avatar.length > 0) {
+      formData.append("avatar", data.avatar[0]);
+    }
+    if (data.coverImage && data.coverImage.length > 0) {
+      formData.append("coverImage", data.coverImage[0]);
+    }
+
     try {
-      console.log("Creating group with data:", data); // Simulated API call
+      await createGroup(formData).unwrap();
+      // If successful, close the dialog
       form.reset();
       if (onClose) onClose();
     } catch (error) {
       console.error("Error creating group:", error);
-      // Optionally, handle error feedback to the user.
+      // Optionally show error to user
     } finally {
       setIsSubmitting(false);
       if (setIsOpen) {
@@ -103,10 +124,10 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
             onSubmit={form.handleSubmit(onSubmit)}
             className="mt-4 space-y-4"
           >
-            {/* Group Name Field */}
+            {/* Group Name */}
             <FormField
               control={form.control}
-              name="groupName"
+              name="name"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
                   <FormLabel className="text-light-1">Group Name</FormLabel>
@@ -114,7 +135,9 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                     <Input
                       {...field}
                       placeholder="Enter group name"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,20 +145,20 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               )}
             />
 
-            {/* Group Image URL Field */}
+            {/* Description */}
             <FormField
               control={form.control}
-              name="groupImageUrl"
+              name="description"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">
-                    Group Image URL (optional)
-                  </FormLabel>
+                  <FormLabel className="text-light-1">Description</FormLabel>
                   <FormControl>
-                    <Input
+                    <textarea
                       {...field}
-                      placeholder="Enter image URL"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      placeholder="Enter group description"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl p-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -143,7 +166,71 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               )}
             />
 
-            {/* Dialog Footer with Buttons */}
+            {/* isJoinableExternally */}
+            <FormField
+              control={form.control}
+              name="isJoinableExternally"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-light-1">Allow External Joins</FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Avatar (Image) */}
+            <FormField
+              control={form.control}
+              name="avatar"
+              render={({ field }) => (
+                <FormItem className="rounded-lg">
+                  <FormLabel className="text-light-1">Avatar (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files)}
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
+                                 file:bg-dark-6 file:border-0 file:text-light-2
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Cover Image (Image) */}
+            <FormField
+              control={form.control}
+              name="coverImage"
+              render={({ field }) => (
+                <FormItem className="rounded-lg">
+                  <FormLabel className="text-light-1">Cover Image (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => field.onChange(e.target.files)}
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
+                                 file:bg-dark-6 file:border-0 file:text-light-2
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <DialogFooter className="flex justify-end space-x-2 pt-4">
               <DialogClose asChild>
                 <Button

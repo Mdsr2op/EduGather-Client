@@ -1,5 +1,4 @@
-"use client";
-
+// JoinGroupDialog.tsx
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,13 +22,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useJoinGroupMutation } from "../slices/groupApiSlice";
 
-// Define the validation schema for the group code
 const joinGroupSchema = z.object({
-  groupCode: z
-    .string()
-    .min(1, "Group code is required")
-    .max(20, "Group code is too long"),
+  groupCode: z.string().min(1, "Group code is required").max(20),
 });
 
 type JoinGroupFormValues = z.infer<typeof joinGroupSchema>;
@@ -46,6 +42,7 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
   onClose,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [joinGroup] = useJoinGroupMutation();
 
   const form = useForm<JoinGroupFormValues>({
     resolver: zodResolver(joinGroupSchema),
@@ -54,7 +51,6 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
     },
   });
 
-  // Handle dialog open state changes
   const handleOpen = (open: boolean) => {
     if (setIsOpen) {
       setIsOpen(open);
@@ -67,13 +63,13 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
   const onSubmit: SubmitHandler<JoinGroupFormValues> = async (data) => {
     setIsSubmitting(true);
     try {
-      console.log("Joining group with code:", data.groupCode); // Simulated API call
-      // TODO: Replace with actual API call to join the group
+      await joinGroup({ groupId: data.groupCode }).unwrap();
+
       form.reset();
       if (onClose) onClose();
     } catch (error) {
       console.error("Error joining group:", error);
-      // Optionally, handle error feedback to the user.
+      // Show error feedback if needed
     } finally {
       setIsSubmitting(false);
       if (setIsOpen) {
@@ -95,22 +91,20 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-4 space-y-4"
-          >
-            {/* Group Code Field */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
             <FormField
               control={form.control}
               name="groupCode"
               render={({ field }) => (
-                <FormItem className="rounded-lg">
+                <FormItem>
                   <FormLabel className="text-light-1">Group Code</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter group code"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 
+                                 text-light-1 placeholder-light-3 focus:ring-primary-500 
+                                 focus:border-primary-500 rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -118,7 +112,6 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
               )}
             />
 
-            {/* Dialog Footer with Buttons */}
             <DialogFooter className="flex justify-end space-x-2 pt-4">
               <DialogClose asChild>
                 <Button

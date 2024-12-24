@@ -56,7 +56,7 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
       <div>
         <h3 className="text-xl font-semibold text-light-1 mb-3">Members</h3>
         <div className="grid grid-cols-3 gap-4 h-48 overflow-y-auto custom-scrollbar pr-4"> {/* Changed to grid layout */}
-          {members.map((member, index) => (
+          {members?.map((member, index) => (
             <div key={index} className="flex items-center">
               <img
                 src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member)}&background=random`}
@@ -67,7 +67,7 @@ const GroupInfo: React.FC<GroupInfoProps> = ({ channelName, description, members
             </div>
           ))}
         </div>
-        <p className="text-xs text-light-3 mt-2">Total Members: {members.length}</p>
+        <p className="text-xs text-light-3 mt-2">Total Members: {members?.length}</p>
       </div>
     </div>
   );

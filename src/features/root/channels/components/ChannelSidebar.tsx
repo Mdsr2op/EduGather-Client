@@ -1,5 +1,8 @@
+// ChannelSidebar.tsx
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // Import RTK Query hooks
 import {
@@ -7,7 +10,6 @@ import {
   useCreateChannelMutation,
   useDeleteChannelMutation,
 } from "../slices/channelApiSlice";
-
 
 import {
   selectSelectedChannelId,
@@ -19,8 +21,7 @@ import {
 
 import ChannelList from "./ChannelList";
 import CreateChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
-import ChannelContextMenu from "../menus/channelContextMenu";
-import { useNavigate } from "react-router-dom";
+import ChannelContextMenu from "../menus/ChannelContextMenu";
 
 interface ChannelSidebarProps {
   groupId: string;
@@ -50,21 +51,26 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
 
   const channels = channelData?.data.channels ?? [];
 
-
   const [createChannel] = useCreateChannelMutation();
   const [deleteChannel] = useDeleteChannelMutation();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
+  // ===================
+  // Handlers
+  // ===================
 
+  // Left-click a channel to select it
   const handleSelectChannel = (channelId: string) => {
     dispatch(setSelectedChannelId(channelId));
-    navigate(`/groups/${groupId}/${channelId}`);
+    // Navigate to the channel view
+    navigate(`/${groupId}/${channelId}`);
   };
 
+  // Right-click a channel to open context menu
   const handleChannelContextMenu = (
-    e: React.MouseEvent<HTMLDivElement>,
-    channelId: string
+    channelId: string,
+    e: React.MouseEvent<HTMLLIElement>
   ) => {
     e.preventDefault();
     dispatch(
@@ -83,9 +89,11 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     switch (action) {
       case "view":
         console.log(`View channel details: ${channelId}`);
+        // Implement view details functionality if needed
         break;
       case "edit":
         console.log(`Edit channel: ${channelId}`);
+        // Implement edit channel functionality if needed
         break;
       case "delete":
         try {
@@ -98,7 +106,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
       default:
         break;
     }
-    // close the context menu
+    // Close the context menu afterward
     handleCloseContextMenu();
   };
 
@@ -106,7 +114,10 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     setIsCreateDialogOpen(true);
   };
 
-  const handleCreateChannelConfirm = async (channelName: string, description: string) => {
+  const handleCreateChannelConfirm = async (
+    channelName: string,
+    description: string
+  ) => {
     try {
       await createChannel({ groupId, channelName, description }).unwrap();
       console.log("Channel created successfully!");
@@ -147,7 +158,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         {/* Button to create a new channel */}
         <button
           onClick={handleCreateChannelButtonClick}
-          className="bg-primary text-white text-xl px-2 py-1 rounded"
+          className="bg-primary-500 hover:bg-primary-600 text-white text-xl px-2 py-1 rounded-full shadow-md"
         >
           +
         </button>
@@ -159,18 +170,18 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
           id: ch._id,
           name: ch.channelName,
         }))}
-        selectedChannelId={selectedChannelId ?? ""}
+        selectedChannelId={selectedChannelId}
+        onChannelClick={handleSelectChannel}
+        onChannelContextMenu={handleChannelContextMenu}
       />
 
       {/* Context Menu */}
-      {channelContextMenu?.isOpen && channelInContext && (
+      {channelContextMenu.isOpen && channelInContext && (
         <ChannelContextMenu
           channel={channelInContext}
           position={channelContextMenu.position}
           onClose={handleCloseContextMenu}
-          onAction={(action) =>
-            handleContextMenuAction(action, channelInContext._id)
-          }
+          onAction={(action) => handleContextMenuAction(action, channelInContext._id)}
         />
       )}
 
@@ -179,7 +190,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         <CreateChannelDialog
           isOpen={isCreateDialogOpen}
           setIsOpen={setIsCreateDialogOpen}
-          onConfirm={handleCreateChannelConfirm} 
+          onConfirm={handleCreateChannelConfirm}
         />
       )}
     </div>

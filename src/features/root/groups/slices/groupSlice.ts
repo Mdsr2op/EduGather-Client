@@ -28,6 +28,8 @@ export interface GroupContextMenu {
 export interface GroupState {
   selectedGroupId: string | null;
   contextMenu: GroupContextMenu;
+  viewGroupDetailsData: UserJoinedGroups | null;
+  isViewGroupDetailsModalOpen: boolean;
 }
 
 const initialState: GroupState = {
@@ -37,6 +39,8 @@ const initialState: GroupState = {
     position: { x: 0, y: 0 },
     groupId: null,
   },
+  viewGroupDetailsData: null,
+  isViewGroupDetailsModalOpen: false,
 };
 
 export const groupSlice = createSlice({
@@ -58,11 +62,25 @@ export const groupSlice = createSlice({
       state.contextMenu.isOpen = false;
       state.contextMenu.groupId = null;
     },
+
+    openViewGroupDetailsModal: (state, action: PayloadAction<UserJoinedGroups>) => {
+      state.viewGroupDetailsData = action.payload;
+      state.isViewGroupDetailsModalOpen = true;
+    },
+    closeViewGroupDetailsModal: (state) => {
+      state.viewGroupDetailsData = null;
+      state.isViewGroupDetailsModalOpen = false;
+    },
   },
 });
 
-export const { setSelectedGroupId, openContextMenu, closeContextMenu } =
-  groupSlice.actions;
+export const {
+  setSelectedGroupId,
+  openContextMenu,
+  closeContextMenu,
+  openViewGroupDetailsModal,
+  closeViewGroupDetailsModal,
+} = groupSlice.actions;
 
 // Selectors
 export const selectSelectedGroupId = (state: { group: GroupState }) =>
@@ -70,5 +88,11 @@ export const selectSelectedGroupId = (state: { group: GroupState }) =>
 
 export const selectGroupContextMenu = (state: { group: GroupState }) =>
   state.group.contextMenu;
+
+export const selectViewGroupDetailsData = (state: { group: GroupState }) =>
+  state.group.viewGroupDetailsData;
+
+export const selectIsViewGroupDetailsModalOpen = (state: { group: GroupState }) =>
+  state.group.isViewGroupDetailsModalOpen;
 
 export default groupSlice.reducer;
