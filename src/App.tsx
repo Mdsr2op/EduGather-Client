@@ -12,11 +12,13 @@ function App() {
   return (
     <main className="h-screen flex">
       <Routes>
+
+      <Route index path="/home" element={<Home />} />
+
         {/* Public Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/sign-up" element={<SignUpForm />} />
           <Route path="/sign-in" element={<SignInForm />} />
-          <Route path="/home" element={<Home />} />
         </Route>
 
         {/* Protected Routes */}
