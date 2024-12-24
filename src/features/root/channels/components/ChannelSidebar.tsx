@@ -19,8 +19,8 @@ import {
 
 import ChannelList from "./ChannelList";
 import CreateChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
-import ChannelContextMenu from "../menus/channelContextMenu";
 import { useNavigate } from "react-router-dom";
+import ChannelContextMenu from "../menus/ChannelContextMenu";
 
 interface ChannelSidebarProps {
   groupId: string;
