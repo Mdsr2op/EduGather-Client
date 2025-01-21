@@ -1,12 +1,8 @@
 import { apiSlice } from "@/redux/api/apiSlice";
-import { setCredentials } from "./authSlice";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import { setUser } from "./authSlice";
 import { AuthResponse, SignInFormValues } from "../types";
 
-
-
-// The `SignUpFormValues` should be turned into `FormData` before calling this mutation.
+// The backend’s response has { data: { user, accessToken, refreshToken } } in some form
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     signIn: builder.mutation<AuthResponse, SignInFormValues>({
@@ -18,8 +14,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data: result } = await queryFulfilled;
-          console.log(result)
-          dispatch(setCredentials({ user: result.data.user, accessToken: result.data.accessToken }));
+          // We only store user in Redux
+          dispatch(setUser(result.data.user));
         } catch (err) {
           console.error("Login error:", err);
         }
@@ -34,13 +30,28 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data: result } = await queryFulfilled;
-          dispatch(setCredentials({ user: result.data.user, accessToken: result.data.accessToken }));
+          dispatch(setUser(result.data.user));
         } catch (err) {
           console.error("Signup error:", err);
+        }
+      },
+    }),
+    getCurrentUser: builder.query<any, void>({
+      query: () => "/users/current-user",
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          // data should look like: { status: 200, data: userObject, message: "..." }
+          dispatch(setUser(data.data));
+        } catch (err) {
+          // if 401 or an error, you can optionally dispatch setUser(null) or handle
+          console.error("getCurrentUser error:", err);
+          dispatch(setUser(null));
         }
       },
     }),
   }),
 });
 
-export const { useSignInMutation, useSignupMutation } = authApiSlice;
+export const { useSignInMutation, useSignupMutation, useGetCurrentUserQuery } = authApiSlice;
+  

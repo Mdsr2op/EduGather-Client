@@ -1,42 +1,36 @@
-import { logOut, setCredentials } from "@/features/auth/slices/authSlice";
+import { logOut } from "@/features/auth/slices/authSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store/store";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api/v1/",
-  credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
-    }
-    return headers;
-  },
+  baseUrl: "http://localhost:8000/api/v1",
+  credentials: "include", // ensure cookies are included
 });
 
-const baseQueryWithReauth: typeof baseQuery = async (
-  args,
-  api,
-  extraOptions
-) => {
+const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  // If we get a 403 error, try to refresh the token
-  if (result?.error && (result.error as any).originalStatus === 403) {
-    console.log("sending refresh token");
-    // Attempt to get a new access token
-    const refreshResult = await baseQuery("/refresh", api, extraOptions);
-    console.log(refreshResult);
-    if (refreshResult?.data) {
-      const { user } = (api.getState() as RootState).auth;
-      // The refresh endpoint should return a new access token
-      const data = refreshResult.data as { accessToken: string };
-      api.dispatch(
-        setCredentials({ user: user!, accessToken: data.accessToken })
-      );
-      // Retry the original request
+  // If 401 or 403 => try refresh
+  if (result.error && (result.error.status === 401 || result.error.status === 403)) {
+    console.log("Attempting token refresh...");
+
+    // Attempt token refresh
+    const refreshResult = await baseQuery(
+      {
+        url: "/users/refresh-token",
+        method: "POST",
+      },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult.data) {
+      // If refresh succeeded, try the original query again
+      console.log("Refresh succeeded. Retrying original request.");
       result = await baseQuery(args, api, extraOptions);
     } else {
+      // If refresh also fails, force logout
+      console.log("Refresh failed. Logging out.");
       api.dispatch(logOut());
     }
   }
@@ -45,7 +39,8 @@ const baseQueryWithReauth: typeof baseQuery = async (
 };
 
 export const apiSlice = createApi({
+  reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Groups"],
+  tagTypes: ["Groups", "Channels"],
   endpoints: () => ({}),
 });

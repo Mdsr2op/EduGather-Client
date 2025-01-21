@@ -207,8 +207,8 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/home"
           className={({ isActive }) =>
-            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
-              isActive ? "bg-dark-6" : ""
+            `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
           title="Home"
@@ -219,8 +219,8 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/discover-groups"
           className={({ isActive }) =>
-            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
-              isActive ? "bg-dark-6" : ""
+            `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
           title="Discover Groups"
@@ -231,8 +231,8 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/scheduled-meetings"
           className={({ isActive }) =>
-            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
-              isActive ? "bg-dark-6" : ""
+            `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
           title="Scheduled Meetings"
@@ -243,8 +243,8 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/ai-quiz-generation"
           className={({ isActive }) =>
-            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
-              isActive ? "bg-dark-6" : ""
+            `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
           title="AI Quiz Generation"
@@ -255,8 +255,8 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/meeting-recordings"
           className={({ isActive }) =>
-            `w-full py-4 flex flex-col items-center justify-center hover:bg-dark-6 ${
-              isActive ? "bg-dark-6" : ""
+            `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
           title="Meeting Recordings"

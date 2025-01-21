@@ -12,44 +12,59 @@ import MeetingRecordings from "./components/pages/MeetingRecordings";
 import AiQuizGeneration from "./components/pages/AIQuizGeneration";
 import ScheduledMeetings from "./components/pages/ScheduledMeetings";
 import DiscoverGroups from "./components/pages/DiscoverGroups";
+import { useGetCurrentUserQuery } from "./features/auth/slices/authApiSlice";
 
 function App() {
+  const { isLoading, isError } = useGetCurrentUserQuery();
+
+  // The rest of your routes
   return (
     <main className="h-screen flex">
-      <Routes>
-        <Route index path="/home" element={<Home />} />
+      {isLoading ? (
+        <p>Loading user session...</p>
+      ) : (
+        <Routes>
+          {/* Public Routes */}
+          <Route element={<AuthLayout />}>
 
-        {/* Public Routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/sign-up" element={<SignUpForm />} />
-          <Route path="/sign-in" element={<SignInForm />} />
-        </Route>
-
-        {/* Protected Routes */}
-        <Route element={<RequireAuth />}>
-          <Route element={<RootLayout />}>
-            {/* ChatPage Route with groupId and channelId */}
-            <Route path="/:groupId/:channelId" element={<ChatPage />} />
-
-            {/* New Routes */}
-            <Route path="/discover-groups" element={<DiscoverGroups />} />
-            <Route path="/scheduled-meetings" element={<ScheduledMeetings />} />
-            <Route path="/ai-quiz-generation" element={<AiQuizGeneration />} />
-            <Route path="/meeting-recordings" element={<MeetingRecordings />} />
-
-            {/* Optional: Redirect root path to a default group and channel */}
-            <Route
-              path="/"
-              element={<Navigate to="/defaultGroupId/defaultChannelId" replace />}
-            />
+            <Route path="/sign-up" element={<SignUpForm />} />
+            <Route path="/sign-in" element={<SignInForm />} />
           </Route>
-        </Route>
 
-        {/* Fallback Route */}
-        <Route path="*" element={<Navigate to="/home" replace />} />
-        
+          {/* Protected Routes */}
+          <Route element={<RequireAuth />}>
+            <Route element={<RootLayout />}>
+            <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
+              {/* ChatPage Route with groupId and channelId */}
+              <Route path="/:groupId/:channelId" element={<ChatPage />} />
 
-      </Routes>
+              {/* Additional Protected Routes */}
+              <Route path="/discover-groups" element={<DiscoverGroups />} />
+              <Route
+                path="/scheduled-meetings"
+                element={<ScheduledMeetings />}
+              />
+              <Route
+                path="/ai-quiz-generation"
+                element={<AiQuizGeneration />}
+              />
+              <Route
+                path="/meeting-recordings"
+                element={<MeetingRecordings />}
+              />
+
+              {/* Default Protected Route */}
+              <Route
+                index
+                element={<Navigate to="/discover-groups" replace />}
+              />
+            </Route>
+          </Route>
+
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      )}
       <Toaster />
     </main>
   );

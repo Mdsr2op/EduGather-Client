@@ -1,22 +1,19 @@
 import { useAppSelector } from "@/redux/hook";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { selectCurrentToken } from "../slices/authSlice";
+import { selectCurrentUser } from "../slices/authSlice";
 
 const AuthLayout = () => {
-    const token = useAppSelector(selectCurrentToken);
-  const isAuthenticated = !!token;
+  const user = useAppSelector(selectCurrentUser);
+  const isAuthenticated = !!user;
 
-  return (
-    <>
-      {isAuthenticated ? (
-        <Navigate to="/" />
-      ) : (
-        <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden">
-          <Outlet />
-        </section>
-      )}
-    </>
+  console.log(isAuthenticated);
+  return isAuthenticated ? (
+    <Navigate to="/discover-groups" />
+  ) : (
+    <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden">
+      <Outlet />
+    </section>
   );
 };
 
