@@ -1,21 +1,9 @@
 // src/features/groups/slices/groupApiSlice.ts
 import { apiSlice } from "@/redux/api/apiSlice";
 import { UserJoinedGroups } from "./groupSlice";
-import { Member } from "../types";
+import { GetAllGroupsResponse, GetJoinedGroupsResponse, Member } from "../types";
 
-interface GetJoinedGroupsResponse {
-  groups: {
-    _id: string;
-    name: string;
-    members: Member[];
-    description: string;
-    avatar?: string;
-    coverImage?: string;
-    createdBy: string;
-    createdAt: string;
-    isJoinableExternally: boolean;
-  }[];
-}
+
 
 export const groupApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -53,6 +41,32 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       }),
       // Invalidate the LIST tag so getJoinedGroups re-fetches
       invalidatesTags: [{ type: "Groups", id: "LIST" }],
+    }),
+
+    getAllGroups: builder.query<UserJoinedGroups[], void>({
+      query: () => `/study-groups`, // matches router.route("/").get(getAllGroups)
+      transformResponse: (response: GetAllGroupsResponse) => {
+        // We only need the array of groups from "response.data.groups"
+        // Then transform them into the desired shape if necessary.
+        return response.data.groups.map((group) => ({
+          _id: group._id,
+          name: group.name,
+          description: group.description,
+          avatar: group.avatar,
+          coverImage: group.coverImage,
+          createdBy: group.createdBy,
+          createdAt: group.createdAt,
+          isJoinableExternally: group.isJoinableExternally,
+          members: group.members, // if needed
+        }));
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: "Groups" as const, id: _id })),
+              { type: "Groups", id: "LIST" },
+            ]
+          : [{ type: "Groups", id: "LIST" }],
     }),
 
     // 2) Update a group
@@ -112,6 +126,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
 // Export the hooks
 export const {
   useGetJoinedGroupsQuery,
+  useGetAllGroupsQuery,
   useCreateGroupMutation,
   useUpdateGroupMutation,
   useDeleteGroupMutation,

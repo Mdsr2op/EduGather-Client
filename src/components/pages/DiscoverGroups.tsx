@@ -1,64 +1,9 @@
-// src/components/pages/DiscoverGroups.tsx
 import React from "react";
 import GroupCard from "@/features/root/groups/components/GroupCard";
-import { useGetJoinedGroupsQuery } from "@/features/root/groups/slices/groupApiSlice";
-
-const dummyGroups = [
-  {
-    _id: "1",
-    name: "React Developers",
-    description: "A group for React enthusiasts to share knowledge and resources.",
-    avatar: "https://via.placeholder.com/100", // Placeholder image URL
-    members: [{ _id: "1", name: "John Doe" }, { _id: "2", name: "Jane Doe" }],
-    coverImage: "https://via.placeholder.com/600x200",
-    createdBy: "admin1",
-    createdAt: "2024-01-01T10:00:00Z",
-    isJoinableExternally: true,
-  },
-  {
-    _id: "2",
-    name: "Node.js Developers",
-    description: "A community for Node.js developers to discuss backend development.",
-    avatar: null,
-    members: [{ _id: "1", name: "Alice" }, { _id: "2", name: "Bob" }],
-    coverImage: null,
-    createdBy: "admin2",
-    createdAt: "2024-01-02T10:00:00Z",
-    isJoinableExternally: true,
-  },
-  {
-    _id: "3",
-    name: "Design Patterns",
-    description: "Discuss and learn about software design patterns.",
-    avatar: null,
-    members: [],
-    coverImage: null,
-    createdBy: "admin3",
-    createdAt: "2024-01-03T10:00:00Z",
-    isJoinableExternally: false,
-  },
-  {
-    _id: "4",
-    name: "AI and ML Enthusiasts",
-    description: "Share insights, projects, and ideas related to AI and Machine Learning.",
-    avatar: "https://via.placeholder.com/100",
-    members: [
-      { _id: "1", name: "Eve" },
-      { _id: "2", name: "Charlie" },
-      { _id: "3", name: "Dave" },
-    ],
-    coverImage: "https://via.placeholder.com/600x200",
-    createdBy: "admin4",
-    createdAt: "2024-01-04T10:00:00Z",
-    isJoinableExternally: true,
-  },
-];
+import { useGetAllGroupsQuery } from "@/features/root/groups/slices/groupApiSlice"; 
 
 const DiscoverGroups: React.FC = () => {
-  const userId = "dummyUserId"; 
-  const { data: groups = dummyGroups, isLoading, isError } = useGetJoinedGroupsQuery(userId, {
-    skip: !userId,
-  });
+  const { data: groups = [], isLoading, isError } = useGetAllGroupsQuery();
 
   return (
     <div className="flex flex-col p-6 bg-dark-2 h-full">
@@ -89,7 +34,8 @@ const DiscoverGroups: React.FC = () => {
                 _id: group._id,
                 name: group.name,
                 description: group.description,
-                avatar: "group.avatar",
+                // You probably want `group.avatar` here (typo in original code used "group.avatar" as a string):
+                avatar: group.avatar ?? "",
                 createdAt: group.createdAt,
                 isJoinableExternally: group.isJoinableExternally,
               }}

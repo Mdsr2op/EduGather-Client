@@ -36,6 +36,18 @@ import {
   selectIsViewGroupDetailsModalOpen,
   closeViewGroupDetailsModal,
   selectViewGroupDetailsData,
+  openEditGroupDialog,
+  closeEditGroupDialog,
+  openDeleteGroupDialog,
+  closeDeleteGroupDialog,
+  openLeaveGroupDialog,
+  closeLeaveGroupDialog,
+  selectIsEditGroupDialogOpen,
+  selectEditGroupData,
+  selectIsDeleteGroupDialogOpen,
+  selectDeleteGroupData,
+  selectIsLeaveGroupDialogOpen,
+  selectLeaveGroupData,
 } from "../groups/slices/groupSlice";
 
 import Groups from "../groups/components/Groups";
@@ -59,6 +71,14 @@ const Sidebar: React.FC = () => {
     selectIsViewGroupDetailsModalOpen
   );
   const viewGroupDetailsData = useSelector(selectViewGroupDetailsData);
+  const isEditGroupDialogOpen = useSelector(selectIsEditGroupDialogOpen);
+  const editGroupData = useSelector(selectEditGroupData);
+
+  const isDeleteGroupDialogOpen = useSelector(selectIsDeleteGroupDialogOpen);
+  const deleteGroupData = useSelector(selectDeleteGroupData);
+
+  const isLeaveGroupDialogOpen = useSelector(selectIsLeaveGroupDialogOpen);
+  const leaveGroupData = useSelector(selectLeaveGroupData);
 
   // Fetch joined groups
   const {
@@ -74,13 +94,10 @@ const Sidebar: React.FC = () => {
   // ----------------------------------
   // Local state for modals
   // ----------------------------------
-  const [isCreateGroupModalOpen, setCreateGroupModalOpen] = React.useState(false);
+  const [isCreateGroupModalOpen, setCreateGroupModalOpen] =
+    React.useState(false);
   const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
   const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
-  const [isDeleteGroupDialogOpen, setIsDeleteGroupDialogOpen] = React.useState(false);
-  const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = React.useState(false);
-  const [isEditGroupDialogOpen, setIsEditGroupDialogOpen] = React.useState(false);
-
   // ----------------------------------
   // Handlers
   // ----------------------------------
@@ -115,32 +132,32 @@ const Sidebar: React.FC = () => {
   ) => {
     try {
       if (!selectedGroupId) return;
-      await createChannel({ groupId: selectedGroupId, channelName, description }).unwrap();
+      await createChannel({
+        groupId: selectedGroupId,
+        channelName,
+        description,
+      }).unwrap();
       console.log("Channel created successfully!");
     } catch (err) {
       console.error("Error creating channel: ", err);
     }
   };
 
-  // Context menu actions
   const handleContextMenuAction = (action: string, groupId: string) => {
     const groupInContext = joinedGroups.find((g) => g._id === groupId);
+    if (!groupInContext) return;
+
     switch (action) {
       case "view":
-        console.log(`View details for group ${groupId}`);
-        // If using Redux-based "ViewGroupDetails":
-        if (groupInContext) {
-          dispatch(openViewGroupDetailsModal(groupInContext));
-        }
+        dispatch(openViewGroupDetailsModal(groupInContext));
         break;
 
       case "edit":
-        console.log(`Edit group ${groupId}`);
-        setIsEditGroupDialogOpen(true);
+        dispatch(openEditGroupDialog(groupInContext));
         break;
 
       case "delete":
-        setIsDeleteGroupDialogOpen(true);
+        dispatch(openDeleteGroupDialog(groupInContext));
         break;
 
       case "create-channel":
@@ -148,7 +165,7 @@ const Sidebar: React.FC = () => {
         break;
 
       case "leave":
-        setIsLeaveGroupDialogOpen(true);
+        dispatch(openLeaveGroupDialog(groupInContext));
         break;
 
       default:
@@ -282,7 +299,9 @@ const Sidebar: React.FC = () => {
           group={groupInContext}
           position={groupContextMenu.position}
           onClose={handleCloseContextMenu}
-          onAction={(action) => handleContextMenuAction(action, groupInContext._id)}
+          onAction={(action) =>
+            handleContextMenuAction(action, groupInContext._id)
+          }
         />
       )}
 
@@ -310,7 +329,9 @@ const Sidebar: React.FC = () => {
         closeCreateGroupModal={() => setCreateGroupModalOpen(false)}
         // View group details (if using Redux-based approach)
         isViewGroupDetailsModalOpen={isViewGroupDetailsModalOpen}
-        closeViewGroupDetailsModal={() => dispatch(closeViewGroupDetailsModal())}
+        closeViewGroupDetailsModal={() =>
+          dispatch(closeViewGroupDetailsModal())
+        }
         viewGroupDetailsData={viewGroupDetailsData}
       />
 
@@ -323,33 +344,30 @@ const Sidebar: React.FC = () => {
         />
       )}
 
-      {/* Delete Group Dialog */}
-      {isDeleteGroupDialogOpen && groupInContext && (
-        <DeleteGroupDialog
-          groupName={groupInContext.name}
-          groupId={groupInContext._id}
-          onDelete={(groupName: string) => handleDeleteGroup(groupName)}
-          isOpen={isDeleteGroupDialogOpen}
-          setIsOpen={setIsDeleteGroupDialogOpen}
-        />
-      )}
-
-      {/* Leave Group Dialog */}
-      {isLeaveGroupDialogOpen && groupInContext && (
-        <LeaveGroupDialog
-          groupName={groupInContext.name}
-          onLeave={(groupName: string) => handleLeaveGroup(groupName)}
-          isOpen={isLeaveGroupDialogOpen}
-          setIsOpen={setIsLeaveGroupDialogOpen}
-        />
-      )}
-
-      {/* Edit Group Dialog */}
-      {isEditGroupDialogOpen && groupInContext && (
+      {isEditGroupDialogOpen && editGroupData && (
         <EditGroupDialog
           isOpen={isEditGroupDialogOpen}
-          setIsOpen={setIsEditGroupDialogOpen}
-          group={groupInContext}
+          setIsOpen={() => dispatch(closeEditGroupDialog())}
+          group={editGroupData}
+        />
+      )}
+
+      {isDeleteGroupDialogOpen && deleteGroupData && (
+        <DeleteGroupDialog
+          groupName={deleteGroupData.name}
+          groupId={deleteGroupData._id}
+          onDelete={(groupName: string) => handleDeleteGroup(groupName)}
+          isOpen={isDeleteGroupDialogOpen}
+          setIsOpen={() => dispatch(closeDeleteGroupDialog())}
+        />
+      )}
+
+      {isLeaveGroupDialogOpen && leaveGroupData && (
+        <LeaveGroupDialog
+          groupName={leaveGroupData.name}
+          onLeave={(groupName: string) => handleLeaveGroup(groupName)}
+          isOpen={isLeaveGroupDialogOpen}
+          setIsOpen={() => dispatch(closeLeaveGroupDialog())}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 export interface Member {
     _id: string;
     groupId: string;
-    role: "admin" | "member" | "moderator"; // Add other roles if applicable
+    role: "admin" | "member" | "moderator"; 
     userId: {
       _id: string;
       username: string;
@@ -17,4 +17,40 @@ export interface Member {
   
   export interface MembersResponse {
     members: Member[];
+  }
+
+  export interface GetJoinedGroupsResponse {
+    groups: {
+      _id: string;
+      name: string;
+      members: Member[];
+      description: string;
+      avatar?: string;
+      coverImage?: string;
+      createdBy: string;
+      createdAt: string;
+      isJoinableExternally: boolean;
+    }[];
+  }
+
+  export interface GetAllGroupsResponse {
+    status: number;
+    data: {
+      totalItems: number;
+      totalPages: number;
+      currentPage: number;
+      hasNextPage: boolean;
+      groups: {
+        _id: string;
+        name: string;
+        description: string;
+        avatar?: string;
+        coverImage?: string;
+        createdBy: string;
+        createdAt: string;
+        isJoinableExternally: boolean;
+        members: Member[];
+      }[];
+    };
+    message: string;
   }
