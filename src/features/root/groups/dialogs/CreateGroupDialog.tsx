@@ -1,5 +1,3 @@
-// CreateGroupDialog.tsx
-
 "use client";
 
 import React, { useState } from "react";
@@ -16,7 +14,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -26,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useCreateGroupMutation } from "../slices/groupApiSlice";
+import FileUpload from "@/features/auth/components/FileUpload";
 
 // Zod schema consistent with your group.model.js and createGroup controller
 const groupSchema = z.object({
@@ -93,7 +91,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 
     try {
       await createGroup(formData).unwrap();
-      // If successful, close the dialog
+      // If successful, close the dialog and reset form
       form.reset();
       if (onClose) onClose();
     } catch (error) {
@@ -109,7 +107,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
+      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto custom-scrollbar max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Create a New Group
@@ -120,10 +118,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-4 space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
             {/* Group Name */}
             <FormField
               control={form.control}
@@ -132,12 +127,12 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                 <FormItem className="rounded-lg">
                   <FormLabel className="text-light-1">Group Name</FormLabel>
                   <FormControl>
-                    <Input
+                    <input
                       {...field}
                       placeholder="Enter group name"
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
+                                 rounded-xl p-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -193,14 +188,11 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                 <FormItem className="rounded-lg">
                   <FormLabel className="text-light-1">Avatar (optional)</FormLabel>
                   <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => field.onChange(e.target.files)}
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
-                                 file:bg-dark-6 file:border-0 file:text-light-2
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
+                    <FileUpload
+                      label="Avatar"
+                      onFileUpload={(file: File) => field.onChange([file])}
+                      preview={null}
+                      accept={{ "image/*": [] }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -216,14 +208,11 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                 <FormItem className="rounded-lg">
                   <FormLabel className="text-light-1">Cover Image (optional)</FormLabel>
                   <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => field.onChange(e.target.files)}
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
-                                 file:bg-dark-6 file:border-0 file:text-light-2
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
+                    <FileUpload
+                      label="Cover Image"
+                      onFileUpload={(file: File) => field.onChange([file])}
+                      preview={null}
+                      accept={{ "image/*": [] }}
                     />
                   </FormControl>
                   <FormMessage />

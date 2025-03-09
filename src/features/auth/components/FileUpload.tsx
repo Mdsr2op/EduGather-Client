@@ -6,6 +6,7 @@ interface FileUploadProps {
   label: string;
   accept?: Accept; // Use the Accept type from react-dropzone
   icon?: React.ReactNode;
+  preview?: string | null; // Optional preview prop
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -13,8 +14,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   label,
   accept,
   icon,
+  preview: initialPreview = null, // default to null if not provided
 }) => {
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialPreview);
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -27,7 +29,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept, // Pass the accept prop directly
+    accept,
     multiple: false,
   });
 
@@ -68,4 +70,5 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     </div>
   );
 };
-  
+
+export default FileUpload;

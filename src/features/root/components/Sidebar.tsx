@@ -356,7 +356,6 @@ const Sidebar: React.FC = () => {
         <DeleteGroupDialog
           groupName={deleteGroupData.name}
           groupId={deleteGroupData._id}
-          onDelete={(groupName: string) => handleDeleteGroup(groupName)}
           isOpen={isDeleteGroupDialogOpen}
           setIsOpen={() => dispatch(closeDeleteGroupDialog())}
         />

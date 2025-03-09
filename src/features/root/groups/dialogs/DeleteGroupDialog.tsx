@@ -8,7 +8,6 @@ type DeleteGroupDialogProps = {
   setIsOpen: (isOpen: boolean) => void;
   groupName?: string;
   groupId?: string; // Add this to identify the group to delete
-  onDelete: (groupName: string) => void;
 };
 
 const DeleteGroupDialog: React.FC<DeleteGroupDialogProps> = ({
@@ -16,7 +15,6 @@ const DeleteGroupDialog: React.FC<DeleteGroupDialogProps> = ({
   setIsOpen,
   groupName = "Awesome",
   groupId,
-  onDelete,
 }) => {
   const [confirmationText, setConfirmationText] = useState<string>('');
   const [deleteGroup] = useDeleteGroupMutation();
@@ -30,7 +28,6 @@ const DeleteGroupDialog: React.FC<DeleteGroupDialogProps> = ({
     if (!groupId) return;
     try {
       await deleteGroup(groupId).unwrap();
-      onDelete(groupName);
       closeDialog();
     } catch (error) {
       console.error('Failed to delete group:', error);
