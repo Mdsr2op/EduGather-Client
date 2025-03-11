@@ -70,7 +70,7 @@ const Sidebar: React.FC = () => {
   const isViewGroupDetailsModalOpen = useSelector(
     selectIsViewGroupDetailsModalOpen
   );
-  const viewGroupDetailsData = useSelector(selectViewGroupDetailsData);
+
   const isEditGroupDialogOpen = useSelector(selectIsEditGroupDialogOpen);
   const editGroupData = useSelector(selectEditGroupData);
 
@@ -332,7 +332,6 @@ const Sidebar: React.FC = () => {
         closeViewGroupDetailsModal={() =>
           dispatch(closeViewGroupDetailsModal())
         }
-        viewGroupDetailsData={viewGroupDetailsData}
       />
 
       {/* Create Channel Dialog */}

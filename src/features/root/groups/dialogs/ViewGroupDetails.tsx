@@ -5,32 +5,18 @@ import { FiX } from 'react-icons/fi';
 import { Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import GroupInfo from '../components/GroupInfo';
+import { User } from '@/features/auth/types';
+import { useSelector } from 'react-redux';
+import { selectViewGroupDetailsData } from '../slices/groupSlice';
+import { Member } from '../types';
 
-
-type GroupDetails = {
-  channelName: string;
-  description: string;
-  members: string[];
-  createdBy: string;
-  createdAt: string;
-  groupAvatar: string;
-};
 
 type ViewGroupDetailsProps = {
   isOpen: boolean;
   onClose: () => void;
-  groupDetails: GroupDetails;
 };
 
-const ViewGroupDetails: React.FC<ViewGroupDetailsProps> = ({ isOpen, onClose, groupDetails }) => {
-  const {
-    channelName,
-    description,
-    members,
-    createdBy,
-    createdAt,
-    groupAvatar,
-  } = groupDetails;
+const ViewGroupDetails: React.FC<ViewGroupDetailsProps> = ({ isOpen, onClose }) => {
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -77,14 +63,7 @@ const ViewGroupDetails: React.FC<ViewGroupDetailsProps> = ({ isOpen, onClose, gr
             </button>
 
             {/* Group Details */}
-            <GroupInfo
-              channelName={channelName}
-              description={description}
-              members={members}
-              createdBy={createdBy}
-              createdAt={createdAt}
-              groupAvatar={groupAvatar}
-            />
+            <GroupInfo />
           </div>
         </Transition.Child>
       </div>

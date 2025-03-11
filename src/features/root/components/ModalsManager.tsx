@@ -1,8 +1,7 @@
 import React from "react";
-import JoinGroupDialog from "../groups/dialogs/JoinGroupDialog";
 import CreateGroupDialog from "../groups/dialogs/CreateGroupDialog";
+import JoinGroupDialog from "../groups/dialogs/JoinGroupDialog";
 import ViewGroupDetails from "../groups/dialogs/ViewGroupDetails";
-import { UserJoinedGroups } from "../groups/slices/groupSlice";
 
 
 type ModalsManagerProps = {
@@ -13,8 +12,6 @@ type ModalsManagerProps = {
   isViewGroupDetailsModalOpen: boolean;
   closeViewGroupDetailsModal: () => void;
 
-  // If we want to pass the actual group data for "view details":
-  viewGroupDetailsData?: UserJoinedGroups | null;
 
   // The rest of your optional modals:
   isCreateChannelModalOpen?: boolean;
@@ -30,8 +27,9 @@ const ModalsManager: React.FC<ModalsManagerProps> = ({
   closeCreateGroupModal,
   isViewGroupDetailsModalOpen,
   closeViewGroupDetailsModal,
-  viewGroupDetailsData,
 }) => {
+
+
   return (
     <>
       {/* Dialog for "Join Group" */}
@@ -47,24 +45,10 @@ const ModalsManager: React.FC<ModalsManagerProps> = ({
       />
 
       {/* Dialog for "View Group Details" */}
-      {viewGroupDetailsData && (
         <ViewGroupDetails
           isOpen={isViewGroupDetailsModalOpen}
           onClose={closeViewGroupDetailsModal}
-          groupDetails={{
-            // If your `ViewGroupDetails` still calls it `channelName`, we map group.name -> channelName
-            channelName: viewGroupDetailsData.name,
-            description: viewGroupDetailsData.description,
-            // If `GroupInfo` requires an array of strings for `members`, just map them:
-            members: viewGroupDetailsData.members?.map(
-              (m) => m.userId?.username || "Unknown"
-            ),
-            createdBy: viewGroupDetailsData.createdBy,
-            createdAt: viewGroupDetailsData.createdAt,
-            groupAvatar: viewGroupDetailsData.avatar || "",
-          }}
         />
-      )}
     </>
   );
 };

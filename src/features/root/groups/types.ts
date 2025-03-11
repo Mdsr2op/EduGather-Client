@@ -1,3 +1,5 @@
+import { User } from "@/features/auth/types";
+
 export interface Member {
     _id: string;
     groupId: string;
@@ -53,4 +55,16 @@ export interface Member {
       }[];
     };
     message: string;
+  }
+
+  export interface GetGroupDetailsResponse{
+    _id: string;
+    name: string;
+    description: string;
+    members: Member[];
+    avatar?: string;
+    coverImage?: string;
+    createdBy: User;
+    createdAt: string;
+    isJoinableExternally: boolean;
   }

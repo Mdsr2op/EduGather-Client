@@ -9,7 +9,7 @@ type GroupContextMenuProps = {
   group: UserJoinedGroups;
   position: { x: number; y: number };
   onClose: () => void;
-  onAction: (action: string) => void; // 'view' | 'edit' | 'delete' | 'create-channel' | 'leave'
+  onAction: (action: 'view' | 'edit' | 'delete' | 'create-channel' | 'leave') => void;
 };
 
 const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
@@ -32,10 +32,10 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
     };
   }, [onClose]);
 
-  const isGroupOwner =
-    group.createdBy ===
-    group.members?.find((m) => m.userId?._id === group.createdBy)?.userId?._id;
-
+  const isGroupOwner = group.members?.some(
+    (m) => m.userId?._id === group.createdBy
+  );
+  
   return (
     <div
       ref={menuRef}
@@ -48,17 +48,21 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
           label="View Group Details"
           onClick={() => onAction("view")}
         />
-        <MenuItem
-          icon={FaEdit}
-          label="Edit Group Details"
-          onClick={() => onAction("edit")}
-        />
-        <MenuItem
-          icon={FaTrash}
-          label="Delete Group"
-          onClick={() => onAction("delete")}
-          isDanger
-        />
+        {isGroupOwner && (
+          <MenuItem
+            icon={FaEdit}
+            label="Edit Group Details"
+            onClick={() => onAction("edit")}
+          />
+        )}
+        {isGroupOwner && (
+          <MenuItem
+            icon={FaTrash}
+            label="Delete Group"
+            onClick={() => onAction("delete")}
+            isDanger
+          />
+        )}
         <MenuItem
           icon={FaPlus}
           label="Create Channel"

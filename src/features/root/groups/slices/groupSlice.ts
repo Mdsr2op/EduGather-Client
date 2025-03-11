@@ -1,6 +1,7 @@
 // groupSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Member } from "../types";
+import { User } from "@/features/auth/types";
 
 export interface UserJoinedGroups {
   _id: string;
@@ -10,6 +11,18 @@ export interface UserJoinedGroups {
   avatar?: string;
   coverImage?: string;
   createdBy: string;
+  createdAt: string;
+  isJoinableExternally: boolean;
+}
+
+export interface GroupDetails {
+  _id: string;
+  name: string;
+  description: string;
+  members: Member[];
+  avatar?: string;
+  coverImage?: string;
+  createdBy: User;
   createdAt: string;
   isJoinableExternally: boolean;
 }
@@ -93,7 +106,7 @@ export const groupSlice = createSlice({
       state.isViewGroupDetailsModalOpen = true;
     },
     closeViewGroupDetailsModal: (state) => {
-      state.viewGroupDetailsData = null;
+      // state.viewGroupDetailsData = null;
       state.isViewGroupDetailsModalOpen = false;
     },
 
