@@ -190,7 +190,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         <CreateChannelDialog
           isOpen={isCreateDialogOpen}
           setIsOpen={setIsCreateDialogOpen}
-          onConfirm={handleCreateChannelConfirm}
+          groupId={groupId}
         />
       )}
     </div>

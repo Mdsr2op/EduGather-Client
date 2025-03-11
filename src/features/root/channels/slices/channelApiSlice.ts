@@ -19,36 +19,56 @@ export const channelApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/channels`,
         method: "GET",
       }),
+      providesTags: (result) => 
+        result
+          ? [
+              ...result.data.channels.map(
+                ({ _id }) => ({ type: 'Channels' as const, id: _id })
+              ),
+              { type: 'Channels' as const, id: 'LIST' }
+            ]
+          : [{ type: 'Channels' as const, id: 'LIST' }],
     }),
 
-    createChannel: builder.mutation<Channel, { groupId: string; channelName: string; description?: string }>({
+    createChannel: builder.mutation<Channel, { groupId: string | null; channelName: string; description?: string }>({
       query: ({ groupId, channelName, description }) => ({
         url: `/study-groups/${groupId}/channels`,
         method: "POST",
         body: { channelName, description },
       }),
+      invalidatesTags: [{ type: 'Channels', id: 'LIST' }]
     }),
 
-    updateChannel: builder.mutation<Channel,{ groupId: string; channelId: string; channelName?: string; description?: string }>({
+    updateChannel: builder.mutation<Channel,{ groupId: string | null; channelId: string; channelName?: string; description?: string }>({
       query: ({ groupId, channelId, channelName, description }) => ({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "PUT",
         body: { channelName, description },
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Channels', id: arg.channelId },
+        { type: 'Channels', id: 'LIST' }
+      ]
     }),
 
-    deleteChannel: builder.mutation<null, { groupId: string; channelId: string }>({
+    deleteChannel: builder.mutation<null, { groupId: string | null; channelId: string }>({
       query: ({ groupId, channelId }) => ({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "DELETE",
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Channels', id: arg.channelId },
+        { type: 'Channels', id: 'LIST' }
+      ]
     }),
 
-    getChannelDetails: builder.query<Channel, { groupId: string; channelId: string }>({
+    getChannelDetails: builder.query<Channel, { groupId: string | null; channelId: string }>({
       query: ({ groupId, channelId }) => ({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "GET",
       }),
+      providesTags: (result, error, arg) => 
+        result ? [{ type: 'Channels' as const, id: result._id }] : [],
     }),
   }),
 });

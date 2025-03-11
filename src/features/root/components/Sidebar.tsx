@@ -339,7 +339,7 @@ const Sidebar: React.FC = () => {
         <CreateChannelDialog
           isOpen={isChannelDialogOpen}
           setIsOpen={setIsChannelDialogOpen}
-          onConfirm={handleCreateChannelConfirm}
+          groupId={selectedGroupId}
         />
       )}
 

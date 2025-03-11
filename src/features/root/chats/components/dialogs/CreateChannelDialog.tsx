@@ -1,28 +1,51 @@
 import React, { useState, Fragment } from "react";
 import { Transition } from "@headlessui/react";
+import { useCreateChannelMutation } from "@/features/root/channels/slices/channelApiSlice";
 
 type CreateChannelDialogProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  onConfirm: (channelName: string, description: string) => Promise<void>
+  groupId: string | null; // groupId is required by the mutation
 };
 
 const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
   isOpen = false,
   setIsOpen,
-  onConfirm,
+  groupId,
 }) => {
   const [channelName, setChannelName] = useState<string>("");
   const [channelDescription, setChannelDescription] = useState<string>("");
+
+  // Initialize the createChannel mutation hook
+  const [createChannel, { isLoading, isError, error }] = useCreateChannelMutation();
 
   const closeDialog = (): void => {
     setIsOpen(false);
   };
 
+  const handleCreateChannel = async (): Promise<void> => {
+    // Optional input validation
+    if (!channelName) return;
+
+    try {
+      await createChannel({
+        groupId,
+        channelName,
+        description: channelDescription,
+      }).unwrap();
+      // Clear inputs and close the dialog on success
+      setChannelName("");
+      setChannelDescription("");
+      closeDialog();
+    } catch (err) {
+      // Error state is handled via isError and error below
+      console.error("Channel creation failed", err);
+    }
+  };
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <div className="fixed inset-0 z-50 flex items-center  justify-center p-4 text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-center">
         {/* Background Overlay */}
         <Transition.Child
           as={Fragment}
@@ -33,7 +56,7 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed  inset-0 bg-dark-4 bg-opacity-50 transition-opacity"></div>
+          <div className="fixed inset-0 bg-dark-4 bg-opacity-50 transition-opacity"></div>
         </Transition.Child>
 
         {/* Dialog Box */}
@@ -72,19 +95,28 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               />
             </div>
 
+            {isError && (
+              <div className="mt-2 text-red-500">
+                {(error as any)?.data?.message || "Failed to create channel. Please try again."}
+              </div>
+            )}
+
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 type="button"
                 className="px-4 py-2 bg-dark-4 text-white rounded-md hover:bg-opacity-80"
                 onClick={closeDialog}
+                disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600"
+                onClick={handleCreateChannel}
+                disabled={isLoading}
               >
-                Create Channel
+                {isLoading ? "Creating..." : "Create Channel"}
               </button>
             </div>
           </div>
