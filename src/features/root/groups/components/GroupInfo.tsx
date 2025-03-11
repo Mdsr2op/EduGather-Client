@@ -61,13 +61,13 @@ const GroupInfo = () => {
               className="flex items-center mb-3 p-2 rounded-lg transition-colors hover:bg-dark-1"
             >
               <img
-                src={member.userId.avatar || 'https://via.placeholder.com/80'}
-                alt={`${member.userId.username} Avatar`}
+                src={member.avatar || 'https://via.placeholder.com/80'}
+                alt={`${member.username} Avatar`}
                 className="w-12 h-12 rounded-full object-cover mr-3"
               />
               <div>
-                <p className="text-sm font-semibold text-light-1">{member.userId.username}</p>
-                <p className="text-xs text-light-3">{member.userId.email}</p>
+                <p className="text-sm font-semibold text-light-1">{member.username}</p>
+                <p className="text-xs text-light-3">{member.email}</p>
               </div>
             </div>
           ))}

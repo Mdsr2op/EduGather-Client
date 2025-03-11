@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { FaEye, FaEdit, FaTrash, FaPlus, FaSignOutAlt } from "react-icons/fa";
 import MenuItem from "../../components/MenuItem";
 import { UserJoinedGroups } from "../slices/groupSlice";
+import { useSelector } from "react-redux";
 
 type GroupContextMenuProps = {
   group: UserJoinedGroups;
@@ -18,6 +19,8 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
   onClose,
   onAction,
 }) => {
+  const currentUserId = useSelector((state: any) => state.auth.user._id);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,10 +35,8 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
     };
   }, [onClose]);
 
-  const isGroupOwner = group.members?.some(
-    (m) => m.userId?._id === group.createdBy
-  );
-  
+  const isGroupOwner = group.createdBy === currentUserId;
+  console.log(isGroupOwner)
   return (
     <div
       ref={menuRef}

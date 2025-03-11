@@ -7,7 +7,6 @@ export interface UserJoinedGroups {
   _id: string;
   name: string;
   description: string;
-  members: Member[];
   avatar?: string;
   coverImage?: string;
   createdBy: string;

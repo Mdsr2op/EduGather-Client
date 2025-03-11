@@ -362,8 +362,8 @@ const Sidebar: React.FC = () => {
 
       {isLeaveGroupDialogOpen && leaveGroupData && (
         <LeaveGroupDialog
+        groupId={selectedGroupId}
           groupName={leaveGroupData.name}
-          onLeave={(groupName: string) => handleLeaveGroup(groupName)}
           isOpen={isLeaveGroupDialogOpen}
           setIsOpen={() => dispatch(closeLeaveGroupDialog())}
         />
