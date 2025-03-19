@@ -1,9 +1,15 @@
-// features/channels/dialogs/ViewChannelDetails.tsx
-
 import React from "react";
-import { Transition } from "@headlessui/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { FiX } from "react-icons/fi";
-import { Fragment } from "react";
 import { Channel } from "../slices/channelSlice";
 
 type ViewChannelDetailsProps = {
@@ -18,61 +24,45 @@ const ViewChannelDetails: React.FC<ViewChannelDetailsProps> = ({
   channel,
 }) => {
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 text-center"
-        aria-modal="true"
-        role="dialog"
-        onClick={onClose}
-      >
-        {/* Overlay */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-dark-6 bg-opacity-80 transition-opacity"></div>
-        </Transition.Child>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold">
+            Channel Details
+          </DialogTitle>
+          <DialogDescription className="text-sm text-light-4">
+            View information about this channel.
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Modal Content */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0 translate-y-4 scale-95"
-          enterTo="opacity-100 translate-y-0 scale-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0 scale-100"
-          leaveTo="opacity-0 translate-y-4 scale-95"
-        >
-          <div
-            className="w-full max-w-xl p-6 bg-dark-3 text-light-1 rounded-2xl shadow-xl transform transition-all relative overflow-auto max-h-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              className="absolute top-3 right-3 text-light-3 hover:text-light-1 focus:outline-none"
-              onClick={onClose}
-              aria-label="Close View Channel Details Modal"
-            >
-              <FiX size={24} />
-            </button>
+        <div className="mt-4 space-y-4">
+          <div>
+            <h2 className="text-xl font-bold text-light-1">
+              {channel.channelName}
+            </h2>
+            <p className="text-light-3 text-sm">Channel ID: {channel._id}</p>
+          </div>
 
-            {/* Channel Details Content */}
-            <h2 className="text-2xl font-bold mb-2">{channel.channelName}</h2>
-            <p className="text-light-2 mb-4">
-              Channel ID: {channel._id}
-            </p>
+          <div>
             <p className="text-light-2">
               {channel.description || "No description provided."}
             </p>
           </div>
-        </Transition.Child>
-      </div>
-    </Transition>
+        </div>
+
+        <DialogFooter className="flex justify-end pt-4">
+          <DialogClose asChild>
+            <Button
+              variant="outline"
+              className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
