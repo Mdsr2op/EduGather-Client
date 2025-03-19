@@ -1,99 +1,116 @@
-import React, { useState, Fragment } from "react";
-import { Transition } from "@headlessui/react";
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useCreateChannelMutation } from "@/features/root/channels/slices/channelApiSlice";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const createChannelSchema = z.object({
+  channelName: z.string().min(1, "Channel name is required").max(100),
+  description: z.string().optional(),
+});
+
+type CreateChannelFormValues = z.infer<typeof createChannelSchema>;
 
 type CreateChannelDialogProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  groupId: string | null; // groupId is required by the mutation
+  groupId: string | null;
 };
 
 const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
-  isOpen = false,
+  isOpen,
   setIsOpen,
   groupId,
 }) => {
-  const [channelName, setChannelName] = useState<string>("");
-  const [channelDescription, setChannelDescription] = useState<string>("");
-
-  // Initialize the createChannel mutation hook
   const [createChannel, { isLoading, isError, error }] = useCreateChannelMutation();
 
-  const closeDialog = (): void => {
-    setIsOpen(false);
-  };
+  const form = useForm<CreateChannelFormValues>({
+    resolver: zodResolver(createChannelSchema),
+    defaultValues: {
+      channelName: "",
+      description: "",
+    },
+  });
 
-  const handleCreateChannel = async (): Promise<void> => {
-    // Optional input validation
-    if (!channelName) return;
-
+  const onSubmit = async (data: CreateChannelFormValues) => {
     try {
       await createChannel({
         groupId,
-        channelName,
-        description: channelDescription,
+        channelName: data.channelName,
+        description: data.description,
       }).unwrap();
-      // Clear inputs and close the dialog on success
-      setChannelName("");
-      setChannelDescription("");
-      closeDialog();
+      form.reset();
+      setIsOpen(false);
     } catch (err) {
-      // Error state is handled via isError and error below
       console.error("Channel creation failed", err);
     }
   };
 
   return (
-    <Transition show={isOpen} as={Fragment}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-center">
-        {/* Background Overlay */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-dark-4 bg-opacity-50 transition-opacity"></div>
-        </Transition.Child>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold">Create a Channel</DialogTitle>
+          <DialogDescription className="text-sm text-light-4">Fill in the details to create a new channel.</DialogDescription>
+        </DialogHeader>
 
-        {/* Dialog Box */}
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0 translate-y-4 scale-95"
-          enterTo="opacity-100 translate-y-0 scale-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0 scale-100"
-          leaveTo="opacity-0 translate-y-4 scale-95"
-        >
-          <div className="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-dark-2 shadow-xl rounded-2xl">
-            <div className="text-2xl font-bold leading-6 text-light-1 mb-6">
-              Create a Channel
-            </div>
-            <div className="mt-4">
-              <label className="block text-light-2 mb-1">Name</label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 bg-dark-3 text-light-1 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder-light-3"
-                placeholder="Enter channel name"
-                value={channelName}
-                onChange={(e) => setChannelName(e.target.value)}
-              />
-            </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
+            <FormField
+              control={form.control}
+              name="channelName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-light-1">Channel Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter channel name"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="mt-4">
-              <label className="block text-light-2 mb-1">Description</label>
-              <textarea
-                className="w-full px-4 py-2 bg-dark-3 text-light-1 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder-light-3"
-                placeholder="Enter channel description"
-                rows={3}
-                value={channelDescription}
-                onChange={(e) => setChannelDescription(e.target.value)}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-light-1">Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Enter channel description"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl p-2"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {isError && (
               <div className="mt-2 text-red-500">
@@ -101,28 +118,28 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               </div>
             )}
 
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                type="button"
-                className="px-4 py-2 bg-dark-4 text-white rounded-md hover:bg-opacity-80"
-                onClick={closeDialog}
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600"
-                onClick={handleCreateChannel}
+            <DialogFooter className="flex justify-end space-x-2 pt-4">
+              <DialogClose asChild>
+                <Button
+                  variant="outline"
+                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating..." : "Create Channel"}
-              </button>
-            </div>
-          </div>
-        </Transition.Child>
-      </div>
-    </Transition>
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
