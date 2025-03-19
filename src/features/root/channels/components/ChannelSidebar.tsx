@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import {
   useGetChannelsQuery,
   useCreateChannelMutation,
-  useDeleteChannelMutation,
 } from "../slices/channelApiSlice";
 
 import {
@@ -17,11 +16,26 @@ import {
   openChannelContextMenu,
   closeChannelContextMenu,
   selectChannelContextMenu,
+  openViewChannelDetailsDialog,
+  closeViewChannelDetailsDialog,
+  openEditChannelDialog,
+  closeEditChannelDialog,
+  openDeleteChannelDialog,
+  closeDeleteChannelDialog,
+  selectIsViewChannelDetailsOpen,
+  selectViewChannelDetailsData,
+  selectIsEditChannelDialogOpen,
+  selectEditChannelData,
+  selectIsDeleteChannelDialogOpen,
+  selectDeleteChannelData,
 } from "../slices/channelSlice";
 
 import ChannelList from "./ChannelList";
 import CreateChannelDialog from "../../chats/components/dialogs/CreateChannelDialog";
 import ChannelContextMenu from "../menus/ChannelContextMenu";
+import EditChannelDialog from "../dialogs/EditChannelDialog";
+import ViewChannelDetails from "../dialogs/ViewChannelDetails";
+import DeleteChannelDialog from "../dialogs/DeleteChannelDialog";
 
 interface ChannelSidebarProps {
   groupId: string;
@@ -37,6 +51,16 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const selectedChannelId = useSelector(selectSelectedChannelId) ?? "";
   const channelContextMenu = useSelector(selectChannelContextMenu);
 
+  // For the new dialogs:
+  const isViewChannelDetailsOpen = useSelector(selectIsViewChannelDetailsOpen);
+  const viewChannelDetailsData = useSelector(selectViewChannelDetailsData);
+
+  const isEditChannelDialogOpen = useSelector(selectIsEditChannelDialogOpen);
+  const editChannelData = useSelector(selectEditChannelData);
+
+  const isDeleteChannelDialogOpen = useSelector(selectIsDeleteChannelDialogOpen);
+  const deleteChannelData = useSelector(selectDeleteChannelData);
+
   // ===================
   // Data Fetching
   // ===================
@@ -51,9 +75,10 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
 
   const channels = channelData?.data.channels ?? [];
 
+  // Create channel
   const [createChannel] = useCreateChannelMutation();
-  const [deleteChannel] = useDeleteChannelMutation();
 
+  // For local state controlling the "Create Channel" button
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   // ===================
@@ -63,7 +88,6 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   // Left-click a channel to select it
   const handleSelectChannel = (channelId: string) => {
     dispatch(setSelectedChannelId(channelId));
-    // Navigate to the channel view
     navigate(`/${groupId}/${channelId}`);
   };
 
@@ -85,28 +109,26 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     dispatch(closeChannelContextMenu());
   };
 
-  const handleContextMenuAction = async (action: string, channelId: string) => {
+  // The context menu action now simply dispatches open-Dialog actions
+  const handleContextMenuAction = (action: string, channelId: string) => {
+    const channelInContext = channels.find((c) => c._id === channelId);
+    if (!channelInContext) return;
+
     switch (action) {
       case "view":
-        console.log(`View channel details: ${channelId}`);
-        // Implement view details functionality if needed
+        dispatch(openViewChannelDetailsDialog(channelInContext));
         break;
+
       case "edit":
-        console.log(`Edit channel: ${channelId}`);
-        // Implement edit channel functionality if needed
+        dispatch(openEditChannelDialog(channelInContext));
         break;
+
       case "delete":
-        try {
-          await deleteChannel({ groupId, channelId }).unwrap();
-          console.log("Channel deleted successfully");
-        } catch (err) {
-          console.error("Error deleting channel: ", err);
-        }
+        dispatch(openDeleteChannelDialog(channelInContext));
         break;
       default:
         break;
     }
-    // Close the context menu afterward
     handleCloseContextMenu();
   };
 
@@ -155,7 +177,6 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pb-[1.53rem] border-b-[1px] border-dark-3 -mx-4 px-4">
         <h2 className="text-xl font-semibold text-light-1">Channels</h2>
-        {/* Button to create a new channel */}
         <button
           onClick={handleCreateChannelButtonClick}
           className="bg-primary-500 hover:bg-primary-600 text-white text-xl px-2 py-1 rounded-full shadow-md"
@@ -185,12 +206,43 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         />
       )}
 
-      {/* Create Channel Dialog */}
+      {/* Create Channel Dialog (local state) */}
       {isCreateDialogOpen && (
         <CreateChannelDialog
           isOpen={isCreateDialogOpen}
           setIsOpen={setIsCreateDialogOpen}
           groupId={groupId}
+        />
+      )}
+
+      {/* View Channel Details (Redux-based) */}
+      {isViewChannelDetailsOpen && viewChannelDetailsData && (
+        <ViewChannelDetails
+          isOpen={isViewChannelDetailsOpen}
+          onClose={() => dispatch(closeViewChannelDetailsDialog())}
+          channel={viewChannelDetailsData}
+        />
+      )}
+
+      {/* Edit Channel Dialog (Redux-based) */}
+      {isEditChannelDialogOpen && editChannelData && (
+        <EditChannelDialog
+          isOpen={isEditChannelDialogOpen}
+          setIsOpen={(val) => {
+            if (!val) dispatch(closeEditChannelDialog());
+          }}
+          channel={editChannelData}
+        />
+      )}
+
+      {/* Delete Channel Dialog (Redux-based) */}
+      {isDeleteChannelDialogOpen && deleteChannelData && (
+        <DeleteChannelDialog
+          isOpen={isDeleteChannelDialogOpen}
+          setIsOpen={(val) => {
+            if (!val) dispatch(closeDeleteChannelDialog());
+          }}
+          channel={deleteChannelData}
         />
       )}
     </div>
