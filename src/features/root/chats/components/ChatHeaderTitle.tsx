@@ -13,7 +13,7 @@ const ChatHeaderTitle: React.FC<ChatHeaderTitleProps> = ({
   
   <div className=" text-light-2">
     <h1 className="text-xl font-semibold">{channelName}</h1>
-    <p className="text-light-3 text-sm">{membersCount} Members</p>
+    <p className="text-light-3 text-sm">{membersCount} {membersCount === 1 ? "Member" : "Members"}</p>
   </div>
 );
 

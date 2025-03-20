@@ -12,11 +12,12 @@ export interface MessageType{
 }
 
 export interface MessageProps {
-  message: MessageType
-  isUserMessage: boolean
+  message: MessageType;
+  isUserMessage: boolean;
+  showTimestamp?: boolean; // Optional prop to control timestamp visibility
 }
 
-const Message = ({message, isUserMessage}: MessageProps) => {
+const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) => {
   const messageRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -99,28 +100,30 @@ const Message = ({message, isUserMessage}: MessageProps) => {
   return (
     <>
       <div
-        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-2`}
+        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-1`}
         onContextMenu={handleContextMenu}
       >
         <div 
           ref={messageRef}
-          className={`flex max-w-xs ${isUserMessage ? "flex-row-reverse" : ""}`}
+          className={`flex max-w-xs md:max-w-md lg:max-w-lg ${isUserMessage ? "flex-row-reverse" : ""}`}
         >
-          <MessageAvatar senderName={message.senderName} />
-          <div className="mx-2">
+          {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
+          <div className="mx-1">
             <div
-              className={`p-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
+              className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
                 isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
               }`}
             >
-                <p className="text-sm">{message.text}</p>
+                <p className="text-lg">{message.text}</p>
             </div>
-            <div className="flex items-center text-xs text-gray-400 mt-1">
-              <MessageTimestamp
-                timestamp={message.timestamp}
-                isUserMessage={isUserMessage}
-              />
-            </div>
+            {showTimestamp && (
+              <div className="flex items-center text-xs text-gray-400 mt-1">
+                <MessageTimestamp
+                  timestamp={message.timestamp}
+                  isUserMessage={isUserMessage}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

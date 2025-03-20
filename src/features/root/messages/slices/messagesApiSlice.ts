@@ -48,7 +48,7 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
     }),
     sendMessage: builder.mutation<Message, SendMessageRequest>({
       query: ({ channelId, ...messageData }) => ({
-        url: `/send-message/${channelId}`,
+        url: `/messages/${channelId}`,
         method: 'POST',
         body: messageData,
       }),

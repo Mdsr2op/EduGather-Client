@@ -1,21 +1,34 @@
 // ChatInput.js
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import AttachButton from './AttachButton';
 import { FiSend } from 'react-icons/fi';
 import MessageInput from '../../messages/components/MessageInput';
+import { useSendMessageMutation } from '../../messages/slices/messagesApiSlice';
+import { useSelector } from 'react-redux';
+import { selectSelectedChannelId } from '../../channels/slices/channelSlice';
 
+interface ChatInputProps {
+  userId: string;
+}
 
-const ChatInput = () => {
+const ChatInput = ({ userId }: ChatInputProps) => {
   const [message, setMessage] = useState('');
+  const [sendMessage, { isLoading }] = useSendMessageMutation();
+  const selectedChannelId = useSelector(selectSelectedChannelId);
 
-  const sendMessage = (message: string) => {
-    console.log('Sending message:', message);
-  };
-
-  const handleSend = () => {
-    if (message.trim()) {
-      sendMessage(message);
-      setMessage('');
+  const handleSend = async () => {
+    if (message.trim() && selectedChannelId) {
+      try {
+        await sendMessage({
+          channelId: selectedChannelId,
+          senderId: userId,
+          content: message
+        }).unwrap();
+        
+        setMessage('');
+      } catch (error) {
+        console.error('Failed to send message:', error);
+      }
     }
   };
 
@@ -27,7 +40,7 @@ const ChatInput = () => {
   };
 
   return (
-    <div className="bg-dark-3 py-2 px-5 flex flex-col  justify-between ">
+    <div className="bg-dark-3 py-2 px-5 flex flex-col justify-between">
       <div className="flex items-center rounded-lg">
         <AttachButton onFileSelect={(file: File) => console.log('File selected:', file)} />
         <MessageInput
@@ -38,7 +51,8 @@ const ChatInput = () => {
         />
         <button
           onClick={handleSend}
-          className="text-primary-500 hover:text-primary-600 flex-shrink-0 ml-2 mr-3"
+          disabled={isLoading || !message.trim()}
+          className={`${isLoading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-2 mr-3`}
           aria-label="Send Message"
         >
           <FiSend size={24} />
