@@ -34,9 +34,11 @@ function App() {
           {/* Protected Routes */}
           <Route element={<RequireAuth />}>
             <Route element={<RootLayout />}>
-            <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
-              {/* ChatPage Route with groupId and channelId */}
-              <Route path="/:groupId/:channelId" element={<ChatPage />} />
+              <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
+              
+              {/* Group and Chat Routes */}
+              <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
+              <Route path="/:groupId/:channelId" element={<ChatPage />} /> {/* Group with channel */}
 
               {/* Additional Protected Routes */}
               <Route path="/discover-groups" element={<DiscoverGroups />} />

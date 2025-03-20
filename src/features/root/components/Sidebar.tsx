@@ -101,6 +101,11 @@ const Sidebar: React.FC = () => {
   // ----------------------------------
   // Handlers
   // ----------------------------------
+  const handleLogoClick = () => {
+    dispatch(setSelectedGroupId(null));
+    navigate('/');
+  };
+
   const handleGroupClick = (groupId: string) => {
     dispatch(setSelectedGroupId(groupId));
     navigate(`/${groupId}/channels`);
@@ -189,7 +194,7 @@ const Sidebar: React.FC = () => {
   if (isLoading) {
     return (
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
-        <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
+        <SidebarLogo onClick={handleLogoClick} />
         <SidebarDivider />
         <div className="text-light-3 mt-4">Loading your groups...</div>
       </div>
@@ -200,7 +205,7 @@ const Sidebar: React.FC = () => {
     console.error(error);
     return (
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
-        <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
+        <SidebarLogo onClick={handleLogoClick} />
         <SidebarDivider />
         <div className="text-red mt-4">Error loading groups</div>
       </div>
@@ -214,8 +219,8 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="w-32 bg-dark-1 h-full p-3 flex flex-col items-center overflow-y-auto">
-      {/* Logo: reset selection if clicked */}
-      <SidebarLogo onClick={() => dispatch(setSelectedGroupId(null))} />
+      {/* Logo that navigates to home and clears selected group */}
+      <SidebarLogo onClick={handleLogoClick} />
 
       <SidebarDivider />
 

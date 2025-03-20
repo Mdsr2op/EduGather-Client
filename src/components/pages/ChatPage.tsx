@@ -3,6 +3,7 @@ import { useGetChannelsQuery } from '@/features/root/channels/slices/channelApiS
 import { selectSelectedChannelId, setSelectedChannelId } from '@/features/root/channels/slices/channelSlice';
 import ChatHeader from '@/features/root/chats/components/ChatHeader';
 import ChatWindow from '@/features/root/chats/components/ChatWindow';
+import { selectSelectedGroupId } from '@/features/root/groups/slices/groupSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,15 +23,23 @@ const mockMessages = [
 function ChatPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const groupId = useParams().groupId || "";
+  const { groupId } = useParams();
+  const selectedGroupId = useSelector(selectSelectedGroupId);
   const selectedChannelId = useSelector(selectSelectedChannelId);
+
+  // Navigate to home if no group is selected
+  useEffect(() => {
+    if (!selectedGroupId && !groupId) {
+      navigate('/');
+    }
+  }, [selectedGroupId, groupId, navigate]);
   
   // Get channels for the current group
   const {
     data: channelsData,
     isLoading: isLoadingChannels,
     isError: isChannelsError
-  } = useGetChannelsQuery(groupId, {
+  } = useGetChannelsQuery(groupId || "", {
     skip: !groupId
   });
 
@@ -50,6 +59,12 @@ function ChatPage() {
       navigate(`/${groupId}/channels`);
     }
   }, [groupId, selectedChannelId, navigate]);
+
+  // No group selected - redirect to home
+  if (!groupId || !selectedGroupId) {
+    navigate('/');
+    return null;
+  }
 
   // Loading state
   if (isLoadingChannels) {

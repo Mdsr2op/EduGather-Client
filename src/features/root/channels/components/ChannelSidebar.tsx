@@ -179,16 +179,18 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         <h2 className="text-xl font-semibold text-light-1">Channels</h2>
       </div>
 
-      {/* Channel List */}
-      <ChannelList
-        channels={channels.map((ch) => ({
-          id: ch._id,
-          name: ch.channelName,
-        }))}
-        selectedChannelId={selectedChannelId}
-        onChannelClick={handleSelectChannel}
-        onChannelContextMenu={handleChannelContextMenu}
-      />
+      {/* Channel List Container */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <ChannelList
+          channels={channels.map((ch) => ({
+            id: ch._id,
+            name: ch.channelName,
+          }))}
+          selectedChannelId={selectedChannelId}
+          onChannelClick={handleSelectChannel}
+          onChannelContextMenu={handleChannelContextMenu}
+        />
+      </div>
       
       {/* Create Channel Button (moved to bottom) */}
       <div className="mt-auto pt-4 border-t border-dark-3 -mx-4 px-4">

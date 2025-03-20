@@ -1,8 +1,8 @@
 import { apiSlice } from "@/redux/api/apiSlice";
-import { setUser } from "./authSlice";
+import { setUser, setAccessToken } from "./authSlice";
 import { AuthResponse, SignInFormValues } from "../types";
 
-// The backend’s response has { data: { user, accessToken, refreshToken } } in some form
+// The backend's response has { data: { user, accessToken, refreshToken } } in some form
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     signIn: builder.mutation<AuthResponse, SignInFormValues>({
@@ -14,8 +14,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data: result } = await queryFulfilled;
-          // We only store user in Redux
           dispatch(setUser(result.data.user));
+          dispatch(setAccessToken(result.data.accessToken));
         } catch (err) {
           console.error("Login error:", err);
         }

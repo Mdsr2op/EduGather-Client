@@ -25,7 +25,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto flex items-center">
+    <div className={`flex-1 overflow-y-auto ${channels.length === 0 ? 'flex items-center' : ''}`}>
       {channels.length === 0 ? (
         <div className="text-center py-8 px-4 text-light-3 bg-dark-4 rounded-md w-full my-auto">
           <p className="text-lg mb-4">No channels available.</p>
