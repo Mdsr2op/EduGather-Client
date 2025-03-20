@@ -175,14 +175,8 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   return (
     <div className="bg-dark-4 text-light-2 w-64 h-full p-4 flex flex-col relative">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 pb-[1.53rem] border-b-[1px] border-dark-3 -mx-4 px-4">
+      <div className="flex items-center mb-4 pb-[1.53rem] border-b-[1px] border-dark-3 -mx-4 px-4">
         <h2 className="text-xl font-semibold text-light-1">Channels</h2>
-        <button
-          onClick={handleCreateChannelButtonClick}
-          className="bg-primary-500 hover:bg-primary-600 text-white text-xl px-2 py-1 rounded-full shadow-md"
-        >
-          +
-        </button>
       </div>
 
       {/* Channel List */}
@@ -195,6 +189,17 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         onChannelClick={handleSelectChannel}
         onChannelContextMenu={handleChannelContextMenu}
       />
+      
+      {/* Create Channel Button (moved to bottom) */}
+      <div className="mt-auto pt-4 border-t border-dark-3 -mx-4 px-4">
+        <button
+          onClick={handleCreateChannelButtonClick}
+          className="bg-primary-500 hover:bg-primary-600 text-white w-full py-2 rounded-md shadow-md flex items-center justify-center"
+        >
+          <span className="text-xl mr-2">+</span>
+          <span>Create Channel</span>
+        </button>
+      </div>
 
       {/* Context Menu */}
       {channelContextMenu.isOpen && channelInContext && (
