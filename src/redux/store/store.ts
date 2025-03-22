@@ -5,6 +5,7 @@ import authReducer from "../../features/auth/slices/authSlice";
 import groupReducer from "../../features/root/groups/slices/groupSlice";
 import channelReducer from "../../features/root/channels/slices/channelSlice";
 import streamReducer from "../../features/root/stream/slices/streamSlice";
+import messagesReducer from "../../features/root/messages/slices/messagesSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     group: groupReducer,
     channel: channelReducer,
     stream: streamReducer,
+    messages: messagesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(apiSlice.middleware),

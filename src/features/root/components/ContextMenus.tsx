@@ -53,17 +53,32 @@ const ContextMenus: React.FC<ContextMenusProps> = ({
       />
 
       {/* Sidebar Group Menu */}
-      <SidebarGroupMenu
-        group={groupMenu?.group}
-        position={groupMenu?.position}
-        isVisible={groupMenu?.visible}
-        onViewDetails={navigateToGroupDetails}
-        onEditDetails={() => handleGroupAction("edit")}
-        onDeleteGroup={() => handleGroupAction("delete")}
-        onCreateChannel={() => handleGroupAction("createChannel")}
-        onLeaveGroup={() => handleGroupAction("leave")}
-        onCloseMenu={closeGroupMenu}
-      />
+      {groupMenu?.group && (
+        <SidebarGroupMenu
+          group={groupMenu.group}
+          position={groupMenu.position}
+          onClose={closeGroupMenu}
+          onAction={(action) => {
+            switch(action) {
+              case 'view':
+                navigateToGroupDetails();
+                break;
+              case 'edit':
+                handleGroupAction("edit");
+                break;
+              case 'delete':
+                handleGroupAction("delete");
+                break;
+              case 'create-channel':
+                handleGroupAction("createChannel");
+                break;
+              case 'leave':
+                handleGroupAction("leave");
+                break;
+            }
+          }}
+        />
+      )}
     </>
   );
 };

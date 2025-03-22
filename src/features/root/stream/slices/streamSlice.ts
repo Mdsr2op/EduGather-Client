@@ -14,11 +14,6 @@ export interface StreamState {
   token: string | null;
   user: StreamUser | null;
   isInitialized: boolean;
-  activeCall: {
-    callId: string | null;
-    callType: 'video' | 'audio' | null;
-    participants: string[];
-  };
 }
 
 const initialState: StreamState = {
@@ -26,11 +21,6 @@ const initialState: StreamState = {
   token: null,
   user: null,
   isInitialized: false,
-  activeCall: {
-    callId: null,
-    callType: null,
-    participants: [],
-  },
 };
 
 const streamSlice = createSlice({
@@ -49,26 +39,11 @@ const streamSlice = createSlice({
     setStreamInitialized: (state, action: PayloadAction<boolean>) => {
       state.isInitialized = action.payload;
     },
-    setActiveCall: (state, action: PayloadAction<{ callId: string; callType: 'video' | 'audio'; participants: string[] }>) => {
-      state.activeCall = action.payload;
-    },
-    clearActiveCall: (state) => {
-      state.activeCall = {
-        callId: null,
-        callType: null,
-        participants: [],
-      };
-    },
     resetStreamState: (state) => {
       state.apiKey = null;
       state.token = null;
       state.user = null;
       state.isInitialized = false;
-      state.activeCall = {
-        callId: null,
-        callType: null,
-        participants: [],
-      };
     },
   },
 });
@@ -78,8 +53,6 @@ export const {
   setStreamToken,
   setStreamUser,
   setStreamInitialized,
-  setActiveCall,
-  clearActiveCall,
   resetStreamState,
 } = streamSlice.actions;
 
@@ -88,6 +61,5 @@ export const selectStreamApiKey = (state: RootState) => state.stream?.apiKey;
 export const selectStreamToken = (state: RootState) => state.stream?.token;
 export const selectStreamUser = (state: RootState) => state.stream?.user;
 export const selectStreamInitialized = (state: RootState) => state.stream?.isInitialized;
-export const selectActiveCall = (state: RootState) => state.stream?.activeCall;
 
 export default streamSlice.reducer;

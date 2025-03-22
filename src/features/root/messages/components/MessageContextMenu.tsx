@@ -65,8 +65,9 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
         />
         <MenuItem
           icon={FaThumbtack}
-          label="Pin Message"
+          label={message.pinned ? "Unpin Message" : "Pin Message"}
           onClick={() => onAction("pin")}
+          className={message.pinned ? "text-yellow-500" : ""}
         />
         {isUserMessage && (
           <>

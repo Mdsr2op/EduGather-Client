@@ -5,14 +5,11 @@ export {
   setStreamToken,
   setStreamUser,
   setStreamInitialized,
-  setActiveCall,
-  clearActiveCall,
   resetStreamState,
   selectStreamApiKey,
   selectStreamToken,
   selectStreamUser,
   selectStreamInitialized,
-  selectActiveCall,
 } from './slices/streamSlice';
 
 // API hooks
@@ -24,10 +21,6 @@ export {
 
 // Components
 export { StreamProvider } from './components/StreamProvider';
-export { StreamVideoWrapper } from './components/StreamVideoWrapper';
-export { VideoCall } from './components/VideoCall';
-export { StartCallButton } from './components/StartCallButton';
-export { CallNotification } from './components/CallNotification';
 
 // Hooks
 export { useStreamInit } from './hooks/useStreamInit';

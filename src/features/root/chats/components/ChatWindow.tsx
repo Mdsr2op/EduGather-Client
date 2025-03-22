@@ -30,7 +30,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
     text: msg.content,
     senderId: msg.senderId._id,
     senderName: msg.senderId.username,
-    timestamp: new Date(msg.createdAt).getTime()
+    timestamp: new Date(msg.createdAt).getTime(),
+    pinned: msg.pinned
   })) || [];
 
   if (isLoading) {
@@ -43,7 +44,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <MessageBody messages={messages} userId={userId} />
+      <div className="flex-1 overflow-y-auto px-4 pt-4">
+        <MessageBody messages={messages} userId={userId} />
+      </div>
       <ChatInput userId={userId} />
     </div>
   );

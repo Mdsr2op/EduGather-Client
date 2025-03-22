@@ -6,14 +6,21 @@ type MenuItemProps = {
   label: string;
   onClick: () => void;
   isDanger?: boolean;
+  className?: string;
 };
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon: Icon, label, onClick, isDanger }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ 
+  icon: Icon, 
+  label, 
+  onClick, 
+  isDanger,
+  className = "" 
+}) => (
   <li
     onClick={onClick}
     className={`flex items-center px-4 py-2 text-sm hover:bg-dark-3 cursor-pointer ${
       isDanger ? 'text-red' : 'text-white'
-    }`}
+    } ${className}`}
   >
     {Icon && <Icon className="mr-2" />}
     {label}
