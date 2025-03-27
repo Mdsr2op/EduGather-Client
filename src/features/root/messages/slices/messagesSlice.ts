@@ -44,6 +44,12 @@ const messagesSlice = createSlice({
     addMessage: (state, action: PayloadAction<Message>) => {
       state.messages.push(action.payload);
     },
+    updateMessage: (state, action: PayloadAction<Message>) => {
+      const index = state.messages.findIndex(msg => msg._id === action.payload._id);
+      if (index !== -1) {
+        state.messages[index] = action.payload;
+      }
+    },
     updatePagination: (state, action: PayloadAction<MessagesState['pagination']>) => {
       state.pagination = action.payload;
     },
@@ -72,6 +78,7 @@ export const {
   setCurrentChannel,
   setMessages,
   addMessage,
+  updateMessage,
   updatePagination,
   setLoading,
   setError,

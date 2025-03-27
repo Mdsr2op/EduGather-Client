@@ -4,7 +4,6 @@ import MessageAvatar from "./MessageAvatar";
 import MessageTimestamp from "./MessageTimestamp";
 import MessageContextMenu from "./MessageContextMenu";
 import { 
-  useEditMessageMutation,
   useDeleteMessageMutation,
   usePinMessageMutation,
   useUnpinMessageMutation,
@@ -15,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { setReplyTo } from "../slices/messagesSlice";
 import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
 import { useParams } from "react-router-dom";
+import { useSocket } from "@/lib/socket";
 
 export interface MessageType {
   id: string;
@@ -23,6 +23,12 @@ export interface MessageType {
   senderName: string;
   timestamp: number;
   pinned?: boolean;
+  replyTo?: {
+    id: string;
+    text: string;
+    senderId: string;
+    senderName: string;
+  };
 }
 
 export interface MessageProps {
@@ -35,15 +41,16 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   const messageRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const selectedChannelId = useSelector(selectSelectedChannelId);
+  const userId = useSelector((state: any) => state.auth.user?._id);
   const [editMode, setEditMode] = useState(false);
   const [editContent, setEditContent] = useState(message.text);
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
+  const { socket } = useSocket();
   
   // Get current group ID from URL params
   const { groupId = "" } = useParams<{ groupId: string }>();
   
   // API mutation hooks
-  const [editMessage] = useEditMessageMutation();
   const [deleteMessage] = useDeleteMessageMutation();
   const [pinMessage] = usePinMessageMutation();
   const [unpinMessage] = useUnpinMessageMutation();
@@ -95,13 +102,16 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   const handleSaveEdit = async () => {
     if (editContent.trim() !== message.text) {
       try {
-        await editMessage({
-          messageId: message.id,
-          data: {
+        if (socket) {
+          // Use socket to edit message
+          socket.emit('edit_message', {
+            messageId: message.id,
             content: editContent,
             mentions: [] // Add mention logic if needed
-          }
-        }).unwrap();
+          });
+        } else {
+          console.error('Socket not connected');
+        }
       } catch (error) {
         console.error("Failed to edit message:", error);
       }
@@ -151,9 +161,27 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
       case "pin":
         try {
           if (message.pinned) {
-            await unpinMessage({ messageId: message.id }).unwrap();
+            if (socket) {
+              // Use socket to unpin message
+              socket.emit('unpin_message', {
+                messageId: message.id,
+                userId: userId // This needs to be accessed from auth state
+              });
+            } else {
+              // Fallback to API if socket not available
+              await unpinMessage({ messageId: message.id }).unwrap();
+            }
           } else {
-            await pinMessage({ messageId: message.id }).unwrap();
+            if (socket) {
+              // Use socket to pin message
+              socket.emit('pin_message', {
+                messageId: message.id,
+                userId: userId // This needs to be accessed from auth state
+              });
+            } else {
+              // Fallback to API if socket not available
+              await pinMessage({ messageId: message.id }).unwrap();
+            }
           }
         } catch (error) {
           console.error("Failed to pin/unpin message:", error);
@@ -185,10 +213,19 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
           <div className="mx-1">
+            {/* Show reply info if this message is a reply */}
+            {message.replyTo && (
+              <div className="px-3 py-1 mb-1 text-xs text-gray-400 bg-dark-5 rounded-t-lg flex items-center">
+                <span className="mr-1">Reply to</span>
+                <span className="font-semibold">{message.replyTo.senderName}</span>: 
+                <span className="ml-1 truncate">{message.replyTo.text.substring(0, 50)}{message.replyTo.text.length > 50 ? '...' : ''}</span>
+              </div>
+            )}
+            
             <div
               className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
                 isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
-              } ${message.pinned ? "border-2 border-yellow-500" : ""}`}
+              } ${message.pinned ? "border-2 border-yellow-500" : ""} ${message.replyTo ? "rounded-tl-none" : ""}`}
             >
               {editMode && isUserMessage ? (
                 <div className="flex flex-col">

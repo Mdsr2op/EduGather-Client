@@ -3,14 +3,11 @@ import React, { useState, useEffect } from 'react';
 import AttachButton from './AttachButton';
 import { FiSend, FiX } from 'react-icons/fi';
 import MessageInput from '../../messages/components/MessageInput';
-import { 
-  useSendMessageMutation,
-  useReplyMessageMutation
-} from '../../messages/slices/messagesApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectSelectedChannelId } from '../../channels/slices/channelSlice';
 import { RootState } from '@/redux/store/store';
 import { setReplyTo } from '../../messages/slices/messagesSlice';
+import { useSocket } from '@/lib/socket';
 
 interface ChatInputProps {
   userId: string;
@@ -18,41 +15,42 @@ interface ChatInputProps {
 
 const ChatInput = ({ userId }: ChatInputProps) => {
   const [message, setMessage] = useState('');
-  const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
-  const [replyMessage, { isLoading: isReplying }] = useReplyMessageMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const selectedChannelId = useSelector(selectSelectedChannelId);
   const replyTo = useSelector((state: RootState) => state.messages.replyTo);
   const dispatch = useDispatch();
-  
-  const isLoading = isSending || isReplying;
+  const { socket } = useSocket();
 
   const handleSend = async () => {
     if (message.trim() && selectedChannelId) {
+
       try {
-        if (replyTo) {
-          // Send as a reply
-          await replyMessage({
-            messageId: replyTo._id,
-            data: {
-              content: message,
-              mentions: [] // Add logic for mentions if needed
-            }
-          }).unwrap();
+        setIsLoading(true);
+        
+        if (socket) {
+
+          // The server expects 'new_message' event
+          socket.emit('new_message', {
+            senderId: userId,
+            content: message,
+            mentions: [],
+            // Include reply reference if replying to a message
+            replyTo: replyTo ? replyTo._id : null
+          });
           
           // Clear the reply state
-          dispatch(setReplyTo(null));
+          if (replyTo) {
+            dispatch(setReplyTo(null));
+          }
         } else {
-          // Send as a regular message
-          await sendMessage({
-            channelId: selectedChannelId,
-            senderId: userId,
-            content: message
-          }).unwrap();
+          console.error('Socket not connected');
         }
         
         setMessage('');
       } catch (error) {
         console.error('Failed to send message:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };

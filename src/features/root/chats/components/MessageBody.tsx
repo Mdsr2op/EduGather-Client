@@ -1,5 +1,4 @@
-// MessageBody.js (updated with auto-scroll)
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import Message, { MessageType } from '../../messages/components/Message';
 
 interface MessageBodyProps {
@@ -9,35 +8,38 @@ interface MessageBodyProps {
 
 const MessageBody = ({ messages, userId }: MessageBodyProps) => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [prevMessageCount, setPrevMessageCount] = useState(0);
 
-  // Auto-scroll to bottom only when new messages are added
-  useEffect(() => {
-    // Only scroll if the number of messages has increased (new messages added)
-    if (messages.length > prevMessageCount) {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+  useLayoutEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
     
-    // Update the previous message count
-    setPrevMessageCount(messages.length);
-  }, [messages, prevMessageCount]);
+    const oldScrollHeight = container.scrollHeight;
+    const oldScrollTop = container.scrollTop;
 
-  // Function to determine if timestamp should be shown for a message
+    if (messages.length > prevMessageCount) {
+      requestAnimationFrame(() => {
+        const newScrollHeight = container.scrollHeight;
+        container.scrollTop = oldScrollTop + (newScrollHeight - oldScrollHeight);
+      });
+    }
+
+    setPrevMessageCount(messages.length);
+  }, [messages]);
+
   const shouldShowTimestamp = (message: MessageType, index: number) => {
-    // Always show timestamp for the last message
     if (index === messages.length - 1) return true;
-    
-    // Show timestamp if sender changes between current and next message
     if (messages[index + 1].senderId !== message.senderId) return true;
-    
-    // Show timestamp if there's a time gap of more than 5 minutes (300000 ms)
     if (messages[index + 1].timestamp - message.timestamp > 300000) return true;
-    
     return false;
   };
 
   return (
-    <div className="bg-dark-3 p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-0 rounded-lg">
+    <div
+      ref={messagesContainerRef}
+      className="bg-dark-3 p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-0 rounded-lg"
+    >
       {messages.length === 0 ? (
         <div className="flex items-center justify-center h-full text-light-3">
           No messages yet. Start the conversation!

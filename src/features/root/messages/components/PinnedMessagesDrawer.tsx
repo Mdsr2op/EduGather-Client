@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectSelectedChannelId } from '../../channels/slices/channelSlice';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { formatDistanceToNow } from 'date-fns';
+import { useSocket } from '@/lib/socket';
 
 interface PinnedMessagesDrawerProps {
   open: boolean;
@@ -21,6 +22,7 @@ const PinnedMessagesDrawer: React.FC<PinnedMessagesDrawerProps> = ({
 }) => {
   const selectedChannelId = useSelector(selectSelectedChannelId);
   const [unpinMessage] = useUnpinMessageMutation();
+  const { socket } = useSocket();
   
   const { 
     data: pinnedMessages, 
@@ -41,7 +43,16 @@ const PinnedMessagesDrawer: React.FC<PinnedMessagesDrawerProps> = ({
   
   const handleUnpinMessage = async (messageId: string) => {
     try {
-      await unpinMessage({ messageId }).unwrap();
+      if (socket) {
+        // Use socket to unpin message
+        socket.emit('unpin_message', {
+          messageId,
+          userId
+        });
+      } else {
+        // Fallback to API if socket not available
+        await unpinMessage({ messageId }).unwrap();
+      }
     } catch (error) {
       console.error('Failed to unpin message:', error);
     }
