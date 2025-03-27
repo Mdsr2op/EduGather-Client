@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,8 +28,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import DatePicker from "react-datepicker"; // Ensure you have react-datepicker installed
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useToast } from "@/hooks/use-toast";
+import { useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
@@ -46,51 +51,120 @@ const meetingSchema = z.object({
 // Type for the form data
 type MeetingFormValues = z.infer<typeof meetingSchema>;
 
+// Meeting types
+type MeetingType = "isScheduleMeeting" | "isInstantMeeting" | undefined;
+
 const StartVideoCallDialog: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [meetingType, setMeetingType] = useState<MeetingType>(undefined);
+  const [meetingId, setMeetingId] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const client = useStreamVideoClient();
+  const user = useSelector(selectCurrentUser);
 
   // Initialize React Hook Form
   const form = useForm<MeetingFormValues>({
     resolver: zodResolver(meetingSchema),
     defaultValues: {
       meetingTitle: "",
-      dateTime: new Date(), // Default to current date and time
+      dateTime: new Date(),
       agenda: "",
     },
   });
 
-  // Handle form submission
-  const onSubmit: SubmitHandler<MeetingFormValues> = async (data) => {
-    setIsSubmitting(true);
+  // Create a meeting
+  const createMeeting = async (data?: MeetingFormValues) => {
     try {
-      // Format the date and time as "DD/MM/YYYY hh:mm am/pm"
-      const formattedDate = data.dateTime.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
+      setIsSubmitting(true);
+      
+      if (!client || !user) {
+        toast({
+          title: "Error",
+          description: "Video client not initialized",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Generate a unique meeting ID
+      const id = crypto.randomUUID();
+      setMeetingId(id);
+      
+      // Create a call using Stream Video client
+      const call = client.call("default", id);
+      if (!call) {
+        throw new Error("Failed to create meeting");
+      }
+      
+      // Set up call parameters
+      const startsAt = data ? data.dateTime.toISOString() : new Date().toISOString();
+      const description = data ? data.meetingTitle : "Instant Meeting";
+      const agenda = data?.agenda || "";
+      
+      // Create the call on Stream's servers
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            description,
+            agenda,
+          },
+        },
       });
-
-      const submissionData = {
-        ...data,
-        dateTime: formattedDate,
-      };
-
-      console.log("Creating meeting with data:", submissionData); // Simulated API call
+      
+      // Close the dialog
+      setIsOpen(false);
+      
+      // Show success message
+      toast({
+        title: "Meeting Created",
+        description: data ? "Your meeting has been scheduled." : "Your instant meeting is ready.",
+      });
+      
+      // Navigate to meeting route as defined in app.tsx
+      navigate(`/meeting/${id}`);
+      
+      // Reset form
       form.reset();
+      
     } catch (error) {
       console.error("Error creating meeting:", error);
+      toast({
+        title: "Failed to create meeting",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
+      setMeetingType(undefined);
     }
   };
 
+  // Handle form submission for scheduled meetings
+  const onSubmit: SubmitHandler<MeetingFormValues> = async (data) => {
+    setMeetingType("isScheduleMeeting");
+    await createMeeting(data);
+  };
+
+  // Handle starting an instant meeting
+  const handleStartInstantMeeting = async () => {
+    setMeetingType("isInstantMeeting");
+    await createMeeting();
+  };
+
+  // Generate meeting link if a meeting ID exists
+  const meetingLink = meetingId 
+    ? `${window.location.origin}/meeting/${meetingId}`
+    : undefined;
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center justify-center text-light-1 rounded-xl shadow-md">
+        <Button 
+          className="flex items-center justify-center text-light-1 rounded-xl shadow-md"
+          onClick={() => setIsOpen(true)}
+        >
           <FiVideo size={20} className="text-primary-500 mr-2" />
         </Button>
       </DialogTrigger>
@@ -101,9 +175,29 @@ const StartVideoCallDialog: React.FC = () => {
             Create a Meeting
           </DialogTitle>
           <DialogDescription className="text-sm text-light-4">
-            Schedule a new video meeting by providing the necessary details.
+            Schedule a new video meeting or start one now.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Instant Meeting Button */}
+        <div className="mb-4 mt-2">
+          <Button
+            type="button"
+            className="w-full bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl shadow-md"
+            onClick={handleStartInstantMeeting}
+            disabled={isSubmitting}
+          >
+            {isSubmitting && meetingType === "isInstantMeeting" 
+              ? "Creating..." 
+              : "Start Instant Meeting"}
+          </Button>
+        </div>
+        
+        <div className="relative flex items-center py-2">
+          <div className="flex-grow border-t border-dark-5"></div>
+          <span className="flex-shrink mx-4 text-light-3">or schedule for later</span>
+          <div className="flex-grow border-t border-dark-5"></div>
+        </div>
 
         <Form {...form}>
           <form
@@ -140,6 +234,7 @@ const StartVideoCallDialog: React.FC = () => {
                     <div className="relative">
                       <DatePicker
                         selected={field.value}
+                        onChange={field.onChange}
                         showTimeSelect
                         dateFormat="dd/MM/yyyy hh:mm aa"
                         className={cn(
@@ -180,21 +275,21 @@ const StartVideoCallDialog: React.FC = () => {
 
             {/* Dialog Footer with Buttons */}
             <DialogFooter className="flex justify-end space-x-2 pt-4">
-              <DialogClose asChild>
-                <Button
-                  variant="outline"
-                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                disabled={isSubmitting}
+                onClick={() => setIsOpen(false)}
+              >
+                Cancel
+              </Button>
               <Button
                 type="submit"
                 className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Creating..." : "Create Meeting"}
+                {isSubmitting && meetingType === "isScheduleMeeting" ? "Creating..." : "Schedule Meeting"}
               </Button>
             </DialogFooter>
           </form>
