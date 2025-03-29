@@ -70,7 +70,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         updatedAt: message.updatedAt,
         pinned: message.pinned || false,
         mentions: message.mentions || [],
-        replyTo: message.replyTo || null
+        replyTo: message.replyTo || null,
+        attachment: message.attachment || null
       };
       
       // Add to Redux store
@@ -96,6 +97,17 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         };
       }
       
+      // Add attachment information if available
+      if (message.attachment) {
+        formattedMessage.attachment = {
+          id: message.attachment._id,
+          url: message.attachment.url,
+          fileType: message.attachment.fileType,
+          fileName: message.attachment.fileName,
+          size: message.attachment.size
+        };
+      }
+      
       // Add to UI messages
       setAllMessages(prev => [...prev, formattedMessage]);
       
@@ -118,7 +130,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         updatedAt: message.updatedAt,
         pinned: message.pinned || false,
         mentions: message.mentions || [],
-        replyTo: message.replyTo || null
+        replyTo: message.replyTo || null,
+        attachment: message.attachment || null
       };
       
       // Update in Redux store
@@ -132,7 +145,14 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 ...msg,
                 text: message.content,
                 pinned: message.pinned || false,
-                timestamp: new Date(message.updatedAt).getTime()
+                timestamp: new Date(message.updatedAt).getTime(),
+                attachment: message.attachment ? {
+                  id: message.attachment._id,
+                  url: message.attachment.url,
+                  fileType: message.attachment.fileType,
+                  fileName: message.attachment.fileName,
+                  size: message.attachment.size
+                } : msg.attachment
               }
             : msg
         )
@@ -156,7 +176,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinned: true,
         pinnedBy: message.pinnedBy,
         mentions: message.mentions || [],
-        replyTo: message.replyTo || null
+        replyTo: message.replyTo || null,
+        attachment: message.attachment || null
       };
       
       // Update in Redux store
@@ -193,7 +214,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinned: false,
         pinnedBy: undefined,
         mentions: message.mentions || [],
-        replyTo: message.replyTo || null
+        replyTo: message.replyTo || null,
+        attachment: message.attachment || null
       };
       
       // Update in Redux store
@@ -268,6 +290,17 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
             text: msg.replyTo.content || '',
             senderId: msg.replyTo.senderId._id || '',
             senderName: msg.replyTo.senderId.username || 'User'
+          };
+        }
+        
+        // Add attachment information if available
+        if (msg.attachment) {
+          formattedMessage.attachment = {
+            id: msg.attachment._id,
+            url: msg.attachment.url,
+            fileType: msg.attachment.fileType,
+            fileName: msg.attachment.fileName,
+            size: msg.attachment.size
           };
         }
         

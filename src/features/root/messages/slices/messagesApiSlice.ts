@@ -20,6 +20,13 @@ export interface Message {
   };
   content: string;
   mentions?: string[];
+  attachment?: {
+    _id: string;
+    url: string;
+    fileType: string;
+    fileName: string;
+    size: number;
+  };
   pinned: boolean;
   pinnedBy?: string;
   pinnedAt?: string;
@@ -44,6 +51,7 @@ interface SendMessageRequest {
   replyTo?: string;
   content: string;
   mentions?: string[];
+  attachment?: string;
 }
 
 interface EditMessageRequest {

@@ -23,6 +23,13 @@ export interface MessageType {
   senderName: string;
   timestamp: number;
   pinned?: boolean;
+  attachment?: {
+    id: string;
+    url: string;
+    fileType: string;
+    fileName: string;
+    size: number;
+  };
   replyTo?: {
     id: string;
     text: string;
@@ -47,6 +54,9 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
   const { socket } = useSocket();
   
+  // For image attachment
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
   // Get current group ID from URL params
   const { groupId = "" } = useParams<{ groupId: string }>();
   
@@ -62,6 +72,9 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
     visible: false,
     position: { x: 0, y: 0 }
   });
+
+  // Check if attachment is an image
+  const isImageAttachment = message.attachment?.fileType?.startsWith('image/');
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -204,7 +217,7 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   return (
     <>
       <div
-        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-1`}
+        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-0.5`}
         onContextMenu={handleContextMenu}
       >
         <div 
@@ -255,7 +268,53 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
                   </div>
                 </div>
               ) : (
-                <p className="text-lg">{message.text}</p>
+                <div>
+                                    {/* Display image attachment if available */}
+                                    {isImageAttachment && message.attachment && (
+                    <div className={`${imageLoaded ? '' : 'min-h-[200px] flex items-center justify-center'}`}>
+                      {!imageLoaded && <div className="animate-pulse">Loading image...</div>}
+                      <img 
+                        src={message.attachment.url} 
+                        alt={message.attachment.fileName}
+                        className="rounded-lg max-w-full max-h-[300px] object-contain"
+                        onLoad={() => setImageLoaded(true)}
+                        style={{ display: imageLoaded ? 'block' : 'none' }}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Display non-image attachment if available */}
+                  {message.attachment && !isImageAttachment && (
+                    <div className="flex items-center p-2 bg-dark-5 rounded-lg">
+                      <div className="mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 truncate">
+                        <div className="text-sm font-medium truncate">{message.attachment.fileName}</div>
+                        <div className="text-xs text-gray-400">
+                          {(message.attachment.size / 1024).toFixed(1)} KB
+                        </div>
+                      </div>
+                      <a 
+                        href={message.attachment.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="ml-2 p-1 rounded-full hover:bg-dark-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                      </a>
+                    </div>
+                  )}
+                  {/* Display message text if available */}
+                  {message.text && <p className="text-lg mb-1">{message.text}</p>}
+                  
+
+                </div>
               )}
             </div>
             {showTimestamp && (

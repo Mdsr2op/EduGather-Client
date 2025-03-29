@@ -16,69 +16,72 @@ import MeetingPage from "./components/pages/MeetingPage";
 import { useGetCurrentUserQuery } from "./features/auth/slices/authApiSlice";
 import { SocketProvider } from "./lib/socket";
 import StreamVideoProvider from "./providers/StreamVideoProvider";
+import ToastProvider from "./components/ToastProvider";
 
 function App() {
   const { isLoading, isError } = useGetCurrentUserQuery();
 
   // The rest of your routes
   return (
-    <SocketProvider>
-      <main className="h-screen flex">
-        {isLoading ? (
-          <p>Loading user session...</p>
-        ) : (
-          <StreamVideoProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route element={<AuthLayout />}>
+    <ToastProvider>
+      <SocketProvider>
+        <main className="h-screen flex">
+          {isLoading ? (
+            <p>Loading user session...</p>
+          ) : (
+            <StreamVideoProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route element={<AuthLayout />}>
 
-                <Route path="/sign-up" element={<SignUpForm />} />
-                <Route path="/sign-in" element={<SignInForm />} />
-              </Route>
-
-              {/* Protected Routes */}
-              <Route element={<RequireAuth />}>
-                <Route element={<RootLayout />}>
-                  <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
-                  
-                  {/* Group and Chat Routes */}
-                  <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
-                  <Route path="/:groupId/:channelId" element={<ChatPage />} /> {/* Group with channel */}
-                  
-                  {/* Meeting Route */}
-                  <Route path="/:groupId/:channelId/meeting/:id" element={<MeetingPage />} />
-
-                  {/* Additional Protected Routes */}
-                  <Route path="/discover-groups" element={<DiscoverGroups />} />
-                  <Route
-                    path="/scheduled-meetings"
-                    element={<ScheduledMeetings />}
-                  />
-                  <Route
-                    path="/ai-quiz-generation"
-                    element={<AiQuizGeneration />}
-                  />
-                  <Route
-                    path="/meeting-recordings"
-                    element={<MeetingRecordings />}
-                  />
-
-                  {/* Default Protected Route */}
-                  <Route
-                    index
-                    element={<Navigate to="/discover-groups" replace />}
-                  />
+                  <Route path="/sign-up" element={<SignUpForm />} />
+                  <Route path="/sign-in" element={<SignInForm />} />
                 </Route>
-              </Route>
 
-              {/* Fallback Route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </StreamVideoProvider>
-        )}
-        <Toaster />
-      </main>
-    </SocketProvider>
+                {/* Protected Routes */}
+                <Route element={<RequireAuth />}>
+                  <Route element={<RootLayout />}>
+                    <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
+                    
+                    {/* Group and Chat Routes */}
+                    <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
+                    <Route path="/:groupId/:channelId" element={<ChatPage />} /> {/* Group with channel */}
+                    
+                    {/* Meeting Route */}
+                    <Route path="/:groupId/:channelId/meeting/:id" element={<MeetingPage />} />
+
+                    {/* Additional Protected Routes */}
+                    <Route path="/discover-groups" element={<DiscoverGroups />} />
+                    <Route
+                      path="/scheduled-meetings"
+                      element={<ScheduledMeetings />}
+                    />
+                    <Route
+                      path="/ai-quiz-generation"
+                      element={<AiQuizGeneration />}
+                    />
+                    <Route
+                      path="/meeting-recordings"
+                      element={<MeetingRecordings />}
+                    />
+
+                    {/* Default Protected Route */}
+                    <Route
+                      index
+                      element={<Navigate to="/discover-groups" replace />}
+                    />
+                  </Route>
+                </Route>
+
+                {/* Fallback Route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </StreamVideoProvider>
+          )}
+          <Toaster />
+        </main>
+      </SocketProvider>
+    </ToastProvider>
   );
 }
 

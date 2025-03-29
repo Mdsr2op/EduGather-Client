@@ -1,0 +1,86 @@
+/* Attachment Styles */
+.attachment-preview {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.attachment-preview:hover {
+  transform: scale(1.02);
+}
+
+.attachment-preview img,
+.attachment-preview video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.file-dropzone {
+  border: 2px dashed transparent;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.file-dropzone.active {
+  border-color: #7b68ee;
+  background-color: rgba(123, 104, 238, 0.1);
+}
+
+.caption-input {
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  width: 100%;
+  outline: none;
+  padding: 0.5rem;
+}
+
+.attachment-icon {
+  padding: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-icon {
+  color: #ff5555;
+}
+
+.doc-icon {
+  color: #5555ff;
+}
+
+.xls-icon {
+  color: #55aa55;
+}
+
+.generic-icon {
+  color: #aaaaaa;
+}
+
+.attachment-filename {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-size {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.attachment-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 

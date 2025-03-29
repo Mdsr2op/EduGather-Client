@@ -8,6 +8,8 @@ import { selectSelectedChannelId } from '../../channels/slices/channelSlice';
 import { RootState } from '@/redux/store/store';
 import { setReplyTo } from '../../messages/slices/messagesSlice';
 import { useSocket } from '@/lib/socket';
+import { useUploadAttachmentMutation } from '../../attachments/slices/attachmentsApiSlice';
+import { toast } from 'react-hot-toast';
 
 interface ChatInputProps {
   userId: string;
@@ -20,15 +22,14 @@ const ChatInput = ({ userId }: ChatInputProps) => {
   const replyTo = useSelector((state: RootState) => state.messages.replyTo);
   const dispatch = useDispatch();
   const { socket } = useSocket();
+  const [uploadAttachment, { isLoading: isUploading }] = useUploadAttachmentMutation();
 
   const handleSend = async () => {
     if (message.trim() && selectedChannelId) {
-
       try {
         setIsLoading(true);
         
         if (socket) {
-
           // The server expects 'new_message' event
           socket.emit('new_message', {
             senderId: userId,
@@ -49,6 +50,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         setMessage('');
       } catch (error) {
         console.error('Failed to send message:', error);
+        toast.error('Failed to send message');
       } finally {
         setIsLoading(false);
       }
@@ -64,6 +66,52 @@ const ChatInput = ({ userId }: ChatInputProps) => {
   
   const clearReply = () => {
     dispatch(setReplyTo(null));
+  };
+
+  const handleFileSelect = async (file: File, caption?: string) => {
+    if (!selectedChannelId) {
+      console.error('Cannot send file: Channel not selected');
+      toast.error('Channel not selected');
+      return;
+    }
+    
+    try {
+      // Create a FormData object to upload the file
+      const formData = new FormData();
+      formData.append('files', file); // Note: Backend expects 'files' not 'file'
+      
+      // Add caption as content if provided
+      if (caption) {
+        formData.append('content', caption);
+      }
+      
+      // Add reply reference if available
+      if (replyTo) {
+        formData.append('replyTo', replyTo._id);
+      }
+      
+      // Show uploading toast
+      toast.loading('Uploading file...', { id: 'uploading' });
+      
+      // Use the uploaded attachment mutation
+      const response = await uploadAttachment({
+        channelId: selectedChannelId,
+        formData
+      }).unwrap();
+      
+      // Show success toast
+      toast.success('File uploaded successfully', { id: 'uploading' });
+      console.log('Attachment uploaded successfully:', response);
+      
+      // Clear the reply state if necessary
+      if (replyTo) {
+        dispatch(setReplyTo(null));
+      }
+      
+    } catch (error) {
+      console.error('Failed to upload file:', error);
+      toast.error('Failed to upload file', { id: 'uploading' });
+    }
   };
 
   return (
@@ -86,7 +134,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       )}
       
       <div className="flex items-center rounded-lg">
-        <AttachButton onFileSelect={(file: File) => console.log('File selected:', file)} />
+        <AttachButton onFileSelect={handleFileSelect} isUploading={isUploading} />
         <MessageInput
           message={message}
           setMessage={setMessage}
@@ -95,8 +143,8 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         />
         <button
           onClick={handleSend}
-          disabled={isLoading || !message.trim()}
-          className={`${isLoading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-2 mr-3`}
+          disabled={isLoading || isUploading || !message.trim()}
+          className={`${isLoading || isUploading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-2 mr-3`}
           aria-label="Send Message"
         >
           <FiSend size={24} />
