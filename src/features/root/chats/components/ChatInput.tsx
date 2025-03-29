@@ -90,8 +90,16 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         formData.append('replyTo', replyTo._id);
       }
       
-      // Show uploading toast
-      toast.loading('Uploading file...', { id: 'uploading' });
+      // Show uploading toast at the bottom center
+      toast.loading('Uploading file...', { 
+        id: 'uploading',
+        position: 'bottom-center',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        }
+      });
       
       // Use the uploaded attachment mutation
       const response = await uploadAttachment({
@@ -99,8 +107,16 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         formData
       }).unwrap();
       
-      // Show success toast
-      toast.success('File uploaded successfully', { id: 'uploading' });
+      // Show success toast at the bottom center
+      toast.success('File uploaded successfully', { 
+        id: 'uploading',
+        position: 'bottom-center',
+        style: {
+          borderRadius: '10px',
+
+        }
+      });
+      
       console.log('Attachment uploaded successfully:', response);
       
       // Clear the reply state if necessary
@@ -110,7 +126,15 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       
     } catch (error) {
       console.error('Failed to upload file:', error);
-      toast.error('Failed to upload file', { id: 'uploading' });
+      toast.error('Failed to upload file', { 
+        id: 'uploading',
+        position: 'bottom-center',
+        style: {
+          borderRadius: '10px',
+          background: '#EF4444',
+          color: '#fff',
+        }
+      });
     }
   };
 
