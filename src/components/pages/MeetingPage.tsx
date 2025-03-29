@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
@@ -9,13 +9,27 @@ import { Loader } from 'lucide-react';
 import { useGetCallById } from '@/hooks/useGetCallById';
 import MeetingSetup from '@/features/root/chats/components/MeetingSetup';
 import { selectCurrentUser } from '@/features/auth/slices/authSlice';
+import { selectSelectedChannelId } from '@/features/root/channels/slices/channelSlice';
+import MeetingRoom from '@/components/video/MeetingRoom';
+import { useSocket } from '@/lib/socket';
 
 const MeetingPage = () => {
-  const { id } = useParams();
+  const { id, channelId: channelIdFromParams } = useParams();
   const user = useSelector(selectCurrentUser);
   const { call, isCallLoading } = useGetCallById(id || '');
   const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const selectedChannelId = useSelector(selectSelectedChannelId) || channelIdFromParams;
+  const userId = user?._id;
+  const { socket, connectToChannel } = useSocket();
+  const prevChannelIdRef = useRef<string | null>(null);
 
+  useEffect(() => {
+    if(selectedChannelId && userId) {
+      connectToChannel(selectedChannelId, userId);
+      prevChannelIdRef.current = selectedChannelId;
+    }
+  }, [selectedChannelId, userId, connectToChannel]);
+  
   if (isCallLoading) return (
     <div className="flex items-center justify-center h-screen">
       <Loader className="animate-spin" />
@@ -44,9 +58,7 @@ const MeetingPage = () => {
           {!isSetupComplete ? (
             <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <p className="text-center text-3xl font-bold text-white">Meeting Room</p>
-            </div>
+            <MeetingRoom />
           )}
         </StreamTheme>
       </StreamCall>
@@ -54,4 +66,4 @@ const MeetingPage = () => {
   );
 };
 
-export default MeetingPage; 
+export default MeetingPage;

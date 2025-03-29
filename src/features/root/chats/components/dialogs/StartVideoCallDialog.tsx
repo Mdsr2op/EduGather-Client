@@ -63,6 +63,7 @@ const StartVideoCallDialog: React.FC = () => {
   const { toast } = useToast();
   const client = useStreamVideoClient();
   const user = useSelector(selectCurrentUser);
+  const { groupId, channelId } = useParams();
 
   // Initialize React Hook Form
   const form = useForm<MeetingFormValues>({
@@ -123,8 +124,8 @@ const StartVideoCallDialog: React.FC = () => {
         description: data ? "Your meeting has been scheduled." : "Your instant meeting is ready.",
       });
       
-      // Navigate to meeting route as defined in app.tsx
-      navigate(`/meeting/${id}`);
+      // Navigate to meeting route with groupId and channelId
+      navigate(`/${groupId}/${channelId}/meeting/${id}`);
       
       // Reset form
       form.reset();
@@ -155,7 +156,7 @@ const StartVideoCallDialog: React.FC = () => {
 
   // Generate meeting link if a meeting ID exists
   const meetingLink = meetingId 
-    ? `${window.location.origin}/meeting/${meetingId}`
+    ? `${window.location.origin}/${groupId}/${channelId}/meeting/${meetingId}`
     : undefined;
 
   return (

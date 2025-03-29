@@ -46,7 +46,7 @@ function App() {
                   <Route path="/:groupId/:channelId" element={<ChatPage />} /> {/* Group with channel */}
                   
                   {/* Meeting Route */}
-                  <Route path="/meeting/:id" element={<MeetingPage />} />
+                  <Route path="/:groupId/:channelId/meeting/:id" element={<MeetingPage />} />
 
                   {/* Additional Protected Routes */}
                   <Route path="/discover-groups" element={<DiscoverGroups />} />
