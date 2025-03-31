@@ -25,6 +25,11 @@ export interface AttachmentResponse {
   };
 }
 
+export interface DeleteAttachmentResponse {
+  success: boolean;
+  message: string;
+}
+
 export const attachmentsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     uploadAttachment: builder.mutation<AttachmentResponse, { channelId: string; formData: FormData }>({
@@ -38,9 +43,17 @@ export const attachmentsApiSlice = apiSlice.injectEndpoints({
         { type: 'Messages', id: channelId }
       ]
     }),
+    deleteAttachment: builder.mutation<DeleteAttachmentResponse, string>({
+      query: (attachmentId) => ({
+        url: `/attachments/delete/${attachmentId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Messages']
+    }),
   }),
 });
 
 export const {
-  useUploadAttachmentMutation
+  useUploadAttachmentMutation,
+  useDeleteAttachmentMutation
 } = attachmentsApiSlice; 

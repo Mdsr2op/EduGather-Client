@@ -15,6 +15,8 @@ import { setReplyTo } from "../slices/messagesSlice";
 import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
 import { useParams } from "react-router-dom";
 import { useSocket } from "@/lib/socket";
+import { useDeleteAttachmentMutation } from "../../attachments/slices/attachmentsApiSlice";
+import { toast } from 'react-hot-toast';
 
 export interface MessageType {
   id: string;
@@ -64,6 +66,7 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   const [deleteMessage] = useDeleteMessageMutation();
   const [pinMessage] = usePinMessageMutation();
   const [unpinMessage] = useUnpinMessageMutation();
+  const [deleteAttachment] = useDeleteAttachmentMutation();
   
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -73,6 +76,8 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
     position: { x: 0, y: 0 }
   });
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Check if attachment is an image
   const isImageAttachment = message.attachment?.fileType?.startsWith('image/');
 
@@ -81,7 +86,7 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
     
     // Get menu dimensions (approximation)
     const menuWidth = 192; // 12rem = 192px
-    const menuHeight = 200; // Approximate height
+    const menuHeight = 250; // Approximate height, increased to be safer
 
     let x = e.clientX;
     let y = e.clientY;
@@ -93,13 +98,32 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
       y = messageRect.bottom;
     }
     
-    // Ensure menu stays within viewport
+    // Ensure menu stays within viewport - horizontal
     if (x + menuWidth > window.innerWidth) {
-      x = window.innerWidth - menuWidth;
+      x = window.innerWidth - menuWidth - 10; // Add 10px padding
     }
     
+    // Ensure menu stays within viewport - vertical
+    // Check if menu would overflow bottom of viewport
     if (y + menuHeight > window.innerHeight) {
-      y = window.innerHeight - menuHeight;
+      // If user message, position above the message instead of below
+      if (isUserMessage && messageRef.current) {
+        const messageRect = messageRef.current.getBoundingClientRect();
+        // Position above if there's room, otherwise position at a fixed distance from the top
+        if (messageRect.top > menuHeight) {
+          y = messageRect.top - menuHeight;
+        } else {
+          y = Math.max(10, window.innerHeight - menuHeight - 10); // Ensure at least 10px from top or bottom
+        }
+      } else {
+        // For non-user messages or if no ref available
+        y = window.innerHeight - menuHeight - 10; // 10px padding from bottom
+      }
+    }
+    
+    // Ensure menu is not positioned outside the top of the viewport
+    if (y < 10) {
+      y = 10; // 10px padding from top
     }
     
     setContextMenu({
@@ -151,9 +175,48 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
         break;
       case "delete":
         try {
+          setIsDeleting(true);
+          // Show deleting toast at the bottom center
+          toast.loading('Deleting message...', { 
+            id: 'deleting',
+            position: 'bottom-center',
+            style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+            }
+          });
+
+          // If message has attachment, delete it first
+          if (message.attachment) {
+            await deleteAttachment(message.attachment.id).unwrap();
+          }
+          // Then delete the message
           await deleteMessage({ messageId: message.id }).unwrap();
+
+          // Show success toast
+          toast.success('Message deleted successfully', { 
+            id: 'deleting',
+            position: 'bottom-center',
+            style: {
+              borderRadius: '10px',
+              background: '#10B981',
+              color: '#fff',
+            }
+          });
         } catch (error) {
           console.error("Failed to delete message:", error);
+          toast.error('Failed to delete message', { 
+            id: 'deleting',
+            position: 'bottom-center',
+            style: {
+              borderRadius: '10px',
+              background: '#EF4444',
+              color: '#fff',
+            }
+          });
+        } finally {
+          setIsDeleting(false);
         }
         break;
       case "reply":
@@ -269,8 +332,8 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
                 </div>
               ) : (
                 <div>
-                                    {/* Display image attachment if available */}
-                                    {isImageAttachment && message.attachment && (
+                    {/* Display image attachment if available */}
+                    {isImageAttachment && message.attachment && (
                     <div className={`${imageLoaded ? '' : 'min-h-[200px] flex items-center justify-center'}`}>
                       {!imageLoaded && <div className="animate-pulse">Loading image...</div>}
                       <img 

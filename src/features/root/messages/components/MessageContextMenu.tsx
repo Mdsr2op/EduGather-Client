@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FaEdit,
   FaTrash,
@@ -26,6 +26,32 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
   isUserMessage
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState({ ...position });
+  const [transformOrigin, setTransformOrigin] = useState("top left");
+
+  // Calculate optimal position and transform origin on mount
+  useEffect(() => {
+    if (menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      let { x, y } = position;
+      let origin = "top left";
+
+      // Check if menu would overflow bottom of viewport
+      if (y + menuRect.height > window.innerHeight) {
+        y = Math.max(5, window.innerHeight - menuRect.height - 5);
+        origin = "bottom left";
+      }
+
+      // Check if menu would overflow right of viewport
+      if (x + menuRect.width > window.innerWidth) {
+        x = Math.max(5, window.innerWidth - menuRect.width - 5);
+        origin = origin.replace("left", "right");
+      }
+
+      setMenuPos({ x, y });
+      setTransformOrigin(origin);
+    }
+  }, [position]);
 
   // Close context menu on outside click
   useEffect(() => {
@@ -35,17 +61,33 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
       }
     };
 
+    // Close context menu on escape key
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [onClose]);
 
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-[rgba(31,31,34,0.9)] text-white rounded-md shadow-lg"
-      style={{ top: position.y, left: position.x, width: "12rem" }}
+      className="fixed z-50 bg-[rgba(31,31,34,0.95)] text-white rounded-md shadow-lg border border-dark-4 animate-in fade-in zoom-in duration-150"
+      style={{ 
+        top: menuPos.y, 
+        left: menuPos.x, 
+        width: "12rem",
+        transformOrigin,
+        maxHeight: "calc(100vh - 20px)",
+        overflowY: "auto"
+      }}
     >
       <ul className="py-1">
         <MenuItem

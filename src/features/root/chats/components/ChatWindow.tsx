@@ -382,9 +382,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           scrollableTarget="scrollableDiv"
           style={{ display: 'flex', flexDirection: 'column-reverse' }}
           endMessage={
-            <div className="text-center p-2 text-gray-400">
-              {allMessages.length > 0 ? "No more messages" : ""}
-            </div>
+              <></>
           }
         >
           <MessageBody messages={allMessages} userId={userId} />
