@@ -1,130 +1,80 @@
 import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import { selectSelectedChannelId } from "../../channels/slices/channelSlice";
+import { setReplyTo } from "../slices/messagesSlice";
+import { useSocket } from "@/lib/socket";
 import MessageAvatar from "./MessageAvatar";
 import MessageTimestamp from "./MessageTimestamp";
 import MessageContextMenu from "./MessageContextMenu";
-import { 
-  useDeleteMessageMutation,
-  usePinMessageMutation,
-  useUnpinMessageMutation,
-  useReplyMessageMutation
-} from "../slices/messagesApiSlice";
-import { selectSelectedChannelId } from "../../channels/slices/channelSlice";
-import { useDispatch } from "react-redux";
-import { setReplyTo } from "../slices/messagesSlice";
+import DeleteMessageDialog from "../dialogs/DeleteMessageDialog";
+import { MessageType } from "../types/messageTypes";
+import { useMessageActions } from "@/hooks/useMessageActions";
+import MessageEditForm from "./ui/MessageEditForm";
+import MessageReplyInfo from "./ui/MessageReplyInfo";
+import MessageAttachment from "./ui/MessageAttachment";
 import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
-import { useParams } from "react-router-dom";
-import { useSocket } from "@/lib/socket";
-import { useDeleteAttachmentMutation } from "../../attachments/slices/attachmentsApiSlice";
-import { toast } from 'react-hot-toast';
-
-export interface MessageType {
-  id: string;
-  text: string;
-  senderId: string;
-  senderName: string;
-  timestamp: number;
-  pinned?: boolean;
-  attachment?: {
-    id: string;
-    url: string;
-    fileType: string;
-    fileName: string;
-    size: number;
-  };
-  replyTo?: {
-    id: string;
-    text: string;
-    senderId: string;
-    senderName: string;
-  };
-}
-
+import MessageContent from "./ui/MessageContent";
 export interface MessageProps {
   message: MessageType;
   isUserMessage: boolean;
-  showTimestamp?: boolean; // Optional prop to control timestamp visibility
+  showTimestamp?: boolean;
 }
 
-const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) => {
+const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps) => {
   const messageRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const selectedChannelId = useSelector(selectSelectedChannelId);
-  const userId = useSelector((state: any) => state.auth.user?._id);
+  const { groupId = "" } = useParams<{ groupId: string }>();
+  const { socket } = useSocket();
+  
   const [editMode, setEditMode] = useState(false);
   const [editContent, setEditContent] = useState(message.text);
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
-  const { socket } = useSocket();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
-  // For image attachment
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // Get current group ID from URL params
-  const { groupId = "" } = useParams<{ groupId: string }>();
-  
-  // API mutation hooks
-  const [deleteMessage] = useDeleteMessageMutation();
-  const [pinMessage] = usePinMessageMutation();
-  const [unpinMessage] = useUnpinMessageMutation();
-  const [deleteAttachment] = useDeleteAttachmentMutation();
-  
-  const [contextMenu, setContextMenu] = useState<{
-    visible: boolean;
-    position: { x: number; y: number };
-  }>({
+  const [contextMenu, setContextMenu] = useState({
     visible: false,
     position: { x: 0, y: 0 }
   });
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Check if attachment is an image
-  const isImageAttachment = message.attachment?.fileType?.startsWith('image/');
+  const { 
+    handleDeleteMessage, 
+    handlePinMessage, 
+    handleEditMessage 
+  } = useMessageActions(socket);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Get menu dimensions (approximation)
-    const menuWidth = 192; // 12rem = 192px
-    const menuHeight = 250; // Approximate height, increased to be safer
-
+    const menuWidth = 192;
+    const menuHeight = 250;
     let x = e.clientX;
     let y = e.clientY;
     
-    // If user is the sender, position the menu at the bottom left of the message
     if (isUserMessage && messageRef.current) {
       const messageRect = messageRef.current.getBoundingClientRect();
       x = messageRect.left;
       y = messageRect.bottom;
     }
-    
-    // Ensure menu stays within viewport - horizontal
+
+    // Adjust position to ensure menu stays within viewport
     if (x + menuWidth > window.innerWidth) {
-      x = window.innerWidth - menuWidth - 10; // Add 10px padding
+      x = window.innerWidth - menuWidth - 10;
     }
     
-    // Ensure menu stays within viewport - vertical
-    // Check if menu would overflow bottom of viewport
     if (y + menuHeight > window.innerHeight) {
-      // If user message, position above the message instead of below
       if (isUserMessage && messageRef.current) {
         const messageRect = messageRef.current.getBoundingClientRect();
-        // Position above if there's room, otherwise position at a fixed distance from the top
-        if (messageRect.top > menuHeight) {
-          y = messageRect.top - menuHeight;
-        } else {
-          y = Math.max(10, window.innerHeight - menuHeight - 10); // Ensure at least 10px from top or bottom
-        }
+        y = messageRect.top > menuHeight ? messageRect.top - menuHeight : Math.max(10, window.innerHeight - menuHeight - 10);
       } else {
-        // For non-user messages or if no ref available
-        y = window.innerHeight - menuHeight - 10; // 10px padding from bottom
+        y = window.innerHeight - menuHeight - 10;
       }
     }
     
-    // Ensure menu is not positioned outside the top of the viewport
-    if (y < 10) {
-      y = 10; // 10px padding from top
-    }
+    if (y < 10) y = 10;
     
     setContextMenu({
       visible: true,
@@ -138,20 +88,7 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
 
   const handleSaveEdit = async () => {
     if (editContent.trim() !== message.text) {
-      try {
-        if (socket) {
-          // Use socket to edit message
-          socket.emit('edit_message', {
-            messageId: message.id,
-            content: editContent,
-            mentions: [] // Add mention logic if needed
-          });
-        } else {
-          console.error('Socket not connected');
-        }
-      } catch (error) {
-        console.error("Failed to edit message:", error);
-      }
+      await handleEditMessage(message.id, editContent);
     }
     setEditMode(false);
   };
@@ -167,60 +104,15 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
   };
 
   const handleMessageAction = async (action: string) => {
-    // Handle different actions
     switch (action) {
       case "edit":
         setEditMode(true);
         setEditContent(message.text);
         break;
       case "delete":
-        try {
-          setIsDeleting(true);
-          // Show deleting toast at the bottom center
-          toast.loading('Deleting message...', { 
-            id: 'deleting',
-            position: 'bottom-center',
-            style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-            }
-          });
-
-          // If message has attachment, delete it first
-          if (message.attachment) {
-            await deleteAttachment(message.attachment.id).unwrap();
-          }
-          // Then delete the message
-          await deleteMessage({ messageId: message.id }).unwrap();
-
-          // Show success toast
-          toast.success('Message deleted successfully', { 
-            id: 'deleting',
-            position: 'bottom-center',
-            style: {
-              borderRadius: '10px',
-              background: '#10B981',
-              color: '#fff',
-            }
-          });
-        } catch (error) {
-          console.error("Failed to delete message:", error);
-          toast.error('Failed to delete message', { 
-            id: 'deleting',
-            position: 'bottom-center',
-            style: {
-              borderRadius: '10px',
-              background: '#EF4444',
-              color: '#fff',
-            }
-          });
-        } finally {
-          setIsDeleting(false);
-        }
+        setDeleteDialogOpen(true);
         break;
       case "reply":
-        // Set the reply message in the global state
         dispatch(setReplyTo({
           _id: message.id,
           content: message.text,
@@ -235,46 +127,30 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
         }));
         break;
       case "pin":
-        try {
-          if (message.pinned) {
-            if (socket) {
-              // Use socket to unpin message
-              socket.emit('unpin_message', {
-                messageId: message.id,
-                userId: userId // This needs to be accessed from auth state
-              });
-            } else {
-              // Fallback to API if socket not available
-              await unpinMessage({ messageId: message.id }).unwrap();
-            }
-          } else {
-            if (socket) {
-              // Use socket to pin message
-              socket.emit('pin_message', {
-                messageId: message.id,
-                userId: userId // This needs to be accessed from auth state
-              });
-            } else {
-              // Fallback to API if socket not available
-              await pinMessage({ messageId: message.id }).unwrap();
-            }
-          }
-        } catch (error) {
-          console.error("Failed to pin/unpin message:", error);
-        }
+        await handlePinMessage(message.id, !message.pinned);
         break;
       case "copy":
-        // Copy message text to clipboard
         navigator.clipboard.writeText(message.text);
         break;
       case "forward":
-        // Open forward dialog
         setForwardDialogOpen(true);
         break;
       default:
         break;
     }
     closeContextMenu();
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setIsDeleting(true);
+      await handleDeleteMessage(message);
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -289,14 +165,7 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
           <div className="mx-1">
-            {/* Show reply info if this message is a reply */}
-            {message.replyTo && (
-              <div className="px-3 py-1 mb-1 text-xs text-gray-400 bg-dark-5 rounded-t-lg flex items-center">
-                <span className="mr-1">Reply to</span>
-                <span className="font-semibold">{message.replyTo.senderName}</span>: 
-                <span className="ml-1 truncate">{message.replyTo.text.substring(0, 50)}{message.replyTo.text.length > 50 ? '...' : ''}</span>
-              </div>
-            )}
+            {message.replyTo && <MessageReplyInfo replyTo={message.replyTo} />}
             
             <div
               className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
@@ -304,79 +173,22 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
               } ${message.pinned ? "border-2 border-yellow-500" : ""} ${message.replyTo ? "rounded-tl-none" : ""}`}
             >
               {editMode && isUserMessage ? (
-                <div className="flex flex-col">
-                  <textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    className="bg-transparent text-light-1 focus:outline-none resize-none w-full"
-                    autoFocus
-                  />
-                  <div className="flex justify-end mt-2">
-                    <button 
-                      onClick={() => {
-                        setEditMode(false);
-                        setEditContent(message.text);
-                      }}
-                      className="text-xs mr-2 text-light-2 hover:text-light-1"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={handleSaveEdit}
-                      className="text-xs text-primary-500 hover:text-primary-400"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
+                <MessageEditForm 
+                  content={editContent}
+                  setContent={setEditContent}
+                  onSave={handleSaveEdit}
+                  onCancel={() => {
+                    setEditMode(false);
+                    setEditContent(message.text);
+                  }}
+                  onKeyDown={handleKeyPress}
+                />
               ) : (
                 <div>
-                    {/* Display image attachment if available */}
-                    {isImageAttachment && message.attachment && (
-                    <div className={`${imageLoaded ? '' : 'min-h-[200px] flex items-center justify-center'}`}>
-                      {!imageLoaded && <div className="animate-pulse">Loading image...</div>}
-                      <img 
-                        src={message.attachment.url} 
-                        alt={message.attachment.fileName}
-                        className="rounded-lg max-w-full max-h-[300px] object-contain"
-                        onLoad={() => setImageLoaded(true)}
-                        style={{ display: imageLoaded ? 'block' : 'none' }}
-                      />
-                    </div>
+                  {message.attachment && (
+                    <MessageAttachment attachment={message.attachment} />
                   )}
-                  
-                  {/* Display non-image attachment if available */}
-                  {message.attachment && !isImageAttachment && (
-                    <div className="flex items-center p-2 bg-dark-5 rounded-lg">
-                      <div className="mr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 truncate">
-                        <div className="text-sm font-medium truncate">{message.attachment.fileName}</div>
-                        <div className="text-xs text-gray-400">
-                          {(message.attachment.size / 1024).toFixed(1)} KB
-                        </div>
-                      </div>
-                      <a 
-                        href={message.attachment.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="ml-2 p-1 rounded-full hover:bg-dark-3"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                      </a>
-                    </div>
-                  )}
-                  {/* Display message text if available */}
-                  {message.text && <p className="text-lg mb-1">{message.text}</p>}
-                  
-
+                  {message.text && <MessageContent text={message.text} />}
                 </div>
               )}
             </div>
@@ -405,12 +217,19 @@ const Message = ({message, isUserMessage, showTimestamp = false}: MessageProps) 
         />
       )}
       
-      {/* Forward Message Dialog */}
       <ForwardMessageDialog
         open={forwardDialogOpen}
         onOpenChange={setForwardDialogOpen}
         message={message}
         groupId={groupId}
+      />
+
+      <DeleteMessageDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        message={message}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
       />
     </>
   );
