@@ -30,6 +30,20 @@ export interface DeleteAttachmentResponse {
   message: string;
 }
 
+export interface GetChannelAttachmentsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    messages: Message[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
+
 export const attachmentsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     uploadAttachment: builder.mutation<AttachmentResponse, { channelId: string; formData: FormData }>({
@@ -50,10 +64,20 @@ export const attachmentsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Messages']
     }),
+    getChannelAttachments: builder.query<GetChannelAttachmentsResponse, { channelId: string; page?: number; limit?: number }>({
+      query: ({ channelId, page = 1, limit = 20 }) => ({
+        url: `/attachments/${channelId}?page=${page}&limit=${limit}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, { channelId }) => [
+        { type: 'Messages', id: channelId }
+      ]
+    }),
   }),
 });
 
 export const {
+  useGetChannelAttachmentsQuery,
   useUploadAttachmentMutation,
   useDeleteAttachmentMutation
 } = attachmentsApiSlice; 

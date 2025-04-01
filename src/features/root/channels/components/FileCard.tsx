@@ -1,11 +1,14 @@
 import React from "react";
-import { FiDownload } from "react-icons/fi";
+import { FiDownload, FiFile, FiImage, FiFileText } from "react-icons/fi";
+import { saveAs } from 'file-saver';
 
 interface File {
-  id: number;
+  id: string;
   name: string;
   size: string;
   date: string;
+  url: string;
+  fileType: string;
 }
 
 interface FileCardProps {
@@ -13,25 +16,53 @@ interface FileCardProps {
 }
 
 const FileCard: React.FC<FileCardProps> = ({ file }) => {
-  const handleDownload = () => {
-    // Implement your download logic here
-    alert(`Downloading ${file.name}...`);
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      saveAs(blob, file.name);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+    }
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <FiFileText className="w-6 h-6" />;
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif':
+        return <FiImage className="w-6 h-6" />;
+      default:
+        return <FiFile className="w-6 h-6" />;
+    }
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-dark-5 rounded hover:bg-dark-3">
-      <div>
-        <p className="font-medium">{file.name}</p>
-        <p className="text-sm text-light-3">
-          Size: {file.size} • Date: {file.date}
-        </p>
+    <div className="flex items-center justify-between p-4 rounded-xl bg-dark-2 hover:bg-dark-2 transition-colors duration-200 border border-dark-4">
+      <div className="flex items-center space-x-4">
+        <div className="text-primary-500">
+          {getFileIcon(file.name)}
+        </div>
+        <div>
+          <p className="font-medium text-light-1">{file.name}</p>
+          <p className="text-sm text-light-3">
+            Size: {file.size} • Date: {file.date}
+          </p>
+        </div>
       </div>
       <button
-        className="flex text-primary-500 items-center space-x-1 px-3 py-2 rounded hover:bg-dark-4"
+        className="flex items-center space-x-2 px-4 py-2 rounded-md bg-dark-3 hover:bg-dark-2 text-primary-500 transition-colors duration-200"
         onClick={handleDownload}
       >
-        <FiDownload />
-        <span className="text-sm text-primary-500">Download</span>
+        <FiDownload className="w-4 h-4" />
+        <span className="text-sm">Download</span>
       </button>
     </div>
   );

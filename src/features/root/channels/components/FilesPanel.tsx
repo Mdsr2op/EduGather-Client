@@ -1,33 +1,56 @@
 import React, { useState } from "react";
 import FileCard from "./FileCard";
-
-// Dummy files data
-const DUMMY_FILES = [
-  { id: 1, name: "Document1.pdf", size: "2 MB", date: "2024-01-01" },
-  { id: 2, name: "Picture.png", size: "500 KB", date: "2024-01-02" },
-  { id: 3, name: "Presentation.pptx", size: "5 MB", date: "2024-01-03" },
-  { id: 4, name: "Report.docx", size: "1 MB", date: "2024-01-05" },
-];
+import { Input } from "@/components/ui/input";
+import { useGetChannelAttachmentsQuery } from "../../attachments/slices/attachmentsApiSlice";
+import { useParams } from "react-router-dom";
+import { Message } from "../../messages/slices/messagesApiSlice";
 
 const FilesPanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { channelId } = useParams();
+  const { data: attachmentsData, isLoading } = useGetChannelAttachmentsQuery(
+    { channelId: channelId || "" },
+    { skip: !channelId }
+  );
 
-  const filteredFiles = DUMMY_FILES.filter((file) =>
+  const attachments = attachmentsData?.data.messages
+    .filter((message): message is Message & { attachment: NonNullable<Message['attachment']> } => 
+      message.attachment !== null && message.attachment !== undefined
+    )
+    .map(message => ({
+      id: message.attachment._id,
+      name: message.attachment.fileName,
+      size: `${Math.round(message.attachment.size / 1024)} KB`,
+      date: new Date(message.createdAt).toLocaleDateString(),
+      url: message.attachment.url,
+      fileType: message.attachment.fileType
+    })) || [];
+
+  const filteredFiles = attachments.filter((file) =>
     file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <div className="p-6 overflow-auto bg-dark-3">
+        <h2 className="text-xl font-semibold mb-4">Files</h2>
+        <p className="text-light-3">Loading files...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 overflow-auto">
+    <div className="p-6 overflow-auto bg-dark-3">
       <h2 className="text-xl font-semibold mb-4">Files</h2>
 
       {/* Search Bar */}
       <div className="mb-4">
-        <input
+        <Input
           type="text"
-          className="w-full px-4 py-2 rounded bg-dark-6 text-light-1 placeholder-light-3"
           placeholder="Search files..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
         />
       </div>
 
