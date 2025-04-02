@@ -18,12 +18,11 @@ const categories = [
 const DiscoverGroups: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.user?._id ?? "");
   const { data: groups = [], isLoading: isLoadingGroups, isError: isGroupsError } = useGetAllGroupsQuery();
-  const { data: joinedGroups = [], isLoading: isLoadingJoined } = useGetJoinedGroupsQuery(userId, { skip: !userId });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const isLoading = isLoadingGroups || isLoadingJoined;
+  const isLoading = isLoadingGroups;
   const isError = isGroupsError;
 
   // Focus search input on mount and when category changes
@@ -31,12 +30,9 @@ const DiscoverGroups: React.FC = () => {
     searchInputRef.current?.focus();
   }, [selectedCategory]);
 
-  // Filter out groups that the user has already joined
-  const joinedGroupIds = new Set(joinedGroups.map(group => group._id));
-  const availableGroups = groups.filter(group => !joinedGroupIds.has(group._id));
 
   // Filter groups based on search query
-  const filteredGroups = availableGroups.filter(group => 
+  const filteredGroups = groups.filter(group => 
     group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     group.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
