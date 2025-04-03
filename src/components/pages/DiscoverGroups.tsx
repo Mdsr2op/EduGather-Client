@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import GroupCard from "@/features/root/groups/components/GroupCard";
-import { useGetAllGroupsQuery, useGetJoinedGroupsQuery } from "@/features/root/groups/slices/groupApiSlice";
+import { useGetAllGroupsQuery, useGetJoinedGroupsQuery, useGetGroupsByCategoryQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
 import { Input } from "@/components/ui/input";
@@ -17,19 +17,39 @@ const categories = [
 
 const DiscoverGroups: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.user?._id ?? "");
-  const { data: groups = [], isLoading: isLoadingGroups, isError: isGroupsError } = useGetAllGroupsQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const isLoading = isLoadingGroups;
-  const isError = isGroupsError;
+  // Use the appropriate query based on selected category
+  const { 
+    data: allGroups = [], 
+    isLoading: isLoadingAllGroups, 
+    isError: isAllGroupsError 
+  } = useGetAllGroupsQuery(undefined, {
+    skip: selectedCategory !== "all"
+  });
+
+  const { 
+    data: categoryGroups = [], 
+    isLoading: isLoadingCategoryGroups, 
+    isError: isCategoryGroupsError 
+  } = useGetGroupsByCategoryQuery(
+    { category: selectedCategory, page, limit },
+    { skip: selectedCategory === "all" }
+  );
+
+  // Determine which data and loading state to use
+  const groups = selectedCategory === "all" ? allGroups : categoryGroups;
+  const isLoading = selectedCategory === "all" ? isLoadingAllGroups : isLoadingCategoryGroups;
+  const isError = selectedCategory === "all" ? isAllGroupsError : isCategoryGroupsError;
 
   // Focus search input on mount and when category changes
   useEffect(() => {
     searchInputRef.current?.focus();
   }, [selectedCategory]);
-
 
   // Filter groups based on search query
   const filteredGroups = groups.filter(group => 
@@ -46,7 +66,7 @@ const DiscoverGroups: React.FC = () => {
             <p className="text-light-3">Find and join groups that match your interests</p>
           </div>
           <Button className="bg-primary-500 hover:bg-primary-600 text-light-1 gap-2 px-6 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
-            <FiPlus className="w-5 h-5" />
+            <FiPlus className="w-10 h-10" />
             <span className="text-lg">Create Group</span>
           </Button>
         </div>

@@ -60,6 +60,30 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Groups", id: "LIST" }],
     }),
 
+    getGroupsByCategory: builder.query<UserJoinedGroups[], { category: string; page?: number; limit?: number }>({
+      query: ({ category, page = 1, limit = 10 }) => 
+        `/study-groups/category?category=${category}&page=${page}&limit=${limit}`,
+      transformResponse: (response: { data: { groups: any[]; totalItems: number; totalPages: number; currentPage: number; hasNextPage: boolean }; message: string; status: number }) =>
+        response.data.groups.map((group) => ({
+          _id: group._id,
+          name: group.name,
+          description: group.description,
+          avatar: group.avatar,
+          coverImage: group.coverImage,
+          createdBy: group.createdBy,
+          createdAt: group.createdAt,
+          isJoinableExternally: group.isJoinableExternally,
+          members: group.members,
+        })),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: "Groups" as const, id: _id })),
+              { type: "Groups", id: "LIST" },
+            ]
+          : [{ type: "Groups", id: "LIST" }],
+    }),
+
     updateGroup: builder.mutation<any, { groupId: string; formData: FormData }>({
       query: ({ groupId, formData }) => ({
         url: `/study-groups/${groupId}`,
@@ -117,6 +141,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetJoinedGroupsQuery,
   useGetAllGroupsQuery,
+  useGetGroupsByCategoryQuery,
   useCreateGroupMutation,
   useUpdateGroupMutation,
   useDeleteGroupMutation,
