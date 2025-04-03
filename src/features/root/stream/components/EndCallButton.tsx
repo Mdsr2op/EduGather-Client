@@ -30,6 +30,18 @@ const EndCallButton = () => {
     // Emit meeting end event to all participants
     if (socket) {
       socket.emit("meetingEnded");
+      
+      // Also emit a message to update the meeting status in the channel
+      const callData = call.state.custom;
+      const callId = call.id;
+      const description = callData?.description || 'Meeting';
+      
+      socket.emit("updateMeetingStatus", {
+        meetingId: callId,
+        status: "ended",
+        endTime: new Date().toISOString()
+      });
+
     }
     navigate('/');
   };
@@ -41,4 +53,4 @@ const EndCallButton = () => {
   );
 };
 
-export default EndCallButton; 
+export default EndCallButton;

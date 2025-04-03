@@ -34,6 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { useSocket } from "@/lib/socket";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
@@ -64,6 +65,7 @@ const StartVideoCallDialog: React.FC = () => {
   const client = useStreamVideoClient();
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
+  const { socket } = useSocket();
 
   // Initialize React Hook Form
   const form = useForm<MeetingFormValues>({
@@ -114,6 +116,31 @@ const StartVideoCallDialog: React.FC = () => {
           },
         },
       });
+      
+      // Send message to the channel with meeting info
+      if (socket && channelId) {
+        const meetingType = data ? "scheduled" : "instant";
+        const meetingStatus = "scheduled";
+        
+        socket.emit("message", {
+          content: `${user.username} created a ${meetingType} meeting: ${description}`,
+          channelId,
+          attachment: {
+            fileType: "application/meeting",
+            fileName: description,
+            type: "meeting",
+            url: `/${groupId}/${channelId}/meeting/${id}`,
+            size: 0,
+            meetingData: {
+              meetingId: id,
+              title: description,
+              startTime: startsAt,
+              status: "scheduled",
+              participantsCount: 0
+            }
+          }
+        });
+      }
       
       // Close the dialog
       setIsOpen(false);

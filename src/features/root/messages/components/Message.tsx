@@ -153,6 +153,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     }
   };
 
+  // Check if this is a meeting attachment
+  const isMeetingAttachment = message.attachment?.fileType === 'application/meeting';
+
   return (
     <>
       <div
@@ -161,37 +164,46 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
       >
         <div 
           ref={messageRef}
-          className={`flex max-w-xs md:max-w-md lg:max-w-lg ${isUserMessage ? "flex-row-reverse" : ""}`}
+          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
-          <div className="mx-1">
+          <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
             {message.replyTo && <MessageReplyInfo replyTo={message.replyTo} />}
             
-            <div
-              className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
-                isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
-              } ${message.pinned ? "border-2 border-yellow-500" : ""} ${message.replyTo ? "rounded-tl-none" : ""}`}
-            >
-              {editMode && isUserMessage ? (
-                <MessageEditForm 
-                  content={editContent}
-                  setContent={setEditContent}
-                  onSave={handleSaveEdit}
-                  onCancel={() => {
-                    setEditMode(false);
-                    setEditContent(message.text);
-                  }}
-                  onKeyDown={handleKeyPress}
-                />
-              ) : (
-                <div>
-                  {message.attachment && (
-                    <MessageAttachment attachment={message.attachment} />
-                  )}
-                  {message.text && <MessageContent text={message.text} />}
-                </div>
-              )}
-            </div>
+            {!isMeetingAttachment && (
+              <div
+                className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
+                  isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
+                } ${message.pinned ? "border-2 border-yellow-500" : ""} ${message.replyTo ? "rounded-tl-none" : ""}`}
+              >
+                {editMode && isUserMessage ? (
+                  <MessageEditForm 
+                    content={editContent}
+                    setContent={setEditContent}
+                    onSave={handleSaveEdit}
+                    onCancel={() => {
+                      setEditMode(false);
+                      setEditContent(message.text);
+                    }}
+                    onKeyDown={handleKeyPress}
+                  />
+                ) : (
+                  <div>
+                    {message.attachment && !isMeetingAttachment && (
+                      <MessageAttachment attachment={message.attachment} isUserMessage={isUserMessage} />
+                    )}
+                    {message.text && <MessageContent text={message.text} />}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isMeetingAttachment && message.attachment && (
+              <div className={`${isUserMessage ? 'flex justify-end' : 'flex justify-start'}`}>
+                <MessageAttachment attachment={message.attachment} isUserMessage={isUserMessage} />
+              </div>
+            )}
+            
             {showTimestamp && (
               <div className="flex items-center text-xs text-gray-400 mt-1">
                 <MessageTimestamp

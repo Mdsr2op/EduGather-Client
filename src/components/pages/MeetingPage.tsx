@@ -10,7 +10,7 @@ import { useGetCallById } from '@/hooks/useGetCallById';
 import MeetingSetup from '@/features/root/chats/components/MeetingSetup';
 import { selectCurrentUser } from '@/features/auth/slices/authSlice';
 import { selectSelectedChannelId } from '@/features/root/channels/slices/channelSlice';
-import MeetingRoom from '@/components/video/MeetingRoom';
+import MeetingRoom from '@/features/root/stream/components/MeetingRoom';
 import { useSocket } from '@/lib/socket';
 
 const MeetingPage = () => {

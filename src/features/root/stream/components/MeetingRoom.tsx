@@ -98,6 +98,22 @@ const MeetingRoom = () => {
     };
   }, [isHost, socket, navigate]);
   
+  // Update meeting status to "ongoing" when joined
+  useEffect(() => {
+    if (callingState === CallingState.JOINED && socket && location.pathname.includes('/meeting/')) {
+      // Extract meeting ID from URL
+      const pathSegments = location.pathname.split('/');
+      const meetingId = pathSegments[pathSegments.length - 1];
+      
+      // Update meeting status
+      socket.emit("updateMeetingStatus", {
+        meetingId,
+        status: "ongoing",
+        participantsCount: validParticipants.length
+      });
+    }
+  }, [callingState, socket, location.pathname, validParticipants.length]);
+
   // Create layout component outside of render method
   const renderCallLayout = () => {
     switch (layout) {

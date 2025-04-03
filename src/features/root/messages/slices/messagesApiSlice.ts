@@ -12,6 +12,7 @@ export interface Message {
     messageId: string;
     content: string;
     senderId: string;
+    senderName?: string;
   };
   forwardedFrom?: {
     messageId: string;
@@ -26,6 +27,15 @@ export interface Message {
     fileType: string;
     fileName: string;
     size: number;
+    type?: 'file' | 'image' | 'video' | 'meeting';
+    meetingData?: {
+      meetingId: string;
+      title: string;
+      startTime: string;
+      endTime?: string;
+      status: 'scheduled' | 'ongoing' | 'ended';
+      participantsCount?: number;
+    };
   };
   pinned: boolean;
   pinnedBy?: string;
@@ -33,6 +43,7 @@ export interface Message {
   deletedAt?: string;
   createdAt: string;
   updatedAt: string;
+  timestamp?: number;
 }
 
 interface MessagesResponse {

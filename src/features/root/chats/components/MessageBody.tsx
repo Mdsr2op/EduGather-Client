@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-import Message, { MessageType } from '../../messages/components/Message';
+import { MessageType } from '../../messages/types/messageTypes';
+import Message from '../../messages/components/Message';
 
 interface MessageBodyProps {
   messages: MessageType[];

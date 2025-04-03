@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { MessageAttachmentProps } from '../../types/messageTypes';
 import { saveAs } from 'file-saver';
+import MeetingAttachment from '../MeetingAttachment';
 
-const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment }) => {
+const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUserMessage }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Determine the type of attachment
   const isImageAttachment = attachment.fileType?.startsWith('image/');
+  const isVideoAttachment = attachment.fileType?.startsWith('video/');
+  const isMeetingAttachment = attachment.fileType === 'application/meeting';
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -19,6 +24,24 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment }) => 
     }
   };
 
+  // Render meeting attachment with a separate container to break out of message constraints
+  if (isMeetingAttachment && attachment.meetingData) {
+    return (
+      <div className="flex items-start">
+        <MeetingAttachment
+          meetingId={attachment.meetingData.meetingId}
+          title={attachment.meetingData.title}
+          startTime={attachment.meetingData.startTime}
+          endTime={attachment.meetingData.endTime}
+          status={attachment.meetingData.status}
+          participantsCount={attachment.meetingData.participantsCount}
+          isUserMessage={isUserMessage}
+        />
+      </div>
+    );
+  }
+
+  // Render image attachment
   if (isImageAttachment) {
     return (
       <div className={`${imageLoaded ? '' : 'min-h-[200px] flex items-center justify-center'}`}>
@@ -34,6 +57,18 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment }) => 
     );
   }
 
+  // Render video attachment
+  if (isVideoAttachment) {
+    return (
+      <video 
+        src={attachment.url}
+        controls
+        className="rounded-lg max-w-full max-h-[300px]"
+      />
+    );
+  }
+
+  // Render file attachment (default)
   return (
     <div className="flex items-center p-2 bg-dark-5 rounded-lg">
       <div className="mr-2">

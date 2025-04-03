@@ -104,7 +104,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           url: message.attachment.url,
           fileType: message.attachment.fileType,
           fileName: message.attachment.fileName,
-          size: message.attachment.size
+          size: message.attachment.size,
+          type: message.attachment.type,
+          meetingData: message.attachment.meetingData
         };
       }
       
@@ -151,7 +153,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                   url: message.attachment.url,
                   fileType: message.attachment.fileType,
                   fileName: message.attachment.fileName,
-                  size: message.attachment.size
+                  size: message.attachment.size,
+                  type: message.attachment.type,
+                  meetingData: message.attachment.meetingData
                 } : msg.attachment
               }
             : msg
@@ -300,7 +304,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
             url: msg.attachment.url,
             fileType: msg.attachment.fileType,
             fileName: msg.attachment.fileName,
-            size: msg.attachment.size
+            size: msg.attachment.size,
+            type: msg.attachment.type,
+            meetingData: msg.attachment.meetingData
           };
         }
         
