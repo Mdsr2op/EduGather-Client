@@ -2,7 +2,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ChatPage from "./components/pages/ChatPage";
 import Home from "./components/pages/Home";
-import { Toaster } from "./components/ui/toaster";
 import { SignInForm } from "./features/auth/components/SignInForm";
 import { SignUpForm } from "./features/auth/components/SignUpForm";
 import AuthLayout from "./features/auth/layout/AuthLayout";
@@ -78,7 +77,6 @@ function App() {
               </Routes>
             </StreamVideoProvider>
           )}
-          <Toaster />
         </main>
       </SocketProvider>
     </ToastProvider>

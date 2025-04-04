@@ -23,12 +23,7 @@ export function useMessageActions(socket: Socket | null) {
       await deleteMessage({ messageId: message.id }).unwrap();
       
       toast.success('Message deleted successfully', {
-        position: 'bottom-center',
-        style: {
-          borderRadius: '10px',
-          background: '#10B981',
-          color: '#fff',
-        }
+        position: 'bottom-center'
       });
       
       return true;

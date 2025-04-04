@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FileUpload } from "./FileUpload";
 import { FiUser, FiImage } from "react-icons/fi";
 import { useSignupMutation } from "../slices/authApiSlice";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 
 interface SignUpFormValues {
   username: string;
@@ -41,7 +41,6 @@ export function SignUpForm() {
     },
   });
 
-  const { toast } = useToast();
   const [signup, { isLoading, isError, error }] = useSignupMutation();
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
@@ -60,18 +59,10 @@ export function SignUpForm() {
 
     try {
       await signup(formData).unwrap();
-      toast({
-        title: "Success",
-        description: "Account created successfully!",
-        variant: "default",
-      });
+      toast.success("Account created successfully!");
     } catch (err) {
       console.error("Signup failed:", err);
-      toast({
-        title: "Error",
-        description: "Signup failed. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Signup failed. Please try again.");
     }
   };
 

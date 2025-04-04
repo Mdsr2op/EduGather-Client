@@ -30,7 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from 'react-hot-toast';
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
@@ -61,7 +61,6 @@ const StartVideoCallDialog: React.FC = () => {
   const [meetingType, setMeetingType] = useState<MeetingType>(undefined);
   const [meetingId, setMeetingId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
-  const { toast } = useToast();
   const client = useStreamVideoClient();
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
@@ -83,11 +82,7 @@ const StartVideoCallDialog: React.FC = () => {
       setIsSubmitting(true);
       
       if (!client || !user) {
-        toast({
-          title: "Error",
-          description: "Video client not initialized",
-          variant: "destructive",
-        });
+        toast.error("Video client not initialized");
         return;
       }
       
@@ -146,10 +141,7 @@ const StartVideoCallDialog: React.FC = () => {
       setIsOpen(false);
       
       // Show success message
-      toast({
-        title: "Meeting Created",
-        description: data ? "Your meeting has been scheduled." : "Your instant meeting is ready.",
-      });
+      toast.success(data ? "Your meeting has been scheduled." : "Your instant meeting is ready.");
       
       // Navigate to meeting route with groupId and channelId
       navigate(`/${groupId}/${channelId}/meeting/${id}`);
@@ -159,10 +151,7 @@ const StartVideoCallDialog: React.FC = () => {
       
     } catch (error) {
       console.error("Error creating meeting:", error);
-      toast({
-        title: "Failed to create meeting",
-        variant: "destructive",
-      });
+      toast.error("Failed to create meeting");
     } finally {
       setIsSubmitting(false);
       setMeetingType(undefined);

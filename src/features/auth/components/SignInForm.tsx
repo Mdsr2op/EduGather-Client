@@ -2,7 +2,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInValidationSchema } from "../validations";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from "react-hot-toast";
 
 import {
   Form,
@@ -15,10 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { FiLock, FiMail } from "react-icons/fi";
 import IconInput from "@/components/ui/icon-input";
-import { useToast } from "@/hooks/use-toast";
 import { useSignInMutation } from "../slices/authApiSlice";
 import { SignInFormValues } from "../types";
-import { Link } from "react-router-dom";
 
 
 export function SignInForm() {
@@ -30,27 +29,18 @@ export function SignInForm() {
     },
   });
 
-  const { toast } = useToast();
   const [signIn, { isLoading, isError, error }] = useSignInMutation();
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<SignInFormValues> = async (data) => {
     try {
       await signIn(data).unwrap();
-      toast({
-        title: "Success",
-        description: "Signed in successfully!",
-        variant: "default",
-      });
+      toast.success("Signed in successfully!");
       navigate("/")
       
     } catch (err) {
       console.error("Signin failed:", err);
-      toast({
-        title: "Error",
-        description: "Signin failed. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Signin failed. Please try again.");
     }
   };
 

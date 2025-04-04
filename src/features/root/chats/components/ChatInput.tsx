@@ -110,11 +110,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       // Show success toast at the bottom center
       toast.success('File uploaded successfully', { 
         id: 'uploading',
-        position: 'bottom-center',
-        style: {
-          borderRadius: '10px',
-
-        }
+        position: 'bottom-center'
       });
       
       console.log('Attachment uploaded successfully:', response);

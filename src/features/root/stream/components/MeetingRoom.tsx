@@ -8,12 +8,14 @@ import {
   PaginatedGridLayout,
   SpeakerLayout,
   useCallStateHooks,
+  useCall,
 } from "@stream-io/video-react-sdk";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Users, LayoutList } from "lucide-react";
 import { useSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,6 +29,7 @@ const MeetingRoom = () => {
   const navigate = useNavigate();
   const { socket } = useSocket();
   const user = useSelector(selectCurrentUser);
+  const call = useCall();
   
   const [layout, setLayout] = useState("speaker-left");
   const [showParticipants, setShowParticipants] = useState(false);
@@ -37,12 +40,14 @@ const MeetingRoom = () => {
   const { 
     useCallCallingState, 
     useHasPermissions, 
-    useParticipants 
+    useParticipants,
+    useLocalParticipant
   } = useCallStateHooks();
   
   const callingState = useCallCallingState();
   const isHost = useHasPermissions(OwnCapability.UPDATE_CALL_PERMISSIONS);
   const participants = useParticipants();
+  const localParticipant = useLocalParticipant();
   
   // Memoize participants to prevent unnecessary re-renders and sort by username
   const validParticipants = useMemo(() => {
@@ -69,6 +74,88 @@ const MeetingRoom = () => {
       return nextIndex;
     });
   }, [validParticipants, isHost, isRotatingMicEnabled, rotateMicMinutes, socket]);
+
+  // Handle duplicate participants using server-side implementation
+  useEffect(() => {
+    if (!call || !localParticipant || !user || !socket) return;
+    
+    const meetingId = call.id;
+    const currentUserId = user._id;
+    const currentSessionId = localParticipant.sessionId;
+    
+    // Notify the server that we've joined this meeting
+    socket.emit("joinedMeeting", {
+      meetingId,
+      sessionId: currentSessionId
+    });
+    
+    // Listen for duplicate session events
+    socket.on("duplicateSessionKicked", (data) => {
+      if (data.sessionId === currentSessionId) {
+        console.log("This session has been kicked due to a duplicate login");
+        
+        // Show toast notification
+        toast.error("This meeting was joined in another tab. Redirecting...", {
+          duration: 3000,
+          position: "bottom-center",
+        });
+        
+        // Leave the call before redirecting
+        try {
+          if (data.action === "leave_immediately") {
+            // Forcefully leave the call immediately
+            call.leave();
+            // Navigate away with minimal delay
+            setTimeout(() => navigate("/"), 500);
+          } else {
+            // Default behavior with a longer delay
+            call.leave();
+            setTimeout(() => navigate("/"), 1500);
+          }
+        } catch (error) {
+          console.error("Error leaving call:", error);
+          // Ensure navigation even on error
+          setTimeout(() => navigate("/"), 1000);
+        }
+      }
+    });
+
+    // Listen for requests to remove old duplicate participants from the call
+    socket.on("removeOldParticipantSession", async (data) => {
+      try {
+        // We are the active session and need to clean up duplicates
+        if (data.userId === currentUserId && data.meetingId === meetingId) {
+          // First verify if we can find a participant with this session ID
+          const duplicateParticipant = participants.find(p => p.sessionId === data.sessionId);
+          
+          if (duplicateParticipant) {
+            console.log(`Found duplicate participant with session ${data.sessionId}`);
+            
+            // Display toast notification for the active user
+            toast.success("Multiple sessions detected. The other session has been disconnected.", {
+              duration: 3000,
+              position: "bottom-center"
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error handling removeOldParticipantSession:", error);
+      }
+    });
+    
+    // Clean up when component unmounts
+    return () => {
+      // Notify server we're leaving
+      socket.emit("leftMeeting", {
+        meetingId,
+        sessionId: currentSessionId
+      });
+      
+      // Remove event listeners
+      socket.off("duplicateSessionKicked");
+      socket.off("removeOldParticipantSession");
+    };
+  }, [call, localParticipant, user, socket, navigate, participants, isHost]);
 
   useEffect(() => {
     if (!socket){

@@ -8,7 +8,7 @@ import {
   FaForward
 } from "react-icons/fa";
 import MenuItem from "../../components/MenuItem";
-import { MessageType } from "./Message";
+import { MessageType } from "../types/messageTypes";
 
 interface MessageContextMenuProps {
   message: MessageType;
