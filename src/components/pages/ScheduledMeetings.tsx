@@ -1,42 +1,135 @@
 // src/components/pages/ScheduledMeetings.tsx
 import ScheduledMeetingCard from "@/features/root/groups/components/ScheduledMeetingCard";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useGetCalls, ExtendedCall } from "@/hooks/useGetCalls";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 
-interface Meeting {
-  id: number;
+// Define the Meeting interface here to ensure both components use the exact same type
+export interface Meeting {
+  id: number | string;
   title: string;
   date: string;
   time: string;
-  description: string;
+  organizer: string;
+  channel: string;
+  agenda: string;
+  startingIn: string;
+  group: string;
 }
 
-const DUMMY_MEETINGS: Meeting[] = [
-  {
-    id: 1,
-    title: "Weekly Sync",
-    date: "2024-01-10",
-    time: "10:00 AM",
-    description: "Discuss weekly tasks and updates.",
-  },
-  {
-    id: 2,
-    title: "Project Kickoff",
-    date: "2024-02-05",
-    time: "2:00 PM",
-    description: "Introduce new project and assign roles.",
-  },
-  // Add more dummy meetings as needed
-];
+// Helper function to format dates and calculate the "starting in" time
+const formatMeetingTime = (startTime: string | Date | null): string => {
+  if (!startTime) return "N/A";
+  
+  const start = typeof startTime === 'string' ? new Date(startTime) : startTime;
+  const now = new Date();
+  const diffMs = start.getTime() - now.getTime();
+  
+  // If time is in the past, return 'Starting now'
+  if (diffMs <= 0) return "Starting now";
+  
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (diffDays > 0) return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+  if (diffHours > 0) return `about ${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
+  if (diffMinutes > 0) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''}`;
+  return "less than a minute";
+};
+
+// Format a date object to a readable date string
+const formatDateString = (date: Date): string => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+
+// Format a date object to a readable time string
+const formatTimeString = (date: Date): string => {
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
+// Convert Stream ExtendedCall to our Meeting interface
+const convertStreamCallToMeeting = (call: ExtendedCall): Meeting => {
+  const startTime = call.state.startsAt ? new Date(call.state.startsAt) : null;
+  const createdBy = call.state.createdBy?.name || "Unknown";
+  const custom = call.state.custom || {};
+  console.log('[convertStreamCallToMeeting] Call:', call.state.custom);
+  return {
+    id: call.id,
+    title: custom.description || "Untitled Meeting",
+    date: startTime ? formatDateString(startTime) : "TBD",
+    time: startTime ? formatTimeString(startTime) : "TBD",
+    organizer: createdBy || "Unknown",
+    channel: custom.channelName || "General",
+    agenda: custom.agenda || "No agenda provided",
+    startingIn: formatMeetingTime(startTime),
+    group: custom.groupName || "General"
+  };
+};
 
 const ScheduledMeetings: React.FC = () => {
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  // Get the current user from the Redux store
+  const user = useSelector(selectCurrentUser);
+  const userId = user?._id; // Use _id from the User interface
+  const [isLoadingData, setIsLoadingData] = useState(true); // To control our own loading state
+  
+  // Fetch meetings using useGetCalls hook
+  const { calls, isLoading, error } = useGetCalls({
+    status: 'scheduled',
+    limit: 20,
+    sortDirection: 1, // ascending by start time
+    userId: userId
+  });
+  
+  // Convert calls to meetings format when calls are loaded
+  useEffect(() => {
+    setIsLoadingData(isLoading);
+    
+    if (!isLoading) {
+      if (calls && calls.length > 0) {
+        try {
+          const convertedMeetings = calls.map(convertStreamCallToMeeting);
+          setMeetings(convertedMeetings);
+        } catch (err) {
+          console.error("Error converting meeting data:", err);
+          setMeetings([]);
+        }
+      } else {
+        // No meetings found or there was an error
+        setMeetings([]);
+      }
+      
+      setIsLoadingData(false);
+    }
+  }, [calls, isLoading, error]);
+
   return (
     <div className="flex-1 p-6 overflow-auto bg-dark-2">
-      <h2 className="text-xl font-semibold text-light-1 mb-4">Scheduled Meetings</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {DUMMY_MEETINGS.map((meeting) => (
-          <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
-        ))}
-      </div>
+      <h2 className="text-3xl font-bold text-light-1 mb-4">Scheduled Meetings</h2>
+      
+      {isLoadingData ? (
+        <div className="text-light-3 text-center py-8">Loading scheduled meetings...</div>
+      ) : meetings.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {meetings.map((meeting) => (
+            <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-light-3 text-center py-8">
+          No scheduled meetings found. Create a new meeting to get started.
+        </div>
+      )}
     </div>
   );
 };

@@ -9,7 +9,10 @@ interface GetAllChannelsResponse {
         hasNextPage: boolean;
         channels: Channel[];
     }
+}
 
+interface GetChannelDetailsResponse {
+    data: Channel;
 }
 
 export const channelApiSlice = apiSlice.injectEndpoints({
@@ -62,13 +65,13 @@ export const channelApiSlice = apiSlice.injectEndpoints({
       ]
     }),
 
-    getChannelDetails: builder.query<Channel, { groupId: string | null; channelId: string }>({
+    getChannelDetails: builder.query<GetChannelDetailsResponse, { groupId: string | null; channelId: string }>({
       query: ({ groupId, channelId }) => ({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "GET",
       }),
       providesTags: (result, error, arg) => 
-        result ? [{ type: 'Channels' as const, id: result._id }] : [],
+        result ? [{ type: 'Channels' as const, id: result.data._id }] : [],
     }),
   }),
 });

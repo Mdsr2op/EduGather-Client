@@ -18,9 +18,8 @@ import StreamVideoProvider from "./providers/StreamVideoProvider";
 import ToastProvider from "./components/ToastProvider";
 
 function App() {
-  const { isLoading, isError } = useGetCurrentUserQuery();
+  const { isLoading } = useGetCurrentUserQuery();
 
-  // The rest of your routes
   return (
     <ToastProvider>
       <SocketProvider>
@@ -32,7 +31,6 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route element={<AuthLayout />}>
-
                   <Route path="/sign-up" element={<SignUpForm />} />
                   <Route path="/sign-in" element={<SignInForm />} />
                 </Route>

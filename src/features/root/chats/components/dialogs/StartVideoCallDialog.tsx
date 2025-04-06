@@ -35,6 +35,8 @@ import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
+import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
+import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
@@ -65,6 +67,22 @@ const StartVideoCallDialog: React.FC = () => {
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
   const { socket } = useSocket();
+
+  // Get group and channel details from Redux store
+  const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
+    skip: !groupId
+  });
+  
+  const { data: channelDetails } = useGetChannelDetailsQuery(
+    { groupId: groupId || "", channelId: channelId || "" },
+    { skip: !groupId || !channelId }
+  );
+
+  console.log('[StartVideoCallDialog] Channel details:', channelDetails?.data?.channelName);
+
+  // Extract names for convenience
+  const groupName = groupDetails?.name || "";
+  const channelName = channelDetails?.data?.channelName || "";
 
   // Initialize React Hook Form
   const form = useForm<MeetingFormValues>({
@@ -108,30 +126,38 @@ const StartVideoCallDialog: React.FC = () => {
           custom: {
             description,
             agenda,
+            groupId,
+            channelId,
+            groupName,
+            channelName
           },
         },
       });
       
+      // Generate meeting link
+      const meetingLink = `${window.location.origin}/${groupId}/${channelId}/meeting/${id}`;
+      
       // Send message to the channel with meeting info
       if (socket && channelId) {
         const meetingType = data ? "scheduled" : "instant";
-        const meetingStatus = "scheduled";
         
         socket.emit("message", {
-          content: `${user.username} created a ${meetingType} meeting: ${description}`,
+          content: `${user.username} created a ${meetingType} meeting in ${groupName} / ${channelName}: ${description}`,
           channelId,
           attachment: {
             fileType: "application/meeting",
             fileName: description,
             type: "meeting",
-            url: `/${groupId}/${channelId}/meeting/${id}`,
+            url: meetingLink.replace(window.location.origin, ''), // Store relative URL in the attachment
             size: 0,
             meetingData: {
               meetingId: id,
               title: description,
               startTime: startsAt,
               status: "scheduled",
-              participantsCount: 0
+              participantsCount: 0,
+              groupName,
+              channelName
             }
           }
         });
@@ -143,8 +169,14 @@ const StartVideoCallDialog: React.FC = () => {
       // Show success message
       toast.success(data ? "Your meeting has been scheduled." : "Your instant meeting is ready.");
       
-      // Navigate to meeting route with groupId and channelId
-      navigate(`/${groupId}/${channelId}/meeting/${id}`);
+      // Navigate based on meeting type
+      if (data) {
+        // For scheduled meetings, navigate to scheduled meetings page
+        navigate("/scheduled-meetings");
+      } else {
+        // For instant meetings, navigate to the meeting page
+        navigate(meetingLink.replace(window.location.origin, '')); // Use meetingLink for navigation
+      }
       
       // Reset form
       form.reset();
@@ -169,11 +201,6 @@ const StartVideoCallDialog: React.FC = () => {
     setMeetingType("isInstantMeeting");
     await createMeeting();
   };
-
-  // Generate meeting link if a meeting ID exists
-  const meetingLink = meetingId 
-    ? `${window.location.origin}/${groupId}/${channelId}/meeting/${meetingId}`
-    : undefined;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
