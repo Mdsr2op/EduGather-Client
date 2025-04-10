@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "@/styles/datepicker.css";
 import { toast } from 'react-hot-toast';
 import { useStreamVideoClient, Call as StreamCall } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
