@@ -1,29 +1,22 @@
-import { useEffect, useState } from 'react';
-import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useEffect, useState } from "react";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 
-// Use the same status types as in the rest of the codebase
-export type MeetingStatus = 'scheduled' | 'ongoing' | 'ended';
+export type MeetingStatus = "scheduled" | "ongoing" | "ended";
 
-// Define an extended call type that includes our derived status
 export interface ExtendedCall extends Call {
   derivedStatus?: MeetingStatus;
 }
 
 export interface CallsOptions {
-  status?: MeetingStatus | 'all'; // Add 'all' as a possible value for filtering
+  status?: MeetingStatus | "all";
   limit?: number;
-  sortDirection?: 1 | -1; // 1 for ascending, -1 for descending
-  userId?: string; // Filter by user ID
+  sortDirection?: 1 | -1;
+  userId?: string;
 }
 
-/**
- * Hook to retrieve meetings (calls) from Stream Video API
- * @param options - Options for filtering and sorting calls
- * @returns Object containing the calls, loading state, and error
- */
 export const useGetCalls = (options: CallsOptions = {}) => {
   const {
-    status = 'scheduled', // Default to scheduled meetings
+    status = "scheduled",
     limit = 10,
     sortDirection = 1,
     userId,
@@ -45,78 +38,71 @@ export const useGetCalls = (options: CallsOptions = {}) => {
       try {
         const now = new Date().toISOString();
         let filterConditions: Record<string, any> = {};
-        
-        // Set filter conditions based on the meeting status
+
         switch (status) {
-          case 'scheduled':
+          case "scheduled":
             filterConditions = {
-              starts_at: { $gt: now }, // Calls with start time greater than now
-              ended_at: { $exists: false }, // Calls that haven't ended
-              $or: [
-                { created_by_user_id: userId },
-                { members: { $in: [userId] } },
-              ],
+              starts_at: { $gt: now },
+              ended_at: { $exists: false },
             };
             break;
-          case 'ongoing':
+          case "ongoing":
             filterConditions = {
-              starts_at: { $lt: now }, // Started in the past
-              ended_at: { $exists: false }, // But hasn't ended yet
+              starts_at: { $lt: now },
+              ended_at: { $exists: false },
             };
             break;
-          case 'ended':
+          case "ended":
             filterConditions = {
-              ended_at: { $exists: true }, // Calls that have ended
+              ended_at: { $exists: true },
             };
             break;
-          case 'all':
+          case "all":
             // No specific filter for 'all'
             break;
         }
-        
-        // Add user filter if provided
-        // if (userId) {
-        //   filterConditions.members = { $in: [userId] };
-        // }
 
-        // Query calls from Stream API
         const response = await client.queryCalls({
           filter_conditions: filterConditions,
-          sort: [{ field: 'starts_at', direction: sortDirection }], // Sort by start time
+          sort: [{ field: "starts_at", direction: sortDirection }],
           limit,
         });
 
         if (response.calls) {
-          // Process calls based on status
-          let processedCalls = response.calls.filter(
-            call => call.state.custom && call.state.custom.description
-          ) as ExtendedCall[];
-          
-          // Map Stream call states to our application's meeting statuses
-          // This ensures the calls returned match the expected status
-          processedCalls = processedCalls.map(call => {
-            // Add a derived property to easily identify status
+          let processedCalls = response.calls as ExtendedCall[];
+
+          // Client-side filtering based on custom fields
+          if (userId) {
+            processedCalls = processedCalls.filter((call) => {
+              const memberIds = call.state.custom?.memberIds || [];
+              const createdBy = call.state.custom?.createdBy;
+              return createdBy === userId || memberIds.includes(userId);
+            });
+          }
+
+          // Map Stream call states to meeting statuses
+          processedCalls = processedCalls.map((call) => {
             const now = new Date();
-            const startTime = call.state.startsAt ? new Date(call.state.startsAt) : null;
-            
-            // Instead of modifying the read-only custom property,
-            // we'll add a new top-level property to our extended call type
+            const startTime = call.state.startsAt
+              ? new Date(call.state.startsAt)
+              : null;
+
             if (call.state.endedAt) {
-              call.derivedStatus = 'ended';
+              call.derivedStatus = "ended";
             } else if (startTime && startTime <= now) {
-              call.derivedStatus = 'ongoing';
+              call.derivedStatus = "ongoing";
             } else {
-              call.derivedStatus = 'scheduled';
+              call.derivedStatus = "scheduled";
             }
-            
+
             return call;
           });
-          
+
           setCalls(processedCalls);
         }
       } catch (error) {
-        console.error('Error loading calls:', error);
-        setError('Failed to load meetings');
+        console.error("Error loading calls:", error);
+        setError("Failed to load meetings");
       } finally {
         setIsLoading(false);
       }
@@ -129,4 +115,4 @@ export const useGetCalls = (options: CallsOptions = {}) => {
   return { calls, isLoading, error };
 };
 
-export default useGetCalls; 
+export default useGetCalls;

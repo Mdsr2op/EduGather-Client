@@ -12,7 +12,10 @@ interface ScheduledMeetingCardProps {
 const ScheduledMeetingCard: React.FC<ScheduledMeetingCardProps> = ({ meeting }) => {
   const client = useStreamVideoClient();
   const navigate = useNavigate();
-
+  
+  const groupId = meeting.groupId;
+  const channelId = meeting.channelId;
+  console.log(groupId, channelId);
   const handleJoinMeeting = async () => {
     if (!client) {
       console.error("Stream Video client not initialized");
@@ -23,33 +26,20 @@ const ScheduledMeetingCard: React.FC<ScheduledMeetingCardProps> = ({ meeting }) 
       // Use the meeting's actual ID from Stream
       const callId = meeting.id.toString();
       
-      try {
-        // Check if the call exists
-        const response = await client.queryCalls({
-          filter_conditions: { id: callId }
-        });
-        
-        const callExists = response.calls && response.calls.length > 0;
-        
-        if (callExists) {
-          // Call exists, get the call
-          const call = client.call("default", callId);
-          
-          // Join the call
-          await call.getOrCreate();
-          
-          // Navigate to the meeting page
-          navigate(`/meeting/${callId}`);
-        } else {
-          throw new Error("Cannot join meeting: Meeting doesn't exist");
-        }
-      } catch (error) {
-        console.error("Failed to join call:", error);
-        alert("Error joining meeting. Please try again.");
+      // Create a call using Stream Video client
+      const call = client.call("default", callId);
+      if (!call) {
+        throw new Error("Failed to create meeting");
       }
+      
+      // Get or create the call
+      await call.getOrCreate();
+      
+      // Navigate to the meeting page
+      navigate(`/${groupId}/${channelId}/meeting/${callId}`);
     } catch (error) {
-      console.error("Error processing meeting:", error);
-      alert("Failed to process meeting request. Please try again.");
+      console.error("Error joining meeting:", error);
+      alert("Failed to join meeting. Please try again.");
     }
   };
 

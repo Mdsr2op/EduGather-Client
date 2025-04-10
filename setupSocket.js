@@ -8,6 +8,9 @@ export function setupSocket(io) {
     // Track active meeting participants by meetingId and userId
     const activeMeetingParticipants = new Map();
     
+    // Track active meetings by channelId
+    const activeChannelMeetings = new Map();
+    
     // Middleware for channel-based authentication
     io.use((socket, next) => {
         const channelId = socket.handshake.auth.channelId;
@@ -54,6 +57,67 @@ export function setupSocket(io) {
                 channelId: socket.channelId,
                 onlineUsers: Array.from(onlineUsers.get(socket.channelId)),
                 action: "joined"
+            });
+            
+            // Check if there's an active meeting in a channel
+            socket.on("checkActiveMeetingsInChannel", (data, callback) => {
+                try {
+                    const { channelId } = data;
+                    if (!channelId) {
+                        callback({ active: false });
+                        return;
+                    }
+                    
+                    // Get the active meeting in this channel, if any
+                    if (activeChannelMeetings.has(channelId)) {
+                        const activeMeeting = activeChannelMeetings.get(channelId);
+                        callback({ 
+                            active: true, 
+                            meetingId: activeMeeting.meetingId,
+                            startedAt: activeMeeting.startedAt 
+                        });
+                    } else {
+                        callback({ active: false });
+                    }
+                } catch (error) {
+                    console.error("Error checking active meetings:", error);
+                    callback({ active: false, error: "Failed to check active meetings" });
+                }
+            });
+            
+            // Set a meeting as active in a channel
+            socket.on("setActiveMeetingInChannel", (data) => {
+                try {
+                    const { channelId, meetingId, active } = data;
+                    if (!channelId || !meetingId) return;
+                    
+                    if (active) {
+                        // Set this meeting as active in the channel
+                        activeChannelMeetings.set(channelId, {
+                            meetingId,
+                            startedAt: new Date()
+                        });
+                        console.log(`Meeting ${meetingId} set as active in channel ${channelId}`);
+                    } else {
+                        // If this specific meeting is active in the channel, remove it
+                        if (activeChannelMeetings.has(channelId)) {
+                            const currentMeeting = activeChannelMeetings.get(channelId);
+                            if (currentMeeting && currentMeeting.meetingId === meetingId) {
+                                activeChannelMeetings.delete(channelId);
+                                console.log(`Meeting ${meetingId} removed as active from channel ${channelId}`);
+                            }
+                        }
+                    }
+                    
+                    // Notify all clients in the channel about the meeting status change
+                    io.to(channelId).emit("meetingStatusChanged", {
+                        channelId,
+                        meetingId,
+                        status: active ? "ongoing" : "ended"
+                    });
+                } catch (error) {
+                    console.error("Error setting active meeting in channel:", error);
+                }
             });
             
             // For tracking when a participant joins a meeting
@@ -209,6 +273,22 @@ export function setupSocket(io) {
                                 activeMeetingParticipants.delete(key);
                             }
                         }
+                        
+                        // Remove this meeting as active in any channel
+                        for (const [channelId, meeting] of activeChannelMeetings.entries()) {
+                            if (meeting.meetingId === data.meetingId) {
+                                activeChannelMeetings.delete(channelId);
+                                
+                                // Notify channel that the meeting is no longer active
+                                io.to(channelId).emit("meetingStatusChanged", {
+                                    channelId,
+                                    meetingId: data.meetingId,
+                                    status: "ended"
+                                });
+                                
+                                console.log(`Meeting ${data.meetingId} removed as active from channel ${channelId} due to meeting end`);
+                            }
+                        }
                     }
                     
                     // Broadcast to all clients in the channel
@@ -257,6 +337,41 @@ export function setupSocket(io) {
                             if (message) {
                                 // Broadcast the updated message
                                 io.to(socket.channelId).emit("message_updated", message);
+                            }
+                        }
+                    }
+                    
+                    // If the status is "ongoing", set this meeting as active in the channel
+                    if (data.status === "ongoing" && data.meetingId) {
+                        activeChannelMeetings.set(socket.channelId, {
+                            meetingId: data.meetingId,
+                            startedAt: new Date()
+                        });
+                        
+                        // Notify all clients in the channel
+                        io.to(socket.channelId).emit("meetingStatusChanged", {
+                            channelId: socket.channelId,
+                            meetingId: data.meetingId,
+                            status: "ongoing"
+                        });
+                        
+                        console.log(`Meeting ${data.meetingId} set as active in channel ${socket.channelId} due to status update`);
+                    } 
+                    // If the status is "ended", remove this meeting as active in the channel
+                    else if (data.status === "ended" && data.meetingId) {
+                        if (activeChannelMeetings.has(socket.channelId)) {
+                            const activeMeeting = activeChannelMeetings.get(socket.channelId);
+                            if (activeMeeting.meetingId === data.meetingId) {
+                                activeChannelMeetings.delete(socket.channelId);
+                                
+                                // Notify all clients in the channel
+                                io.to(socket.channelId).emit("meetingStatusChanged", {
+                                    channelId: socket.channelId,
+                                    meetingId: data.meetingId,
+                                    status: "ended"
+                                });
+                                
+                                console.log(`Meeting ${data.meetingId} removed as active from channel ${socket.channelId} due to status update`);
                             }
                         }
                     }

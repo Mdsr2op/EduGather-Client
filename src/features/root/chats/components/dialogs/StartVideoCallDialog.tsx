@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-hot-toast';
-import { useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { useStreamVideoClient, Call as StreamCall } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
@@ -62,11 +62,16 @@ const StartVideoCallDialog: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [meetingType, setMeetingType] = useState<MeetingType>(undefined);
   const [meetingId, setMeetingId] = useState<string | undefined>(undefined);
+  const [isActiveMeetingInChannel, setIsActiveMeetingInChannel] = useState(false);
+  const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
   const navigate = useNavigate();
   const client = useStreamVideoClient();
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
   const { socket } = useSocket();
+  
+  // Add state to track the active call
+  const [call, setCall] = useState<StreamCall | null>(null);
 
   // Get group and channel details from Redux store
   const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
@@ -94,6 +99,35 @@ const StartVideoCallDialog: React.FC = () => {
     },
   });
 
+  // Check if there's an active meeting in the channel
+  useEffect(() => {
+    if (!socket || !channelId) return;
+    
+    const checkActiveMeetings = () => {
+      socket.emit("checkActiveMeetingsInChannel", { channelId }, (response: { active: boolean, meetingId?: string }) => {
+        setIsActiveMeetingInChannel(response.active);
+        setActiveMeetingId(response.meetingId || null);
+      });
+    };
+    
+    // Check when dialog opens
+    if (isOpen) {
+      checkActiveMeetings();
+    }
+    
+    // Listen for meeting status updates
+    socket.on("meetingStatusChanged", (data) => {
+      if (data.channelId === channelId) {
+        setIsActiveMeetingInChannel(data.status === "ongoing");
+        setActiveMeetingId(data.status === "ongoing" ? data.meetingId : null);
+      }
+    });
+    
+    return () => {
+      socket.off("meetingStatusChanged");
+    };
+  }, [socket, channelId, isOpen]);
+
   // Create a meeting
   const createMeeting = async (data?: MeetingFormValues) => {
     try {
@@ -104,23 +138,46 @@ const StartVideoCallDialog: React.FC = () => {
         return;
       }
       
+      // Check if there's already an active meeting in this channel
+      if (isActiveMeetingInChannel && activeMeetingId) {
+        // Offer to join the existing meeting instead of creating a new one
+        toast.error("A meeting is already in progress in this channel");
+        setIsOpen(false);
+        
+        // Ask if they want to join the existing meeting
+        const wantToJoin = window.confirm("A meeting is already in progress. Would you like to join it?");
+        if (wantToJoin) {
+          navigate(`/${groupId}/${channelId}/meeting/${activeMeetingId}`);
+        }
+        setIsSubmitting(false);
+        return;
+      }
+      
       // Generate a unique meeting ID
       const id = crypto.randomUUID();
       setMeetingId(id);
       
       // Create a call using Stream Video client
-      const call = client.call("default", id);
-      if (!call) {
+      const newCall = client.call("default", id);
+      if (!newCall) {
         throw new Error("Failed to create meeting");
       }
+      
+      // Store the call reference for event handling
+      setCall(newCall);
       
       // Set up call parameters
       const startsAt = data ? data.dateTime.toISOString() : new Date().toISOString();
       const description = data ? data.meetingTitle : "Instant Meeting";
       const agenda = data?.agenda || "";
       
+      // Store member information in custom data instead of trying to add them directly
+      // This avoids the error with non-existent users in Stream
+      const memberIds = groupDetails?.members ? 
+        groupDetails.members.map(member => member._id) : [];
+      
       // Create the call on Stream's servers
-      await call.getOrCreate({
+      await newCall.getOrCreate({
         data: {
           starts_at: startsAt,
           custom: {
@@ -129,7 +186,14 @@ const StartVideoCallDialog: React.FC = () => {
             groupId,
             channelId,
             groupName,
-            channelName
+            channelName,
+            memberIds, // Store member IDs in custom data
+            createdBy: user._id
+          },
+          settings_override: {
+            limits: {
+              max_duration_seconds: 10,
+            },
           },
         },
       });
@@ -155,11 +219,19 @@ const StartVideoCallDialog: React.FC = () => {
               title: description,
               startTime: startsAt,
               status: "scheduled",
-              participantsCount: 0,
+              participantsCount: groupDetails?.members?.length || 0,
               groupName,
-              channelName
+              channelName,
+              memberIds // Include member IDs in the message data
             }
           }
+        });
+        
+        // Mark this meeting as active in the channel
+        socket.emit("setActiveMeetingInChannel", {
+          channelId,
+          meetingId: id,
+          active: true
         });
       }
       
@@ -184,6 +256,9 @@ const StartVideoCallDialog: React.FC = () => {
     } catch (error) {
       console.error("Error creating meeting:", error);
       toast.error("Failed to create meeting");
+      
+      // Reset call state on error
+      setCall(null);
     } finally {
       setIsSubmitting(false);
       setMeetingType(undefined);
@@ -223,17 +298,39 @@ const StartVideoCallDialog: React.FC = () => {
           </DialogDescription>
         </DialogHeader>
 
+        {isActiveMeetingInChannel && (
+          <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700/50 rounded-lg">
+            <p className="text-amber-300 text-sm">
+              A meeting is already active in this channel. You can join it instead of creating a new one.
+            </p>
+            <Button
+              type="button"
+              className="w-full mt-2 bg-amber-600 hover:bg-amber-700 text-light-1 rounded-xl shadow-md"
+              onClick={() => {
+                setIsOpen(false);
+                if (activeMeetingId) {
+                  navigate(`/${groupId}/${channelId}/meeting/${activeMeetingId}`);
+                }
+              }}
+            >
+              Join Active Meeting
+            </Button>
+          </div>
+        )}
+
         {/* Instant Meeting Button */}
         <div className="mb-4 mt-2">
           <Button
             type="button"
             className="w-full bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl shadow-md"
             onClick={handleStartInstantMeeting}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isActiveMeetingInChannel}
           >
             {isSubmitting && meetingType === "isInstantMeeting" 
               ? "Creating..." 
-              : "Start Instant Meeting"}
+              : isActiveMeetingInChannel
+                ? "Meeting Already In Progress"
+                : "Start Instant Meeting"}
           </Button>
         </div>
         
@@ -331,7 +428,7 @@ const StartVideoCallDialog: React.FC = () => {
               <Button
                 type="submit"
                 className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isActiveMeetingInChannel}
               >
                 {isSubmitting && meetingType === "isScheduleMeeting" ? "Creating..." : "Schedule Meeting"}
               </Button>

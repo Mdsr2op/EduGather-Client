@@ -37,17 +37,22 @@ const MeetingRoom = () => {
   const [rotateMicMinutes, setRotateMicMinutes] = useState(5);
   const [currentSpeakerIndex, setCurrentSpeakerIndex] = useState(0);
 
+  // Add state for members info
+  const [expectedMembers, setExpectedMembers] = useState<string[]>([]);
+
   const { 
     useCallCallingState, 
     useHasPermissions, 
     useParticipants,
-    useLocalParticipant
+    useLocalParticipant,
+    useCallMembers
   } = useCallStateHooks();
   
   const callingState = useCallCallingState();
   const isHost = useHasPermissions(OwnCapability.UPDATE_CALL_PERMISSIONS);
   const participants = useParticipants();
   const localParticipant = useLocalParticipant();
+  const members = useCallMembers();
   
   // Memoize participants to prevent unnecessary re-renders and sort by username
   const validParticipants = useMemo(() => {
@@ -55,7 +60,51 @@ const MeetingRoom = () => {
       .filter(p => p && p.userId)
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }, [participants]);
+  
+  // Handle call end event and navigation
+  useEffect(() => {
+    if (!call) return;
 
+    // Subscribe to the 'call.ended' event
+    const unsubscribe = call.on('call.ended', () => {
+      // Extract meeting info from call state
+      const groupId = call.state.custom?.groupId;
+      const channelId = call.state.custom?.channelId;
+      
+      // Clear active meeting status in the channel
+      if (socket && channelId) {
+        socket.emit("setActiveMeetingInChannel", {
+          channelId,
+          meetingId: call.id,
+          active: false
+        });
+        
+        // Update meeting status to "ended" in the message attachment
+        socket.emit("updateMeetingStatus", {
+          meetingId: call.id,
+          status: "ended",
+          endTime: new Date().toISOString(),
+          participantsCount: validParticipants.length
+        });
+      }
+      
+      // Show notification
+      toast.success('Call ended', { position: 'bottom-center' });
+      
+      // Navigate back to the channel when the call ends
+      if (groupId && channelId) {
+        navigate(`/${groupId}/${channelId}`);
+      } else {
+        navigate('/');
+      }
+    });
+
+    // Cleanup subscription on component unmount
+    return () => {
+      unsubscribe();
+    };
+  }, [call, navigate, socket, validParticipants.length]);
+  
   // Calculate timer key based on current speaker index
   const timerKey = useMemo(() => currentSpeakerIndex, [currentSpeakerIndex]);
 
@@ -201,6 +250,31 @@ const MeetingRoom = () => {
     }
   }, [callingState, socket, location.pathname, validParticipants.length]);
 
+  useEffect(() => {
+    if (members && members.length > 0) {
+      console.log(`Meeting has ${members.length} members added`);
+    }
+  }, [members]);
+
+  useEffect(() => {
+    if (call?.state?.custom?.memberIds) {
+      setExpectedMembers(call.state.custom.memberIds);
+    }
+  }, [call]);
+
+  // Check which members have joined and which are still expected
+  const joinedMemberIds = useMemo(() => {
+    return participants
+      .filter(p => p && p.userId)
+      .map(p => p.userId);
+  }, [participants]);
+  
+  // Calculate missing members
+  const missingMembers = useMemo(() => {
+    if (!expectedMembers || !joinedMemberIds) return [];
+    return expectedMembers.filter(id => !joinedMemberIds.includes(id));
+  }, [expectedMembers, joinedMemberIds]);
+
   // Create layout component outside of render method
   const renderCallLayout = () => {
     switch (layout) {
@@ -211,6 +285,25 @@ const MeetingRoom = () => {
       default:
         return <SpeakerLayout participantsBarPosition="right" />;
     }
+  };
+
+  // Add this inside your rendered UI, perhaps in the participants section
+  const renderMembersStatus = () => {
+    if (!showParticipants) return null;
+    
+    return (
+      <div className="p-3 mt-3 bg-[#19232d] rounded-lg">
+        <h3 className="text-sm font-medium mb-2">Group Members Status</h3>
+        <div className="text-xs">
+          <p>{joinedMemberIds.length} of {expectedMembers.length} members have joined</p>
+          {missingMembers.length > 0 && (
+            <p className="mt-1 text-light-3">
+              {missingMembers.length} members still expected to join
+            </p>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (callingState !== CallingState.JOINED) return (
@@ -243,6 +336,7 @@ const MeetingRoom = () => {
           })}
         >
           <CallParticipantsList onClose={() => setShowParticipants(false)} />
+          {renderMembersStatus()}
         </div>
       </div>
 

@@ -16,6 +16,8 @@ export interface Meeting {
   agenda: string;
   startingIn: string;
   group: string;
+  groupId: string;
+  channelId: string;
 }
 
 // Helper function to format dates and calculate the "starting in" time
@@ -72,7 +74,9 @@ const convertStreamCallToMeeting = (call: ExtendedCall): Meeting => {
     channel: custom.channelName || "General",
     agenda: custom.agenda || "No agenda provided",
     startingIn: formatMeetingTime(startTime),
-    group: custom.groupName || "General"
+    group: custom.groupName || "General",
+    groupId: custom.groupId || "General",
+    channelId: custom.channelId || "General"
   };
 };
 
