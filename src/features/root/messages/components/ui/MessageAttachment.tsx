@@ -27,7 +27,7 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
   // Render meeting attachment with a separate container to break out of message constraints
   if (isMeetingAttachment && attachment.meetingData) {
     return (
-      <div className="flex items-start">
+      <div className={`flex items-start ${isUserMessage ? 'justify-end w-full' : ''}`}>
         <MeetingAttachment
           meetingId={attachment.meetingData.meetingId}
           title={attachment.meetingData.title}

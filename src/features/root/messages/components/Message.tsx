@@ -205,7 +205,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
             )}
             
             {showTimestamp && (
-              <div className="flex items-center text-xs text-gray-400 mt-1">
+              <div className={`flex items-center text-xs text-gray-400 mt-1 ${
+                isMeetingAttachment && isUserMessage ? 'justify-end' : ''
+              }`}>
                 <MessageTimestamp
                   timestamp={message.timestamp}
                   isUserMessage={isUserMessage}

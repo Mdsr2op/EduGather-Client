@@ -54,7 +54,8 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
         "relative w-full sm:w-80 md:w-96 rounded-xl overflow-hidden group mb-2 mt-1",
         "transition-all duration-300 shadow-md hover:shadow-lg",
         "bg-dark-4", // Always use the same background color regardless of isUserMessage
-        status === 'ended' && "opacity-85"
+        status === 'ended' && "opacity-85",
+        isUserMessage && "ml-auto" // Align to the right side if it's a user message
       )}
     >
       {/* Status Badge */}
