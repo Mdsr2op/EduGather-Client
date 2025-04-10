@@ -32,6 +32,7 @@ const editGroupSchema = z.object({
   isJoinableExternally: z.boolean().optional(),
   avatar: z.any().optional(), // new file if user wants to upload
   coverImage: z.any().optional(), // new file if user wants to upload
+  category: z.array(z.string()).optional(), // Array of category tags
 });
 
 type EditGroupFormValues = z.infer<typeof editGroupSchema>;
@@ -47,6 +48,7 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
   setIsOpen,
   group,
 }) => {
+  console.log(group);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateGroup] = useUpdateGroupMutation();
 
@@ -58,6 +60,7 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       isJoinableExternally: group?.isJoinableExternally ?? true,
       avatar: null,
       coverImage: null,
+      category: group?.category || [],
     },
   });
 
@@ -69,6 +72,7 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       isJoinableExternally: group?.isJoinableExternally ?? true,
       avatar: null,
       coverImage: null,
+      category: group?.category || [],
     });
   }, [group._id]);
 
@@ -96,6 +100,13 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       }
       if (data.coverImage && data.coverImage.length > 0) {
         formData.append("coverImage", data.coverImage[0]);
+      }
+      
+      // Append category tags if available
+      if (data.category && data.category.length > 0) {
+        data.category.forEach(tag => {
+          formData.append("category", tag);
+        });
       }
 
       console.log(formData.get("name"));
@@ -206,6 +217,37 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
                       onFileUpload={(file: File) => field.onChange([file])}
                       preview={group?.avatar || null}
                       accept={{ "image/*": [] }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category Tags */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-light-1">Categories (comma separated)</FormLabel>
+                  <FormControl>
+                    <Input
+                     {...field}
+                      placeholder="Enter tags (e.g., programming, science, math)"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl"
+                      value={field.value?.join(', ') || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Split by comma and trim each value
+                        const tags = value
+                          .split(',')
+                          .map(tag => tag.trim())
+                          .filter(tag => tag !== '');
+                        field.onChange(tags);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

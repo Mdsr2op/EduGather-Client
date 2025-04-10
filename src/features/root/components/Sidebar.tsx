@@ -1,7 +1,7 @@
 // Sidebar.tsx
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import {
   FiHome,
   FiUsers,
@@ -48,6 +48,7 @@ import {
   selectDeleteGroupData,
   selectIsLeaveGroupDialogOpen,
   selectLeaveGroupData,
+  setNavigationSource,
 } from "../groups/slices/groupSlice";
 
 import Groups from "../groups/components/Groups";
@@ -56,6 +57,7 @@ import GroupContextMenu from "../groups/components/GroupContextMenu";
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Logged-in user
   const userId = useSelector(
@@ -102,13 +104,37 @@ const Sidebar: React.FC = () => {
   // Handlers
   // ----------------------------------
   const handleLogoClick = () => {
-    dispatch(setSelectedGroupId(null));
+    // First set navigation source
+    dispatch(setNavigationSource('user_action'));
+    // Then navigate
     navigate('/');
+    // Finally set selected group ID to null
+    setTimeout(() => {
+      dispatch(setSelectedGroupId(null));
+    }, 50);
   };
 
   const handleGroupClick = (groupId: string) => {
-    dispatch(setSelectedGroupId(groupId));
+    // First navigate to the group
     navigate(`/${groupId}/channels`);
+    // Then set the selected group ID
+    dispatch(setSelectedGroupId(groupId));
+  };
+
+  const handleNavigationClick = (path: string) => {
+    // Debug with localStorage
+    localStorage.setItem('lastNavigation', `User clicked on ${path}`);
+    console.log(`Setting navigation source to user_action for ${path}`);
+    
+    // First set navigation source
+    dispatch(setNavigationSource('user_action'));
+    // Then navigate
+    navigate(path);
+    // Finally set selected group ID to null with a small delay
+    setTimeout(() => {
+      console.log(`Setting selectedGroupId to null for ${path}`);
+      dispatch(setSelectedGroupId(null));
+    }, 50);
   };
 
   // Context menu: open on right-click
@@ -127,8 +153,27 @@ const Sidebar: React.FC = () => {
   };
 
   // Add Group button: open create or join modals
-  const handleCreateGroup = () => setCreateGroupModalOpen(true);
-  const handleJoinGroup = () => setJoinGroupModalOpen(true);
+  const handleCreateGroup = () => {
+    // First set navigation source
+    dispatch(setNavigationSource('user_action'));
+    // Then open modal
+    setCreateGroupModalOpen(true);
+    // Finally set selected group ID to null with a small delay
+    setTimeout(() => {
+      dispatch(setSelectedGroupId(null));
+    }, 50);
+  };
+  
+  const handleJoinGroup = () => {
+    // First set navigation source
+    dispatch(setNavigationSource('user_action'));
+    // Then open modal
+    setJoinGroupModalOpen(true);
+    // Finally set selected group ID to null with a small delay
+    setTimeout(() => {
+      dispatch(setSelectedGroupId(null));
+    }, 50);
+  };
 
   // Create channel confirm
   const handleCreateChannelConfirm = async (
@@ -233,6 +278,7 @@ const Sidebar: React.FC = () => {
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
+          onClick={() => handleNavigationClick('/home')}
           title="Home"
         >
           <FiHome size={20} className="text-light-3" />
@@ -245,6 +291,7 @@ const Sidebar: React.FC = () => {
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
+          onClick={() => handleNavigationClick('/discover-groups')}
           title="Discover Groups"
         >
           <FiUsers size={20} className="text-light-3" />
@@ -257,6 +304,7 @@ const Sidebar: React.FC = () => {
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
+          onClick={() => handleNavigationClick('/scheduled-meetings')}
           title="Scheduled Meetings"
         >
           <FiCalendar size={20} className="text-light-3" />
@@ -269,6 +317,7 @@ const Sidebar: React.FC = () => {
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
+          onClick={() => handleNavigationClick('/ai-quiz-generation')}
           title="AI Quiz Generation"
         >
           <FiCpu size={20} className="text-light-3" />
@@ -281,6 +330,7 @@ const Sidebar: React.FC = () => {
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
             }`
           }
+          onClick={() => handleNavigationClick('/meeting-recordings')}
           title="Meeting Recordings"
         >
           <FiVideo size={20} className="text-light-3" />

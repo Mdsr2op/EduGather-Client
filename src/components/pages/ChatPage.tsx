@@ -4,7 +4,7 @@ import { selectSelectedChannelId, setSelectedChannelId } from '@/features/root/c
 import ChatHeader from '@/features/root/chats/components/ChatHeader';
 import ChatWindow from '@/features/root/chats/components/ChatWindow';
 import { useGetGroupDetailsQuery } from '@/features/root/groups/slices/groupApiSlice';
-import { selectSelectedGroupId } from '@/features/root/groups/slices/groupSlice';
+import { selectSelectedGroupId, selectNavigationSource, setNavigationSource } from '@/features/root/groups/slices/groupSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -14,15 +14,17 @@ function ChatPage() {
   const dispatch = useDispatch();
   const { groupId } = useParams();
   const selectedGroupId = useSelector(selectSelectedGroupId);
+  const navigationSource = useSelector(selectNavigationSource);
   const selectedChannelId = useSelector(selectSelectedChannelId);
   const userId = useSelector((state: any) => state.auth.user?._id) || "";
 
-  // Navigate to home if no group is selected
+  // Note: We're removing the redirects based on selectedGroupId to stop unwanted navigation
+  // Reset the navigation source if it's set
   useEffect(() => {
-    if (!selectedGroupId && !groupId) {
-      navigate('/');
+    if (navigationSource === 'user_action') {
+      dispatch(setNavigationSource(null));
     }
-  }, [selectedGroupId, groupId, navigate]);
+  }, [navigationSource, dispatch]);
   
   // Get group details to show member count
   const {
@@ -56,13 +58,6 @@ function ChatPage() {
       navigate(`/${groupId}/channels`);
     }
   }, [groupId, selectedChannelId, navigate]);
-
-  // No group selected - redirect to home
-  useEffect(() => {
-    if (!groupId || !selectedGroupId) {
-      navigate('/');
-    }
-  }, [groupId, selectedGroupId, navigate]);
 
   // Loading state
   if (isLoadingChannels) {

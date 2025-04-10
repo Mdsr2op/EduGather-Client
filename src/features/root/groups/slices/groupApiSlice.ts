@@ -13,11 +13,12 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           name: group.name,
           description: group.description,
           avatar: group.avatar,
-          members: group.members,
           coverImage: group.coverImage,
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
+          category: group.category || [],
+          members: group.members || [],
         })),
       providesTags: (result, error, userId) =>
         result
@@ -49,7 +50,8 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
-          members: group.members,
+          members: group.members || [],
+          category: group.category || [],
         })),
       providesTags: (result) =>
         result
@@ -73,15 +75,20 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
-          members: group.members,
+          members: group.members || [],
+          category: group.category || [],
         })),
-      providesTags: (result) =>
+      providesTags: (result, error, { category }) =>
         result
           ? [
               ...result.map(({ _id }) => ({ type: "Groups" as const, id: _id })),
               { type: "Groups", id: "LIST" },
+              { type: "Groups", id: `category-${category}` }
             ]
-          : [{ type: "Groups", id: "LIST" }],
+          : [
+              { type: "Groups", id: "LIST" },
+              { type: "Groups", id: `category-${category}` }
+            ],
     }),
 
     updateGroup: builder.mutation<any, { groupId: string; formData: FormData }>({
@@ -93,6 +100,8 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, { groupId }) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
+        { type: "Channels", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" }
       ],
     }),
 
@@ -104,6 +113,8 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, groupId) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
+        { type: "Channels", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" }
       ],
     }),
 
@@ -112,7 +123,11 @@ export const groupApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/join`,
         method: "POST",
       }),
-      invalidatesTags: [{ type: "Groups", id: "LIST" }],
+      invalidatesTags: (result, error, { groupId }) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" }
+      ],
     }),
 
     leaveGroup: builder.mutation<any, { groupId: string }>({
@@ -123,6 +138,8 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, { groupId }) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
+        { type: "Channels", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" }
       ],
     }),
 

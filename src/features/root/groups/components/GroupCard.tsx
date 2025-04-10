@@ -1,6 +1,7 @@
 // src/features/groups/components/GroupCard.tsx
 import React from "react";
 import { FiUsers, FiPlus } from "react-icons/fi";
+import { toast } from "react-hot-toast";
 import { useJoinGroupMutation } from "../slices/groupApiSlice";
 
 interface Member {
@@ -28,10 +29,14 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
   const handleJoinGroup = async () => {
     try {
       await joinGroup({ groupId: group._id }).unwrap();
-      alert(`Joined group: ${group.name}`);
+      toast.success(`Successfully joined ${group.name}!`, {
+        position: "top-center"
+      });
     } catch (error) {
       console.error("Failed to join group:", error);
-      alert("Failed to join the group. Please try again.");
+      toast.error("Failed to join the group. Please try again.", {
+        position: "top-center"
+      });
     }
   };
 

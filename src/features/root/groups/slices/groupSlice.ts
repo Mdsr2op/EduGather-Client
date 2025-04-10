@@ -1,6 +1,6 @@
 // groupSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Member } from "../types";
+import { Member, CreatedBy } from "../types";
 import { User } from "@/features/auth/types";
 
 export interface UserJoinedGroups {
@@ -9,9 +9,11 @@ export interface UserJoinedGroups {
   description: string;
   avatar?: string;
   coverImage?: string;
-  createdBy: string;
+  createdBy: CreatedBy;
   createdAt: string;
   isJoinableExternally: boolean;
+  category?: string[];
+  members: Member[];
 }
 
 export interface GroupDetails {
@@ -24,6 +26,7 @@ export interface GroupDetails {
   createdBy: User;
   createdAt: string;
   isJoinableExternally: boolean;
+  category?: string[];
 }
 
 export interface ContextMenuPosition {
@@ -40,6 +43,7 @@ export interface GroupContextMenu {
 export interface GroupState {
   selectedGroupId: string | null;
   contextMenu: GroupContextMenu;
+  navigationSource: string | null;
 
   // For "View Group Details"
   viewGroupDetailsData: UserJoinedGroups | null;
@@ -65,6 +69,7 @@ const initialState: GroupState = {
     position: { x: 0, y: 0 },
     groupId: null,
   },
+  navigationSource: null,
   viewGroupDetailsData: null,
   isViewGroupDetailsModalOpen: false,
 
@@ -84,6 +89,10 @@ export const groupSlice = createSlice({
   reducers: {
     setSelectedGroupId: (state, action: PayloadAction<string | null>) => {
       state.selectedGroupId = action.payload;
+    },
+
+    setNavigationSource: (state, action: PayloadAction<string | null>) => {
+      state.navigationSource = action.payload;
     },
 
     openContextMenu: (
@@ -143,6 +152,7 @@ export const groupSlice = createSlice({
 
 export const {
   setSelectedGroupId,
+  setNavigationSource,
   openContextMenu,
   closeContextMenu,
   openViewGroupDetailsModal,
@@ -187,5 +197,8 @@ export const selectIsLeaveGroupDialogOpen = (state: { group: GroupState }) =>
   state.group.isLeaveGroupDialogOpen;
 export const selectLeaveGroupData = (state: { group: GroupState }) =>
   state.group.leaveGroupData;
+
+export const selectNavigationSource = (state: { group: GroupState }) =>
+  state.group.navigationSource;
 
 export default groupSlice.reducer;

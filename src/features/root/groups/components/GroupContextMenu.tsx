@@ -35,7 +35,7 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
     };
   }, [onClose]);
 
-  const isGroupOwner = group.createdBy === currentUserId;
+  const isGroupOwner = group.createdBy._id === currentUserId;
   console.log(isGroupOwner)
   return (
     <div

@@ -14,6 +14,13 @@ export interface MembersResponse {
   members: Member[];
 }
 
+export interface CreatedBy {
+  _id: string;
+  username: string;
+  fullName: string;
+  avatar: string;
+}
+
 export interface GetJoinedGroupsResponse {
   groups: {
     _id: string;
@@ -22,9 +29,10 @@ export interface GetJoinedGroupsResponse {
     description: string;
     avatar?: string;
     coverImage?: string;
-    createdBy: string;
+    createdBy: CreatedBy;
     createdAt: string;
     isJoinableExternally: boolean;
+    category?: string[];
   }[];
 }
 
@@ -41,10 +49,11 @@ export interface GetAllGroupsResponse {
       description: string;
       avatar?: string;
       coverImage?: string;
-      createdBy: string;
+      createdBy: CreatedBy;
       createdAt: string;
       isJoinableExternally: boolean;
       members: Member[];
+      category?: string[];
     }[];
   };
   message: string;
@@ -60,4 +69,5 @@ export interface GetGroupDetailsResponse {
   createdBy: User;
   createdAt: string;
   isJoinableExternally: boolean;
+  category?: string[];
 }

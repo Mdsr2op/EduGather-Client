@@ -44,6 +44,26 @@ const GroupInfo = () => {
         <p className="text-sm text-light-3">{groupDetails.description}</p>
       </div>
 
+      {/* Categories/Tags Section */}
+      {groupDetails.category && groupDetails.category.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-light-1 mb-2">Categories</h3>
+            {isAdmin && <MdEdit className="text-light-1 cursor-pointer text-xl" />}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {groupDetails.category.map((tag, index) => (
+              <span 
+                key={index} 
+                className="bg-primary-500/20 text-primary-500 px-2 py-1 rounded-full text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold text-light-1 mb-2">Created By</h3>

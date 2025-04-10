@@ -36,7 +36,7 @@ const Groups: React.FC<GroupsProps> = ({
             className={`rounded-full ${
               selectedGroupId === group._id ? "ring-2 ring-primary-500" : ""
             }`}
-            style={{ padding: "2px" }}
+            style={{ padding: selectedGroupId === group._id ? "2px" : "0" }}
           >
             <img
               src={group.avatar}

@@ -9,6 +9,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-hot-toast";
 import { useLeaveGroupMutation } from "../slices/groupApiSlice";
 
 interface LeaveGroupDialogProps {
@@ -36,9 +37,15 @@ const LeaveGroupDialog: React.FC<LeaveGroupDialogProps> = ({
     try {
       if (!groupId) return;
       await leaveGroup({ groupId }).unwrap();
+      toast.success(`Left ${groupName} successfully`, {
+        position: "top-center"
+      });
       closeDialog();
     } catch (err) {
       setLocalError("Failed to leave the group. Please try again.");
+      toast.error("Failed to leave the group. Please try again.", {
+        position: "top-center"
+      });
     }
   };
 

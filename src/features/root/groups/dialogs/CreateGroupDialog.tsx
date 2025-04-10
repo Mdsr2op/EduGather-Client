@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ const groupSchema = z.object({
   isJoinableExternally: z.boolean().optional(), // default = true
   avatar: z.any().optional(), // We'll handle as file
   coverImage: z.any().optional(), // We'll handle as file
+  category: z.array(z.string()).optional(), // Array of category tags
 });
 
 type GroupFormValues = z.infer<typeof groupSchema>;
@@ -58,6 +60,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
       isJoinableExternally: true,
       avatar: null,
       coverImage: null,
+      category: [],
     },
   });
 
@@ -87,6 +90,12 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
     }
     if (data.coverImage && data.coverImage.length > 0) {
       formData.append("coverImage", data.coverImage[0]);
+    }
+    // Append category tags if available
+    if (data.category && data.category.length > 0) {
+      data.category.forEach(tag => {
+        formData.append("category", tag);
+      });
     }
 
     try {
@@ -127,12 +136,12 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                 <FormItem className="rounded-lg">
                   <FormLabel className="text-light-1">Group Name</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       placeholder="Enter group name"
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl p-2"
+                                 rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -154,6 +163,36 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
                                  rounded-xl p-2"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category Tags */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="rounded-lg">
+                  <FormLabel className="text-light-1">Categories (comma separated)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter tags (e.g., programming, science, math)"
+                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
+                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
+                                 rounded-xl"
+                      value={field.value?.join(', ') || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Split by comma and trim each value
+                        const tags = value
+                          .split(',')
+                          .map(tag => tag.trim())
+                          .filter(tag => tag !== '');
+                        field.onChange(tags);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

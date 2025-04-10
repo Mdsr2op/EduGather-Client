@@ -193,7 +193,7 @@ const StartVideoCallDialog: React.FC = () => {
           },
           settings_override: {
             limits: {
-              max_duration_seconds: 10,
+              max_duration_seconds: 100,
             },
           },
         },

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -64,12 +65,16 @@ const JoinGroupDialog: React.FC<JoinGroupDialogProps> = ({
     setIsSubmitting(true);
     try {
       await joinGroup({ groupId: data.groupCode }).unwrap();
-
+      toast.success("Successfully joined the group!", {
+        position: "top-center"
+      });
       form.reset();
       if (onClose) onClose();
     } catch (error) {
       console.error("Error joining group:", error);
-      // Show error feedback if needed
+      toast.error("Failed to join the group. Please try again.", {
+        position: "top-center"
+      });
     } finally {
       setIsSubmitting(false);
       if (setIsOpen) {
