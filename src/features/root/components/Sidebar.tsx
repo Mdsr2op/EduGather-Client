@@ -263,7 +263,7 @@ const Sidebar: React.FC = () => {
     : null;
 
   return (
-    <div className="w-32 bg-dark-1 h-full p-3 flex flex-col items-center overflow-y-auto">
+    <div className="w-32 bg-dark-1 h-full p-3 flex flex-col items-center overflow-hidden">
       {/* Logo that navigates to home and clears selected group */}
       <SidebarLogo onClick={handleLogoClick} />
 

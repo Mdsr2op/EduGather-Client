@@ -18,16 +18,26 @@ const Groups: React.FC<GroupsProps> = ({
   onCloseContextMenu,
 }) => {
   if (!joinedGroups || joinedGroups.length === 0) {
-    return <div>You have not joined any groups yet.</div>;
+    return <div className="text-light-3 text-center p-3">You have not joined any groups yet.</div>;
   }
 
   return (
-    <div className="flex flex-col space-y-2 w-full" onClick={onCloseContextMenu}>
+    <div 
+      className="flex flex-col space-y-3 w-full overflow-y-auto max-h-72 p-3 
+                rounded-xl border-2 border-dark-4 bg-gradient-to-b from-dark-2 to-dark-3 
+                shadow-md scrollbar-thin scrollbar-thumb-dark-4 scrollbar-track-dark-2" 
+      onClick={onCloseContextMenu}
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'var(--color-dark-4) var(--color-dark-2)'
+      }}
+    >
+      <div className="text-xs font-medium text-light-3 uppercase tracking-wider px-1 mb-1">Groups</div>
       {joinedGroups.map((group) => (
         <div
           key={group._id}
           className="relative flex items-center justify-center 
-                     cursor-pointer transition-transform transform hover:scale-110"
+                     cursor-pointer transition-all transform hover:scale-110 hover:brightness-110"
           onClick={() => onGroupClick(group._id)}
           onContextMenu={(e) => onGroupContextMenu(e, group)}
           title={group.name}
