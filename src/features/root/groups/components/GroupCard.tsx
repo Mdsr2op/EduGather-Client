@@ -14,7 +14,6 @@ interface Group {
   name: string;
   description: string;
   avatar?: string;
-  coverImage?: string;
   createdAt: string;
   isJoinableExternally: boolean;
 }
@@ -42,11 +41,6 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
 
   return (
     <div className="bg-dark-3 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow flex flex-col justify-between">
-      {/* Cover Image */}
-      {group.coverImage && (
-        <div className="w-full h-32 bg-cover bg-center" style={{ backgroundImage: `url(${group.coverImage})` }} />
-      )}
-
       <div className="p-4 flex flex-col flex-1">
         {/* Group Header */}
         <div className="flex items-center mb-3">

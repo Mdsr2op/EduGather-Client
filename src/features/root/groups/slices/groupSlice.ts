@@ -8,7 +8,6 @@ export interface UserJoinedGroups {
   name: string;
   description: string;
   avatar?: string;
-  coverImage?: string;
   createdBy: CreatedBy;
   createdAt: string;
   isJoinableExternally: boolean;
@@ -22,7 +21,6 @@ export interface GroupDetails {
   description: string;
   members: Member[];
   avatar?: string;
-  coverImage?: string;
   createdBy: User;
   createdAt: string;
   isJoinableExternally: boolean;

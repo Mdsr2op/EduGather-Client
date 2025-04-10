@@ -13,7 +13,6 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           name: group.name,
           description: group.description,
           avatar: group.avatar,
-          coverImage: group.coverImage,
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
@@ -29,12 +28,46 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Groups", id: "LIST" }],
     }),
 
-    createGroup: builder.mutation<any, FormData>({
+    createGroup: builder.mutation<UserJoinedGroups, FormData>({
       query: (formData) => ({
         url: `/study-groups`,
         method: "POST",
         body: formData,
       }),
+      transformResponse: (response: any) => {
+        // Backend returns an ApiResponse with structure { status, data, message }
+        // where data is the created group
+        
+        // Safety checks
+        if (!response) return {} as UserJoinedGroups;
+        
+        const group = response.data || {};
+        
+        // Format members array to match UserJoinedGroups format
+        const members = Array.isArray(group.members) 
+          ? group.members.map((member: any) => ({
+              _id: member._id || '',
+              role: member.role || 'member',
+              username: member.userId?.username || '',
+              email: member.userId?.email || '',
+              fullName: member.userId?.fullName || '',
+              avatar: member.userId?.avatar || '',
+              joinedAt: member.joinedAt || new Date().toISOString(),
+            }))
+          : [];
+        
+        return {
+          _id: group._id || '',
+          name: group.name || '',
+          description: group.description || '',
+          avatar: group.avatar || '',
+          createdBy: group.createdBy || { _id: '', username: '', fullName: '', avatar: '' },
+          createdAt: group.createdAt || new Date().toISOString(),
+          isJoinableExternally: Boolean(group.isJoinableExternally),
+          category: Array.isArray(group.category) ? group.category : [],
+          members: members,
+        };
+      },
       invalidatesTags: [{ type: "Groups", id: "LIST" }],
     }),
 
@@ -46,7 +79,6 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           name: group.name,
           description: group.description,
           avatar: group.avatar,
-          coverImage: group.coverImage,
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
@@ -65,13 +97,12 @@ export const groupApiSlice = apiSlice.injectEndpoints({
     getGroupsByCategory: builder.query<UserJoinedGroups[], { category: string; page?: number; limit?: number }>({
       query: ({ category, page = 1, limit = 10 }) => 
         `/study-groups/category?category=${category}&page=${page}&limit=${limit}`,
-      transformResponse: (response: { data: { groups: any[]; totalItems: number; totalPages: number; currentPage: number; hasNextPage: boolean }; message: string; status: number }) =>
-        response.data.groups.map((group) => ({
+      transformResponse: (response: any) =>
+        response.data.groups.map((group: any) => ({
           _id: group._id,
           name: group.name,
           description: group.description,
           avatar: group.avatar,
-          coverImage: group.coverImage,
           createdBy: group.createdBy,
           createdAt: group.createdAt,
           isJoinableExternally: group.isJoinableExternally,
@@ -146,8 +177,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
     // New endpoint for fetching group details
     getGroupDetails: builder.query<GetGroupDetailsResponse, string>({
       query: (groupId) => `/study-groups/${groupId}`,
-      transformResponse: (response: { data: GetGroupDetailsResponse; message: string; status: number }) =>
-        response.data,
+      transformResponse: (response: any) => response.data,
       providesTags: (result, error, groupId) => [{ type: "Groups", id: groupId }],
     }),
   }),

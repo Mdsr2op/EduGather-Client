@@ -25,14 +25,13 @@ import {
 } from "@/components/ui/form";
 import { useCreateGroupMutation } from "../slices/groupApiSlice";
 import FileUpload from "@/features/auth/components/FileUpload";
-
+import { toast } from "react-hot-toast";
 // Zod schema consistent with your group.model.js and createGroup controller
 const groupSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
   description: z.string().min(1, "Description is required").max(500),
   isJoinableExternally: z.boolean().optional(), // default = true
   avatar: z.any().optional(), // We'll handle as file
-  coverImage: z.any().optional(), // We'll handle as file
   category: z.array(z.string()).optional(), // Array of category tags
 });
 
@@ -59,7 +58,6 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
       description: "",
       isJoinableExternally: true,
       avatar: null,
-      coverImage: null,
       category: [],
     },
   });
@@ -88,9 +86,6 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
     if (data.avatar && data.avatar.length > 0) {
       formData.append("avatar", data.avatar[0]);
     }
-    if (data.coverImage && data.coverImage.length > 0) {
-      formData.append("coverImage", data.coverImage[0]);
-    }
     // Append category tags if available
     if (data.category && data.category.length > 0) {
       data.category.forEach(tag => {
@@ -99,13 +94,35 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
     }
 
     try {
-      await createGroup(formData).unwrap();
+      const createdGroup = await createGroup(formData).unwrap();
+      console.log("Group created successfully:", createdGroup);
+      
+      // Check if we got a valid response with group data
+      if (!createdGroup || !createdGroup._id) {
+        console.warn("API returned success but with incomplete group data");
+        toast.success("Group created successfully", {
+          position: "top-center"
+        });
+      } else {
+        // Check if avatar was correctly set
+        if (data.avatar && data.avatar.length > 0 && !createdGroup.avatar) {
+          console.warn("Avatar was uploaded but not set in the response");
+        }
+        
+        // Show success toast with fallback for undefined name
+        toast.success(`Group "${createdGroup.name || data.name}" created successfully`, {
+          position: "top-center"
+        });
+      }
+      
       // If successful, close the dialog and reset form
       form.reset();
       if (onClose) onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating group:", error);
-      // Optionally show error to user
+      toast.error(error?.data?.message || "Failed to create group. Please try again.", {
+        position: "top-center"
+      });
     } finally {
       setIsSubmitting(false);
       if (setIsOpen) {
@@ -229,26 +246,6 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
                   <FormControl>
                     <FileUpload
                       label="Avatar"
-                      onFileUpload={(file: File) => field.onChange([file])}
-                      preview={null}
-                      accept={{ "image/*": [] }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Cover Image (Image) */}
-            <FormField
-              control={form.control}
-              name="coverImage"
-              render={({ field }) => (
-                <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Cover Image (optional)</FormLabel>
-                  <FormControl>
-                    <FileUpload
-                      label="Cover Image"
                       onFileUpload={(file: File) => field.onChange([file])}
                       preview={null}
                       accept={{ "image/*": [] }}

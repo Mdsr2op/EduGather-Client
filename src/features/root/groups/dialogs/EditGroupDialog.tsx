@@ -31,7 +31,6 @@ const editGroupSchema = z.object({
   description: z.string().min(1, "Description is required").max(500),
   isJoinableExternally: z.boolean().optional(),
   avatar: z.any().optional(), // new file if user wants to upload
-  coverImage: z.any().optional(), // new file if user wants to upload
   category: z.array(z.string()).optional(), // Array of category tags
 });
 
@@ -59,7 +58,6 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       description: group?.description || "",
       isJoinableExternally: group?.isJoinableExternally ?? true,
       avatar: null,
-      coverImage: null,
       category: group?.category || [],
     },
   });
@@ -71,7 +69,6 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       description: group?.description || "",
       isJoinableExternally: group?.isJoinableExternally ?? true,
       avatar: null,
-      coverImage: null,
       category: group?.category || [],
     });
   }, [group._id]);
@@ -98,9 +95,6 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       if (data.avatar && data.avatar.length > 0) {
         formData.append("avatar", data.avatar[0]);
       }
-      if (data.coverImage && data.coverImage.length > 0) {
-        formData.append("coverImage", data.coverImage[0]);
-      }
       
       // Append category tags if available
       if (data.category && data.category.length > 0) {
@@ -114,7 +108,6 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       console.log(formData.get("isJoinableExternally"));
       console.log(typeof formData.get("isJoinableExternally"));
       console.log(formData.get("avatar"));
-      console.log(formData.get("coverImage"));
       await updateGroup({ groupId: group._id, formData }).unwrap();
 
       setIsOpen(false);
@@ -248,28 +241,6 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
                           .filter(tag => tag !== '');
                         field.onChange(tags);
                       }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Cover Image */}
-            <FormField
-              control={form.control}
-              name="coverImage"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-light-1">
-                    Change Cover Image
-                  </FormLabel>
-                  <FormControl>
-                    <FileUpload
-                      label="Cover Image"
-                      onFileUpload={(file: File) => field.onChange([file])}
-                      preview={group?.coverImage || null}
-                      accept={{ "image/*": [] }}
                     />
                   </FormControl>
                   <FormMessage />

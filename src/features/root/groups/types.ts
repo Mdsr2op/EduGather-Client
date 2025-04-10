@@ -28,7 +28,6 @@ export interface GetJoinedGroupsResponse {
     members: Member[];
     description: string;
     avatar?: string;
-    coverImage?: string;
     createdBy: CreatedBy;
     createdAt: string;
     isJoinableExternally: boolean;
@@ -48,7 +47,6 @@ export interface GetAllGroupsResponse {
       name: string;
       description: string;
       avatar?: string;
-      coverImage?: string;
       createdBy: CreatedBy;
       createdAt: string;
       isJoinableExternally: boolean;
@@ -65,7 +63,6 @@ export interface GetGroupDetailsResponse {
   description: string;
   members: Member[];
   avatar?: string;
-  coverImage?: string;
   createdBy: User;
   createdAt: string;
   isJoinableExternally: boolean;
