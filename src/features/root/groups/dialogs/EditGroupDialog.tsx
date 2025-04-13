@@ -21,6 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { useUpdateGroupMutation } from "../slices/groupApiSlice";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import FileUpload from "@/features/auth/components/FileUpload";
@@ -82,6 +83,7 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
 
   const onSubmit: SubmitHandler<EditGroupFormValues> = async (data) => {
     setIsSubmitting(true);
+    console.log(data);
     try {
       const formData = new FormData();
       formData.append("name", data.name);
@@ -181,17 +183,16 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               control={form.control}
               name="isJoinableExternally"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2">
-                  <FormControl>
-                    <input
-                      type="checkbox"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-light-1">
+                <FormItem className="flex flex-row items-center space-x-3">
+                  <FormLabel className="text-light-1 pt-2 cursor-pointer">
                     Allow External Joins
                   </FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
