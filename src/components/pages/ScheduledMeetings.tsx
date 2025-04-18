@@ -118,20 +118,24 @@ const ScheduledMeetings: React.FC = () => {
   }, [calls, isLoading, error]);
 
   return (
-    <div className="flex-1 p-6 overflow-auto bg-dark-2">
-      <h2 className="text-3xl font-bold text-light-1 mb-4">Scheduled Meetings</h2>
+    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-2 sm:mb-3 md:mb-4">Scheduled Meetings</h2>
       
       {isLoadingData ? (
-        <div className="text-light-3 text-center py-8">Loading scheduled meetings...</div>
+        <div className="text-light-3 text-center py-4 sm:py-6 md:py-8">
+          <div className="animate-spin rounded-xl h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-primary-500 mx-auto mb-2"></div>
+          <p className="text-sm sm:text-base">Loading scheduled meetings...</p>
+        </div>
       ) : meetings.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {meetings.map((meeting) => (
             <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
           ))}
         </div>
       ) : (
-        <div className="text-light-3 text-center py-8">
-          No scheduled meetings found. Create a new meeting to get started.
+        <div className="text-light-3 text-center p-4 sm:p-6 md:p-8 bg-dark-3 rounded-xl border border-dark-5">
+          <p className="text-sm sm:text-base md:text-lg mb-2">No scheduled meetings found.</p>
+          <p className="text-xs sm:text-sm">Create a new meeting to get started.</p>
         </div>
       )}
     </div>

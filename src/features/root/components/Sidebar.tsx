@@ -10,10 +10,11 @@ import {
   FiVideo,
   FiPlusCircle,
   FiMoreVertical,
+  FiX,
 } from "react-icons/fi";
 
 // UI components
-import SidebarLogo from "../groups/components/SidebarLogo";
+import SidebarLogo from "../groups/components/Logo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import AddGroupButton from "../groups/components/AddGroupButton";
 import ModalsManager from "./ModalsManager";
@@ -54,7 +55,11 @@ import {
 import Groups from "../groups/components/Groups";
 import GroupContextMenu from "../groups/components/GroupContextMenu";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onCloseDrawer?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,6 +122,8 @@ const Sidebar: React.FC = () => {
   const handleGroupClick = (groupId: string) => {
     // First navigate to the group
     navigate(`/${groupId}/channels`);
+    // Close the drawer on mobile if applicable
+    if (onCloseDrawer) onCloseDrawer();
     // Then set the selected group ID
     dispatch(setSelectedGroupId(groupId));
   };
@@ -130,6 +137,8 @@ const Sidebar: React.FC = () => {
     dispatch(setNavigationSource('user_action'));
     // Then navigate
     navigate(path);
+    // Close the drawer on mobile if applicable
+    if (onCloseDrawer) onCloseDrawer();
     // Finally set selected group ID to null with a small delay
     setTimeout(() => {
       console.log(`Setting selectedGroupId to null for ${path}`);
@@ -263,11 +272,15 @@ const Sidebar: React.FC = () => {
     : null;
 
   return (
-    <div className="w-32 bg-dark-1 h-full p-3 flex flex-col items-center overflow-hidden">
-      {/* Logo that navigates to home and clears selected group */}
-      <SidebarLogo onClick={handleLogoClick} />
+    <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
+      <div className="mt-4 mb-2 hidden md:block">
+        <SidebarLogo onClick={handleLogoClick} />
+      </div>
 
-      <SidebarDivider />
+      {/* Only show divider if logo is visible */}
+      <div className="hidden md:block">
+        <SidebarDivider />
+      </div>
 
       {/* Navigation Links */}
       <nav className="flex flex-col w-full">
@@ -275,7 +288,7 @@ const Sidebar: React.FC = () => {
           to="/home"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/home')}
@@ -288,7 +301,7 @@ const Sidebar: React.FC = () => {
           to="/discover-groups"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/discover-groups')}
@@ -301,7 +314,7 @@ const Sidebar: React.FC = () => {
           to="/scheduled-meetings"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/scheduled-meetings')}
@@ -314,7 +327,7 @@ const Sidebar: React.FC = () => {
           to="/ai-quiz-generation"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/ai-quiz-generation')}
@@ -327,7 +340,7 @@ const Sidebar: React.FC = () => {
           to="/meeting-recordings"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-150"
+              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/meeting-recordings')}
@@ -363,14 +376,16 @@ const Sidebar: React.FC = () => {
       <SidebarDivider />
 
       {/* Add Group Button */}
-      <AddGroupButton
-        onClick={handleCreateGroup}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          console.log("Right-click on AddGroupButton");
-        }}
-        title="Add a Group"
-      />
+      <div className="mb-4">
+        <AddGroupButton
+          onClick={handleCreateGroup}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            console.log("Right-click on AddGroupButton");
+          }}
+          title="Add a Group"
+        />
+      </div>
 
       <SidebarDivider />
 

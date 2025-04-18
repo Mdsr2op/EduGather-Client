@@ -27,7 +27,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
   const handleSend = async () => {
     if (message.trim() && selectedChannelId) {
       try {
-        setIsLoading(true);
+      setIsLoading(true);
         
         if (socket) {
           // The server expects 'new_message' event

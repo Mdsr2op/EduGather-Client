@@ -30,13 +30,20 @@ const DUMMY_RECORDINGS: Recording[] = [
 
 const MeetingRecordings: React.FC = () => {
   return (
-    <div className="flex-1 p-6 overflow-auto bg-dark-2">
-      <h2 className="text-xl font-semibold text-light-1 mb-4">Meeting Recordings</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {DUMMY_RECORDINGS.map((recording) => (
-          <MeetingRecordingCard key={recording.id} recording={recording} />
-        ))}
-      </div>
+    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-light-1 mb-2 sm:mb-3 md:mb-4">Meeting Recordings</h2>
+      {DUMMY_RECORDINGS.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {DUMMY_RECORDINGS.map((recording) => (
+            <MeetingRecordingCard key={recording.id} recording={recording} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-light-3 text-center p-4 sm:p-6 md:p-8 bg-dark-3 rounded-xl border border-dark-5">
+          <p className="text-sm sm:text-base md:text-lg mb-2">No recording found.</p>
+          <p className="text-xs sm:text-sm">Recordings will appear here after meetings are completed.</p>
+        </div>
+      )}
     </div>
   );
 };

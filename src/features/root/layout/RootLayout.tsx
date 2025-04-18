@@ -1,13 +1,87 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { useState, useEffect } from "react";
+import { FiMenu, FiX } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
+import SidebarLogo from "../groups/components/Logo";
 
 const Layout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check for mobile screen size on mount and resize
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkIsMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkIsMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  // Close sidebar when navigating on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname, isMobile]);
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="flex w-full h-screen overflow-y-auto custom-scrollbar">
-      {/* Sidebar section */}
-      <Sidebar />
-      {/* Main content section */}
-      <div className="overflow-y-auto w-full">
+    <div className="flex w-full h-screen overflow-hidden">
+      {/* Mobile logo - only visible on small screens and positioned with lower z-index */}
+      {isMobile && (
+        <div className="md:hidden fixed top-4 left-4 z-30">
+          <SidebarLogo onClick={handleLogoClick} />
+        </div>
+      )}
+
+      {/* Mobile menu button - positioned in top-right for better placement */}
+      <button 
+        className="md:hidden fixed top-4 right-4 z-50 bg-dark-2 p-2.5 rounded-full shadow-lg hover:bg-dark-3 transition-colors"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
+      >
+        {isSidebarOpen ? (
+          <FiX size={24} className="text-light-1" />
+        ) : (
+          <FiMenu size={24} className="text-light-1" />
+        )}
+      </button>
+
+      {/* Overlay for mobile - closes sidebar when clicking outside */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - fixed on desktop, drawer on mobile */}
+      <div 
+        className={`
+          md:w-auto md:relative
+          ${isMobile ? 'fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out shadow-xl' : 'relative'}
+          ${isMobile && !isSidebarOpen ? '-translate-x-full' : 'translate-x-0'}
+        `}
+      >
+        <Sidebar onCloseDrawer={() => setIsSidebarOpen(false)} />
+      </div>
+
+      {/* Main content section - add padding on mobile for the menu button */}
+      <div className="overflow-y-auto w-full h-full md:ml-0 pt-2 md:pt-0">
+        <div className="md:hidden h-12"></div> {/* Spacer for mobile menu button */}
         <Outlet />
       </div>
     </div>
