@@ -1,11 +1,10 @@
 // ChannelContextMenu.tsx
 import React, { useEffect, useRef } from "react";
 import {
-  FaEye,
-  FaEdit,
-  FaTrash,
-  FaSignOutAlt,
-} from "react-icons/fa";
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+} from "react-icons/fi";
 import MenuItem from "../../components/MenuItem";
 
 type Channel = {
@@ -52,32 +51,47 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-[rgba(31,31,34,0.9)] text-white rounded-md shadow-lg"
-      style={{ top: position.y, left: position.x, width: "12rem" }}
+      className="fixed z-50 bg-dark-2 text-light-1 rounded-xl shadow-lg border border-dark-4 backdrop-blur-lg overflow-hidden"
+      style={{ 
+        top: position.y, 
+        left: position.x, 
+        width: "13rem",
+        animation: "fadeIn 0.15s ease-in-out"
+      }}
     >
+      <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+        <h3 className="text-sm font-medium truncate">{channel.channelName}</h3>
+      </div>
       <ul className="py-1">
         <MenuItem
-          icon={FaEye}
+          icon={FiEye}
           label="View Channel Details"
           onClick={() => onAction("view")}
         />
         {isChannelOwner && (
           <>
             <MenuItem
-              icon={FaEdit}
+              icon={FiEdit2}
               label="Edit Channel"
               onClick={() => onAction("edit")}
             />
             <MenuItem
-              icon={FaTrash}
+              icon={FiTrash2}
               label="Delete Channel"
               onClick={() => onAction("delete")}
               isDanger={true}
             />
           </>
         )}
-        {/* Add other menu items as needed */}
       </ul>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+        `}
+      </style>
     </div>
   );
 };

@@ -35,12 +35,31 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
     };
   }, [onClose]);
 
+  // Adjust position to ensure menu stays within viewport
+  useEffect(() => {
+    if (menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Check if menu extends beyond right edge
+      if (position.x + menuRect.width > viewportWidth) {
+        menuRef.current.style.left = `${viewportWidth - menuRect.width - 10}px`;
+      }
+      
+      // Check if menu extends beyond bottom edge
+      if (position.y + menuRect.height > viewportHeight) {
+        menuRef.current.style.top = `${viewportHeight - menuRect.height - 10}px`;
+      }
+    }
+  }, [position]);
+
   const isGroupOwner = group.createdBy._id === currentUserId;
   console.log(isGroupOwner)
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-[rgba(31,31,34,0.9)] text-white rounded-md shadow-lg"
+      className="fixed z-[9999] bg-[rgba(31,31,34,0.9)] text-white rounded-md shadow-lg"
       style={{ top: position.y, left: position.x, width: "12rem" }}
     >
       <ul className="py-1">

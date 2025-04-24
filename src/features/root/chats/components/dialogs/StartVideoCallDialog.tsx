@@ -281,12 +281,17 @@ const StartVideoCallDialog: React.FC = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button 
-          className="flex items-center justify-center text-light-1 rounded-xl shadow-md"
+        <button 
+          className={`p-2 rounded-full transition-all duration-200 ${
+            isOpen 
+              ? 'bg-primary-500/20 text-primary-500' 
+              : 'hover:bg-dark-4 hover:text-light-1'
+          }`}
           onClick={() => setIsOpen(true)}
+          title="Start Video Call"
         >
-          <FiVideo size={20} className="text-primary-500 mr-2" />
-        </Button>
+          <FiVideo size={18} className="text-current" />
+        </button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">

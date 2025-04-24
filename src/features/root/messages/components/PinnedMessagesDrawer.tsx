@@ -76,7 +76,7 @@ const PinnedMessagesDrawer: React.FC<PinnedMessagesDrawerProps> = ({
           </div>
         </SheetHeader>
         
-        <div className="overflow-y-auto h-full pb-20">
+        <div className="overflow-y-auto custom-scrollbar h-full pb-20">
           {isLoading && (
             <div className="flex justify-center items-center h-24 text-light-2">
               Loading pinned messages...

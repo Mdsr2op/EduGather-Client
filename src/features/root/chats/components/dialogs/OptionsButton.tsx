@@ -16,11 +16,15 @@ const OptionsButton = () => {
   return (
     <div className="relative">
       <button
-        className="hover:text-primary-500"
+        className={`p-2 rounded-full transition-all duration-200 ${
+          openDialog 
+            ? 'bg-primary-500/20 text-primary-500' 
+            : 'hover:bg-dark-4 hover:text-light-1'
+        }`}
         onClick={handleOpenDialog}
-        aria-label="Open Options Dialog"
+        title="Channel Options"
       >
-        <FiMoreVertical size={20} className="text-light-3" />
+        <FiMoreVertical size={18} className="text-current" />
       </button>
 
       {openDialog && <OptionsDialog onClose={handleCloseDialog} />}

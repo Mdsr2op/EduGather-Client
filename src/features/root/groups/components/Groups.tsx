@@ -23,16 +23,12 @@ const Groups: React.FC<GroupsProps> = ({
 
   return (
     <div 
-      className="flex flex-col space-y-3 w-full overflow-y-auto max-h-72 p-3 
+      className="flex flex-col space-y-3 w-full overflow-y-auto custom-scrollbar max-h-72 p-3 
                 rounded-xl border-2 border-dark-4 bg-gradient-to-b from-dark-2 to-dark-3 
                 shadow-md scrollbar-thin scrollbar-thumb-dark-4 scrollbar-track-dark-2" 
       onClick={onCloseContextMenu}
-      style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'var(--color-dark-4) var(--color-dark-2)'
-      }}
     >
-      <div className="text-xs font-medium text-light-3 uppercase tracking-wider px-1 mb-1">Groups</div>
+      <div className="text-xs font-medium text-light-3  text-center uppercase tracking-wider px-1 mb-1">Groups</div>
       {joinedGroups.map((group) => (
         <div
           key={group._id}

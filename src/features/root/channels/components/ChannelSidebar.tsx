@@ -36,6 +36,7 @@ import ChannelContextMenu from "../menus/ChannelContextMenu";
 import EditChannelDialog from "../dialogs/EditChannelDialog";
 import ViewChannelDetails from "../dialogs/ViewChannelDetails";
 import DeleteChannelDialog from "../dialogs/DeleteChannelDialog";
+import { FiPlus } from "react-icons/fi";
 
 interface ChannelSidebarProps {
   groupId: string;
@@ -153,8 +154,10 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   // ===================
   if (isLoading) {
     return (
-      <div className="bg-dark-4 text-light-2 w-64 h-full p-4 flex flex-col">
-        <div>Loading channels...</div>
+      <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
+        <div className="flex justify-center items-center flex-1">
+          <div className="animate-spin rounded-xl h-10 w-10 md:h-12 md:w-12 border-t-2 border-b-2 border-primary-500"></div>
+        </div>
       </div>
     );
   }
@@ -162,8 +165,11 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   if (isError) {
     console.error("Error fetching channels: ", error);
     return (
-      <div className="bg-dark-4 text-light-2 w-64 h-full p-4 flex flex-col">
-        <div>Error loading channels</div>
+      <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
+        <div className="text-center p-4 md:p-6 bg-dark-3 rounded-xl border border-dark-5 shadow-sm">
+          <p className="text-red-500 text-sm md:text-base font-medium">Error loading channels</p>
+          <p className="text-light-3 text-xs md:text-sm mt-2">Please try again later</p>
+        </div>
       </div>
     );
   }
@@ -173,34 +179,40 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   );
 
   return (
-    <div className="bg-dark-4 text-light-2 w-64 h-full p-4 flex flex-col relative">
-      {/* Header */}
-      <div className="flex items-center mb-4 pb-[1.53rem] border-b-[1px] border-dark-3 -mx-4 px-4">
-        <h2 className="text-xl font-semibold text-light-1">Channels</h2>
+    <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 max-h-[100dvh] p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col relative overflow-hidden">
+      {/* Header with Create Channel Button */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-3 md:pb-4 border-b-[1px] border-dark-4 -mx-3 md:-mx-4 lg:-mx-5 px-3 md:px-4 lg:px-5">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-1 sm:mb-0">Channels</h1>
+        <button
+          onClick={handleCreateChannelButtonClick}
+          className="bg-primary-500 hover:bg-primary-600 text-light-1 px-3 py-2 sm:p-2 md:p-3 rounded-lg md:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 flex items-center justify-center w-full sm:w-auto"
+          title="Create Channel"
+        >
+          <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
+          <span className="ml-2 text-sm md:text-base font-medium sm:hidden md:inline-block">Create</span>
+        </button>
       </div>
 
       {/* Channel List Container */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <ChannelList
-          channels={channels.map((ch) => ({
-            id: ch._id,
-            name: ch.channelName,
-          }))}
-          selectedChannelId={selectedChannelId}
-          onChannelClick={handleSelectChannel}
-          onChannelContextMenu={handleChannelContextMenu}
-        />
-      </div>
-      
-      {/* Create Channel Button (moved to bottom) */}
-      <div className="mt-auto pt-4 border-t border-dark-3 -mx-4 px-4">
-        <button
-          onClick={handleCreateChannelButtonClick}
-          className="bg-primary-500 hover:bg-primary-600 text-white w-full py-2 rounded-md shadow-md flex items-center justify-center"
-        >
-          <span className="text-xl mr-2">+</span>
-          <span>Create Channel</span>
-        </button>
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {channels.length === 0 ? (
+          <div className="text-center p-4 md:p-6 bg-dark-3 rounded-lg md:rounded-xl border border-dark-5 shadow-sm my-2">
+            <p className="text-light-1 text-sm md:text-base font-medium">No channels yet</p>
+            <p className="text-light-3 text-xs md:text-sm mt-2">Create your first channel</p>
+          </div>
+        ) : (
+          <div className="overflow-y-auto custom-scrollbar">
+            <ChannelList
+              channels={channels.map((ch) => ({
+                id: ch._id,
+                name: ch.channelName,
+              }))}
+              selectedChannelId={selectedChannelId}
+              onChannelClick={handleSelectChannel}
+              onChannelContextMenu={handleChannelContextMenu}
+            />
+          </div>
+        )}
       </div>
 
       {/* Context Menu */}

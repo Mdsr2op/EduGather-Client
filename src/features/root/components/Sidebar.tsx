@@ -1,5 +1,5 @@
 // Sidebar.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import {
@@ -30,13 +30,9 @@ import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import {
   selectSelectedGroupId,
   setSelectedGroupId,
-  openContextMenu,
-  closeContextMenu,
-  selectGroupContextMenu,
-  openViewGroupDetailsModal,
   selectIsViewGroupDetailsModalOpen,
   closeViewGroupDetailsModal,
-  selectViewGroupDetailsData,
+  openViewGroupDetailsModal,
   openEditGroupDialog,
   closeEditGroupDialog,
   openDeleteGroupDialog,
@@ -53,13 +49,18 @@ import {
 } from "../groups/slices/groupSlice";
 
 import Groups from "../groups/components/Groups";
-import GroupContextMenu from "../groups/components/GroupContextMenu";
 
 interface SidebarProps {
   onCloseDrawer?: () => void;
+  onGroupContextMenu: (e: React.MouseEvent, groupId: string) => void;
+  onCloseContextMenu: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  onCloseDrawer, 
+  onGroupContextMenu, 
+  onCloseContextMenu 
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,7 +72,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
 
   // Group selection and context menu
   const selectedGroupId = useSelector(selectSelectedGroupId);
-  const groupContextMenu = useSelector(selectGroupContextMenu);
 
   // For "View Group Details" if using Redux-based approach
   const isViewGroupDetailsModalOpen = useSelector(
@@ -105,6 +105,48 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
     React.useState(false);
   const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
   const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
+  
+  // ----------------------------------
+  // Listen for context menu actions from RootLayout
+  // ----------------------------------
+  useEffect(() => {
+    const handleContextMenuAction = (event: CustomEvent) => {
+      const { action, groupId } = event.detail;
+      const groupInContext = joinedGroups.find((g) => g._id === groupId);
+      if (!groupInContext) return;
+      
+      switch (action) {
+        case "view":
+          dispatch(openViewGroupDetailsModal(groupInContext));
+          break;
+
+        case "edit":
+          dispatch(openEditGroupDialog(groupInContext));
+          break;
+
+        case "delete":
+          dispatch(openDeleteGroupDialog(groupInContext));
+          break;
+
+        case "create-channel":
+          setIsChannelDialogOpen(true);
+          break;
+
+        case "leave":
+          dispatch(openLeaveGroupDialog(groupInContext));
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    document.addEventListener('group-context-menu-action', handleContextMenuAction as EventListener);
+    return () => {
+      document.removeEventListener('group-context-menu-action', handleContextMenuAction as EventListener);
+    };
+  }, [dispatch, joinedGroups]);
+
   // ----------------------------------
   // Handlers
   // ----------------------------------
@@ -144,21 +186,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
       console.log(`Setting selectedGroupId to null for ${path}`);
       dispatch(setSelectedGroupId(null));
     }, 50);
-  };
-
-  // Context menu: open on right-click
-  const handleGroupContextMenu = (e: React.MouseEvent, groupId: string) => {
-    e.preventDefault();
-    dispatch(
-      openContextMenu({
-        position: { x: e.pageX, y: e.pageY },
-        groupId,
-      })
-    );
-  };
-
-  const handleCloseContextMenu = () => {
-    dispatch(closeContextMenu());
   };
 
   // Add Group button: open create or join modals
@@ -202,46 +229,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
     }
   };
 
-  const handleContextMenuAction = (action: string, groupId: string) => {
-    const groupInContext = joinedGroups.find((g) => g._id === groupId);
-    if (!groupInContext) return;
-
-    switch (action) {
-      case "view":
-        dispatch(openViewGroupDetailsModal(groupInContext));
-        break;
-
-      case "edit":
-        dispatch(openEditGroupDialog(groupInContext));
-        break;
-
-      case "delete":
-        dispatch(openDeleteGroupDialog(groupInContext));
-        break;
-
-      case "create-channel":
-        setIsChannelDialogOpen(true);
-        break;
-
-      case "leave":
-        dispatch(openLeaveGroupDialog(groupInContext));
-        break;
-
-      default:
-        break;
-    }
-    handleCloseContextMenu();
-  };
-
-  // Example placeholders, you can do actual logic within the dialogs
-  const handleDeleteGroup = (groupName: string) => {
-    console.log(`Deleting group: ${groupName}`);
-  };
-
-  const handleLeaveGroup = (groupName: string) => {
-    console.log(`Leaving group: ${groupName}`);
-  };
-
   // ----------------------------------
   // Conditional Rendering
   // ----------------------------------
@@ -265,11 +252,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
       </div>
     );
   }
-
-  // The group currently under right-click context
-  const groupInContext = groupContextMenu.groupId
-    ? joinedGroups.find((g) => g._id === groupContextMenu.groupId)
-    : null;
 
   return (
     <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
@@ -357,21 +339,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onCloseDrawer }) => {
         joinedGroups={joinedGroups}
         selectedGroupId={selectedGroupId || ""}
         onGroupClick={handleGroupClick}
-        onGroupContextMenu={(e, group) => handleGroupContextMenu(e, group._id)}
-        onCloseContextMenu={handleCloseContextMenu}
+        onGroupContextMenu={(e, group) => onGroupContextMenu(e, group._id)}
+        onCloseContextMenu={onCloseContextMenu}
       />
-
-      {/* Group Context Menu (visible if the user right-clicked a group) */}
-      {groupContextMenu.isOpen && groupInContext && (
-        <GroupContextMenu
-          group={groupInContext}
-          position={groupContextMenu.position}
-          onClose={handleCloseContextMenu}
-          onAction={(action) =>
-            handleContextMenuAction(action, groupInContext._id)
-          }
-        />
-      )}
 
       <SidebarDivider />
 

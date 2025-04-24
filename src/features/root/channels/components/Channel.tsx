@@ -1,5 +1,6 @@
 // Channel.tsx
 import React from "react";
+import { FiHash } from "react-icons/fi";
 
 interface ChannelProps {
   id: string;
@@ -22,13 +23,16 @@ const Channel: React.FC<ChannelProps> = ({
 
   return (
     <li
-      className={`p-2 cursor-pointer rounded-md ${
-        isSelected ? "bg-dark-5 text-primary-500" : "text-light-1 hover:bg-dark-5"
+      className={`px-4 py-3 cursor-pointer rounded-xl flex items-center gap-3 transition-all duration-200 ${
+        isSelected 
+          ? "bg-dark-4 text-primary-500 shadow-md" 
+          : "text-light-2 hover:bg-dark-3 hover:text-light-1"
       }`}
       onClick={onClick}
       onContextMenu={handleContextMenu} // Use the wrapped handler
     >
-      {name}
+      <FiHash className={`w-5 h-5 ${isSelected ? "text-primary-500" : "text-light-3"}`} />
+      <span className={`text-base truncate ${isSelected ? "font-medium" : ""}`}>{name}</span>
     </li>
   );
 };

@@ -1,6 +1,7 @@
 // ChannelList.tsx
 import React from "react";
 import Channel from "./Channel";
+import { FiMessageSquare } from "react-icons/fi";
 
 type Channels = {
   id: string;
@@ -51,7 +52,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
           </style>
         </div>
       ) : (
-        <ul className="flex flex-col space-y-1 w-full">
+        <ul className="flex flex-col space-y-3 w-full px-2 py-3">
           {channels.map((channel) => (
             <Channel
               key={channel.id}

@@ -43,13 +43,20 @@ const PinnedMessagesButton = () => {
     <>
       <div className="relative group">
         <button 
-          className="relative hover:text-light-1"
+          className={`relative p-2 rounded-full transition-all duration-200 ${
+            isDrawerOpen 
+              ? 'bg-primary-500/20 text-primary-500' 
+              : 'hover:bg-dark-4 hover:text-light-1'
+          }`}
           onClick={handleOpenDrawer}
           title="Pinned Messages"
         >
-          <PushPinOutlinedIcon className={`text-light-3 ${pinnedMessagesCount > 0 ? 'text-yellow-500' : ''}`} />
+          <PushPinOutlinedIcon className={`
+            ${pinnedMessagesCount > 0 ? 'text-yellow-500' : 'text-current'} 
+            transform -rotate-45 group-hover:rotate-0 transition-transform duration-200
+          `} />
           {pinnedMessagesCount > 0 && (
-            <span className="absolute -top-2 -right-2 mr-5 bg-secondary-500 text-black font-bold text-base rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-secondary-500 text-dark-1 font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md">
               {pinnedMessagesCount}
             </span>
           )}

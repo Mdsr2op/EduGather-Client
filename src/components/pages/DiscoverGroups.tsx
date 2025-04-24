@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 
+
 const categories = [
   { id: "all", name: "All Groups", icon: <FiUsers className="w-5 h-5" /> },
   { id: "education", name: "Education", icon: <FiBook className="w-5 h-5" /> },
@@ -107,7 +108,7 @@ const DiscoverGroups: React.FC = () => {
       </header>
 
       {/* Groups Grid */}
-      <div className="overflow-y-auto flex-1">
+      <div className="overflow-y-auto custom-scrollbar flex-1">
         <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {isLoading && (
             <div className="col-span-full flex justify-center items-center min-h-[200px] sm:min-h-[300px]">

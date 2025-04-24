@@ -4,12 +4,36 @@ import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLogo from "../groups/components/Logo";
+import { useDispatch, useSelector } from "react-redux";
+import GroupContextMenu from "../groups/components/GroupContextMenu";
+import { 
+  selectGroupContextMenu, 
+  closeContextMenu,
+  openContextMenu,
+  UserJoinedGroups
+} from "../groups/slices/groupSlice";
+import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
+import { AuthState } from "@/features/auth/slices/authSlice";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Group context menu from Redux
+  const groupContextMenu = useSelector(selectGroupContextMenu);
+  
+  // Logged-in user
+  const userId = useSelector(
+    (state: { auth: AuthState }) => state.auth.user?._id ?? ""
+  );
+  
+  // Fetch joined groups to get group details
+  const { data: joinedGroups = [] } = useGetJoinedGroupsQuery(userId, { 
+    skip: !userId 
+  });
 
   // Check for mobile screen size on mount and resize
   useEffect(() => {
@@ -37,6 +61,33 @@ const Layout = () => {
   const handleLogoClick = () => {
     navigate('/');
   };
+
+  // Context menu handlers
+  const handleGroupContextMenu = (e: React.MouseEvent, groupId: string) => {
+    e.preventDefault();
+    dispatch(
+      openContextMenu({
+        position: { x: e.pageX, y: e.pageY },
+        groupId,
+      })
+    );
+  };
+
+  const handleCloseContextMenu = () => {
+    dispatch(closeContextMenu());
+  };
+
+  const handleContextMenuAction = (action: string) => {
+    // Pass the action back to the Sidebar through a custom event
+    const event = new CustomEvent('group-context-menu-action', { 
+      detail: { action, groupId: groupContextMenu.groupId } 
+    });
+    document.dispatchEvent(event);
+    handleCloseContextMenu();
+  };
+  
+  // Find the current group under context menu
+  const currentGroup = joinedGroups.find(g => g._id === groupContextMenu.groupId);
 
   return (
     <div className="flex w-full h-screen overflow-hidden">
@@ -76,14 +127,28 @@ const Layout = () => {
           ${isMobile && !isSidebarOpen ? '-translate-x-full' : 'translate-x-0'}
         `}
       >
-        <Sidebar onCloseDrawer={() => setIsSidebarOpen(false)} />
+        <Sidebar 
+          onCloseDrawer={() => setIsSidebarOpen(false)} 
+          onGroupContextMenu={handleGroupContextMenu}
+          onCloseContextMenu={handleCloseContextMenu}
+        />
       </div>
 
       {/* Main content section - add padding on mobile for the menu button */}
-      <div className="overflow-y-auto w-full h-full md:ml-0 pt-2 md:pt-0">
+      <div className="overflow-y-auto custom-scrollbar w-full h-full md:ml-0 pt-2 md:pt-0">
         <div className="md:hidden h-12"></div> {/* Spacer for mobile menu button */}
         <Outlet />
       </div>
+
+      {/* Group Context Menu - Positioned at the root level */}
+      {groupContextMenu.isOpen && currentGroup && (
+        <GroupContextMenu
+          group={currentGroup}
+          position={groupContextMenu.position}
+          onClose={handleCloseContextMenu}
+          onAction={handleContextMenuAction}
+        />
+      )}
     </div>
   );
 };

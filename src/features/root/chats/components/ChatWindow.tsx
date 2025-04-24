@@ -376,7 +376,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <div 
         id="scrollableDiv"
         ref={scrollableDivRef}
-        className="flex-1 overflow-y-auto px-4 pt-4 flex flex-col-reverse"
+        className="flex-1 overflow-y-auto custom-scrollbar px-4 pt-4 flex flex-col-reverse"
         onScroll={handleScroll}
       >
         <InfiniteScroll

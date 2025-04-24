@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store/store";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api/v1",
-  credentials: "include", // ensure cookies are included
+  baseUrl: "https://api-edugather.com/api/v1",
+  credentials: "include",
 });
 
 const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {

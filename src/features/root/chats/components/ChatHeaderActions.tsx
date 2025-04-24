@@ -4,10 +4,11 @@ import SearchDialog from "./dialogs/SearchDialog";
 import StartVideoCallDialog from "./dialogs/StartVideoCallDialog";
 import OptionsButton from "./dialogs/OptionsButton";
 
-
-const ChatHeaderActions= () => (
-  <div className="flex items-center space-x-4 text-light-3 mr-4">
-    <PinnedMessagesButton />
+const ChatHeaderActions = () => (
+  <div className="flex items-center gap-1 sm:gap-3 text-light-3">
+    <div className="hidden sm:block">
+      <PinnedMessagesButton />
+    </div>
     <SearchDialog />
     <StartVideoCallDialog />
     <OptionsButton />
