@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
 import { Loader } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 import { useGetCallById } from '@/hooks/useGetCallById';
 import MeetingSetup from '@/features/root/chats/components/MeetingSetup';

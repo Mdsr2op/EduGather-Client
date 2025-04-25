@@ -1,16 +1,13 @@
 // Sidebar.tsx
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, NavLink, useLocation } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import {
   FiHome,
   FiUsers,
   FiCalendar,
   FiCpu,
   FiVideo,
-  FiPlusCircle,
-  FiMoreVertical,
-  FiX,
 } from "react-icons/fi";
 
 // UI components
@@ -25,7 +22,6 @@ import EditGroupDialog from "../groups/dialogs/EditGroupDialog";
 
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
-import { useCreateChannelMutation } from "../channels/slices/channelApiSlice";
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import {
   selectSelectedGroupId,
@@ -63,7 +59,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Logged-in user
   const userId = useSelector(
@@ -94,9 +89,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     isError,
     error,
   } = useGetJoinedGroupsQuery(userId, { skip: !userId });
-
-  // RTK Query: create channel
-  const [createChannel] = useCreateChannelMutation();
 
   // ----------------------------------
   // Local state for modals
@@ -198,35 +190,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     setTimeout(() => {
       dispatch(setSelectedGroupId(null));
     }, 50);
-  };
-  
-  const handleJoinGroup = () => {
-    // First set navigation source
-    dispatch(setNavigationSource('user_action'));
-    // Then open modal
-    setJoinGroupModalOpen(true);
-    // Finally set selected group ID to null with a small delay
-    setTimeout(() => {
-      dispatch(setSelectedGroupId(null));
-    }, 50);
-  };
-
-  // Create channel confirm
-  const handleCreateChannelConfirm = async (
-    channelName: string,
-    description: string
-  ) => {
-    try {
-      if (!selectedGroupId) return;
-      await createChannel({
-        groupId: selectedGroupId,
-        channelName,
-        description,
-      }).unwrap();
-      console.log("Channel created successfully!");
-    } catch (err) {
-      console.error("Error creating channel: ", err);
-    }
   };
 
   // ----------------------------------

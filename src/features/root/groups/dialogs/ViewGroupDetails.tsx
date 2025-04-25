@@ -5,11 +5,6 @@ import { FiX } from 'react-icons/fi';
 import { Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import GroupInfo from '../components/GroupInfo';
-import { User } from '@/features/auth/types';
-import { useSelector } from 'react-redux';
-import { selectViewGroupDetailsData } from '../slices/groupSlice';
-import { Member } from '../types';
-
 
 type ViewGroupDetailsProps = {
   isOpen: boolean;

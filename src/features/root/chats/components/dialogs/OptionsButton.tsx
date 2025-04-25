@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 import OptionsDialog from "./OptionsDialog";
 

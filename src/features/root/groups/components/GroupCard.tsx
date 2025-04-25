@@ -4,11 +4,6 @@ import { FiUsers, FiPlus } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useJoinGroupMutation } from "../slices/groupApiSlice";
 
-interface Member {
-  _id: string;
-  name: string;
-}
-
 interface Group {
   _id: string;
   name: string;

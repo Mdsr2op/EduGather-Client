@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppSelector } from "@/redux/hook";
 import { selectCurrentUser } from "../slices/authSlice";
 import { Navigate, Outlet, useLocation } from "react-router-dom";

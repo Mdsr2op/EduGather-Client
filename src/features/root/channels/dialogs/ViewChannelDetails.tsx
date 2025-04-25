@@ -9,7 +9,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FiX } from "react-icons/fi";
 import { Channel } from "../slices/channelSlice";
 
 type ViewChannelDetailsProps = {

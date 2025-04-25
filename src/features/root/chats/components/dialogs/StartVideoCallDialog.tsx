@@ -15,7 +15,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,7 +31,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/datepicker.css";
 import { toast } from 'react-hot-toast';
-import { useStreamVideoClient, Call as StreamCall } from "@stream-io/video-react-sdk";
+import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
@@ -62,7 +61,6 @@ const StartVideoCallDialog: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [meetingType, setMeetingType] = useState<MeetingType>(undefined);
-  const [meetingId, setMeetingId] = useState<string | undefined>(undefined);
   const [isActiveMeetingInChannel, setIsActiveMeetingInChannel] = useState(false);
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -70,9 +68,6 @@ const StartVideoCallDialog: React.FC = () => {
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
   const { socket } = useSocket();
-  
-  // Add state to track the active call
-  const [call, setCall] = useState<StreamCall | null>(null);
 
   // Get group and channel details from Redux store
   const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
@@ -156,16 +151,12 @@ const StartVideoCallDialog: React.FC = () => {
       
       // Generate a unique meeting ID
       const id = crypto.randomUUID();
-      setMeetingId(id);
       
       // Create a call using Stream Video client
       const newCall = client.call("default", id);
       if (!newCall) {
         throw new Error("Failed to create meeting");
       }
-      
-      // Store the call reference for event handling
-      setCall(newCall);
       
       // Set up call parameters
       const startsAt = data ? data.dateTime.toISOString() : new Date().toISOString();
@@ -257,9 +248,6 @@ const StartVideoCallDialog: React.FC = () => {
     } catch (error) {
       console.error("Error creating meeting:", error);
       toast.error("Failed to create meeting");
-      
-      // Reset call state on error
-      setCall(null);
     } finally {
       setIsSubmitting(false);
       setMeetingType(undefined);

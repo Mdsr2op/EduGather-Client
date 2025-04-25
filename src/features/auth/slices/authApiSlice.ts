@@ -11,7 +11,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data: result } = await queryFulfilled;
           dispatch(setUser(result.data.user));
@@ -27,7 +27,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data: result } = await queryFulfilled;
           dispatch(setUser(result.data.user));
@@ -38,7 +38,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
     getCurrentUser: builder.query<any, void>({
       query: () => "/users/current-user",
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           // data should look like: { status: 200, data: userObject, message: "..." }

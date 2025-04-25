@@ -1,7 +1,6 @@
 // ChannelList.tsx
 import React from "react";
 import Channel from "./Channel";
-import { FiMessageSquare } from "react-icons/fi";
 
 type Channels = {
   id: string;

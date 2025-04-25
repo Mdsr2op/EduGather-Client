@@ -1,5 +1,5 @@
 // EmojiPicker.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FiSmile } from 'react-icons/fi';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';

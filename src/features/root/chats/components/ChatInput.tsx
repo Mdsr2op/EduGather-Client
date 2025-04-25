@@ -1,5 +1,5 @@
 // ChatInput.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AttachButton from './AttachButton';
 import { FiSend, FiX } from 'react-icons/fi';
 import MessageInput from '../../messages/components/MessageInput';

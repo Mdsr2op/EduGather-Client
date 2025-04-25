@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, Calendar, Clock, Users, ExternalLink, Edit, Check } from 'lucide-react';
+import { Video, Calendar, Clock, Users, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';

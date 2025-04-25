@@ -53,7 +53,7 @@ export const attachmentsApiSlice = apiSlice.injectEndpoints({
         body: formData,
         formData: true,
       }),
-      invalidatesTags: (result, error, { channelId }) => [
+      invalidatesTags: (_, __, { channelId }) => [
         { type: 'Messages', id: channelId }
       ]
     }),
@@ -69,7 +69,7 @@ export const attachmentsApiSlice = apiSlice.injectEndpoints({
         url: `/attachments/${channelId}?page=${page}&limit=${limit}`,
         method: 'GET',
       }),
-      providesTags: (result, error, { channelId }) => [
+      providesTags: (_, __, { channelId }) => [
         { type: 'Messages', id: channelId }
       ]
     }),

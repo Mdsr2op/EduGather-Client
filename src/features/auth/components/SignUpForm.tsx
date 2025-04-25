@@ -1,5 +1,4 @@
 // SignUpForm.tsx
-import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpValidationSchema } from "../validations";
@@ -41,7 +40,7 @@ export function SignUpForm() {
     },
   });
 
-  const [signup, { isLoading, isError, error }] = useSignupMutation();
+  const [signup, { isLoading }] = useSignupMutation();
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
      console.log("clicked")

@@ -9,8 +9,7 @@ import GroupContextMenu from "../groups/components/GroupContextMenu";
 import { 
   selectGroupContextMenu, 
   closeContextMenu,
-  openContextMenu,
-  UserJoinedGroups
+  openContextMenu
 } from "../groups/slices/groupSlice";
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import { AuthState } from "@/features/auth/slices/authSlice";

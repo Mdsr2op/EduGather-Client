@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useForwardMessageMutation } from '../slices/messagesApiSlice';
 import { useGetChannelsQuery } from '../../channels/slices/channelApiSlice';
-import { MessageType } from '../components/Message';
+import { MessageType } from '../types/messageTypes';
 
 interface ForwardMessageDialogProps {
   open: boolean;

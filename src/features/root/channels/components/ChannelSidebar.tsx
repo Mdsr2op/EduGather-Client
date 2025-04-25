@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 // Import RTK Query hooks
 import {
   useGetChannelsQuery,
-  useCreateChannelMutation,
 } from "../slices/channelApiSlice";
 
 import {
@@ -75,10 +74,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   });
 
   const channels = channelData?.data.channels ?? [];
-
-  // Create channel
-  const [createChannel] = useCreateChannelMutation();
-
+  
   // For local state controlling the "Create Channel" button
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -135,18 +131,6 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
 
   const handleCreateChannelButtonClick = () => {
     setIsCreateDialogOpen(true);
-  };
-
-  const handleCreateChannelConfirm = async (
-    channelName: string,
-    description: string
-  ) => {
-    try {
-      await createChannel({ groupId, channelName, description }).unwrap();
-      console.log("Channel created successfully!");
-    } catch (err) {
-      console.error("Error creating channel: ", err);
-    }
   };
 
   // ===================

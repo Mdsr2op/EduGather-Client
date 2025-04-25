@@ -87,7 +87,7 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
         url: `/messages/${channelId}?page=${page}&limit=${limit}`,
         method: 'GET',
       }),
-      providesTags: (result, error, { channelId }) => [
+      providesTags: (_, __, { channelId }) => [
         { type: 'Messages', id: channelId },
       ],
     }),
@@ -99,7 +99,7 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: messageData,
       }),
-      invalidatesTags: (result, error, { channelId }) => [
+      invalidatesTags: (_, __, { channelId }) => [
         { type: 'Messages', id: channelId },
       ],
     }),
@@ -155,7 +155,7 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
         url: `/messages/${channelId}/pinned`,
         method: 'GET',
       }),
-      providesTags: (result, error, { channelId }) => [
+      providesTags: (_, __, { channelId }) => [
         { type: 'Messages', id: `${channelId}-pinned` },
       ],
     }),

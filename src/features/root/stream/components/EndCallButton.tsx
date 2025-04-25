@@ -32,9 +32,7 @@ const EndCallButton = () => {
       socket.emit("meetingEnded");
       
       // Also emit a message to update the meeting status in the channel
-      const callData = call.state.custom;
       const callId = call.id;
-      const description = callData?.description || 'Meeting';
       
       socket.emit("updateMeetingStatus", {
         meetingId: callId,

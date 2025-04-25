@@ -1,5 +1,3 @@
-import React from 'react';
-
 const MessageAvatar = ({ senderName }: { senderName: string }) => {
   return (
     <div className="flex-shrink-0">

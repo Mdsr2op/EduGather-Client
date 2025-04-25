@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import GroupCard from "@/features/root/groups/components/GroupCard";
-import { useGetAllGroupsQuery, useGetJoinedGroupsQuery, useGetGroupsByCategoryQuery } from "@/features/root/groups/slices/groupApiSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store/store";
+import { useGetAllGroupsQuery, useGetGroupsByCategoryQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { Input } from "@/components/ui/input";
 import { FiSearch, FiUsers, FiBook, FiCode, FiGlobe, FiPlus } from "react-icons/fi";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,11 +16,11 @@ const categories = [
 ];
 
 const DiscoverGroups: React.FC = () => {
-  const userId = useSelector((state: RootState) => state.auth.user?._id ?? "");
+  // const userId = useSelector((state: RootState) => state.auth.user?._id ?? "");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const limit = 10;
 
   // Use the appropriate query based on selected category

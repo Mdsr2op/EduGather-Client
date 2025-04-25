@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import { useSelector } from "react-redux";
 import { selectSelectedChannelId } from "../../../channels/slices/channelSlice";

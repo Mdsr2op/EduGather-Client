@@ -22,15 +22,13 @@ export const channelApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/channels`,
         method: "GET",
       }),
-      providesTags: (result) => 
+      providesTags: (result) =>
         result
           ? [
-              ...result.data.channels.map(
-                ({ _id }) => ({ type: 'Channels' as const, id: _id })
-              ),
-              { type: 'Channels' as const, id: 'LIST' }
+              ...result.data.channels.map(({ _id }) => ({ type: 'Channels' as const, id: _id })),
+              { type: 'Channels', id: 'LIST' },
             ]
-          : [{ type: 'Channels' as const, id: 'LIST' }],
+          : [{ type: 'Channels', id: 'LIST' }],
     }),
 
     createChannel: builder.mutation<Channel, { groupId: string | null; channelName: string; description?: string }>({
@@ -48,7 +46,7 @@ export const channelApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: { channelName, description },
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_, __, arg) => [
         { type: 'Channels', id: arg.channelId },
         { type: 'Channels', id: 'LIST' }
       ]
@@ -59,7 +57,7 @@ export const channelApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_, __, arg) => [
         { type: 'Channels', id: arg.channelId },
         { type: 'Channels', id: 'LIST' }
       ]
@@ -70,7 +68,7 @@ export const channelApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/channels/${channelId}`,
         method: "GET",
       }),
-      providesTags: (result, error, arg) => 
+      providesTags: (result) => 
         result ? [{ type: 'Channels' as const, id: result.data._id }] : [],
     }),
   }),

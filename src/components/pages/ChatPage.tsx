@@ -8,7 +8,6 @@ import ChatHeader from "@/features/root/chats/components/ChatHeader";
 import ChatWindow from "@/features/root/chats/components/ChatWindow";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import {
-  selectSelectedGroupId,
   selectNavigationSource,
   setNavigationSource,
 } from "@/features/root/groups/slices/groupSlice";
@@ -20,7 +19,6 @@ function ChatPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { groupId } = useParams();
-  const selectedGroupId = useSelector(selectSelectedGroupId);
   const navigationSource = useSelector(selectNavigationSource);
   const selectedChannelId = useSelector(selectSelectedChannelId);
   const userId = useSelector((state: any) => state.auth.user?._id) || "";

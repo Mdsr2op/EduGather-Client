@@ -1,7 +1,7 @@
 // src/features/groups/slices/groupApiSlice.ts
 import { apiSlice } from "@/redux/api/apiSlice";
 import { UserJoinedGroups } from "./groupSlice"; // Ensure GroupDetails is imported correctly
-import { GetAllGroupsResponse, GetGroupDetailsResponse, GetJoinedGroupsResponse, Member } from "../types";
+import { GetAllGroupsResponse, GetGroupDetailsResponse, GetJoinedGroupsResponse } from "../types";
 
 export const groupApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,7 +19,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           category: group.category || [],
           members: group.members || [],
         })),
-      providesTags: (result, error, userId) =>
+      providesTags: (result, _, __) =>
         result
           ? [
               ...result.map((group) => ({ type: "Groups" as const, id: group._id })),
@@ -109,7 +109,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           members: group.members || [],
           category: group.category || [],
         })),
-      providesTags: (result, error, { category }) =>
+      providesTags: (result, _, { category }) =>
         result
           ? [
               ...result.map(({ _id }) => ({ type: "Groups" as const, id: _id })),
@@ -128,7 +128,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: formData,
       }),
-      invalidatesTags: (result, error, { groupId }) => [
+      invalidatesTags: (_, __, { groupId }) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
         { type: "Channels", id: "LIST" },
@@ -141,7 +141,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, groupId) => [
+      invalidatesTags: (_, __, groupId) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
         { type: "Channels", id: "LIST" },
@@ -154,7 +154,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/join`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, { groupId }) => [
+      invalidatesTags: (_, __, { groupId }) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
         { type: "Groups", id: "CATEGORIES" }
@@ -166,7 +166,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
         url: `/study-groups/${groupId}/leave`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, { groupId }) => [
+      invalidatesTags: (_, __, { groupId }) => [
         { type: "Groups", id: groupId },
         { type: "Groups", id: "LIST" },
         { type: "Channels", id: "LIST" },
@@ -178,7 +178,7 @@ export const groupApiSlice = apiSlice.injectEndpoints({
     getGroupDetails: builder.query<GetGroupDetailsResponse, string>({
       query: (groupId) => `/study-groups/${groupId}`,
       transformResponse: (response: any) => response.data,
-      providesTags: (result, error, groupId) => [{ type: "Groups", id: groupId }],
+      providesTags: (_, __, groupId) => [{ type: "Groups", id: groupId }],
     }),
   }),
   overrideExisting: false,

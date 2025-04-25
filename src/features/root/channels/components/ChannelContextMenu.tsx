@@ -4,20 +4,15 @@ import React, { useEffect, useRef } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import MenuItem from "../../components/MenuItem";
 
-type Channel = {
-  _id: string;
-  channelName: string;
-};
-
 type ChannelContextMenuProps = {
-  channel: Channel;
+  // channel: Channel;
   position: { x: number; y: number };
   onClose: () => void;
   onAction: (action: string) => void;  // "view" | "edit" | "delete"
 };
 
 const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
-  channel,
+  // channel,
   position,
   onClose,
   onAction,

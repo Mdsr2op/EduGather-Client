@@ -1,6 +1,5 @@
 import { logOut } from "@/features/auth/slices/authSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../store/store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://api-edugather.com/api/v1",

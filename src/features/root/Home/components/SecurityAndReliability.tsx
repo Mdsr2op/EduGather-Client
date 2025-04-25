@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Lock, Server } from 'lucide-react';
 
 export function SecurityAndReliability() {

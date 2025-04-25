@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { FiX, FiSend } from 'react-icons/fi';
-import { IoDocumentOutline, IoImageOutline, IoFilmOutline } from 'react-icons/io5';
+import { IoDocumentOutline } from 'react-icons/io5';
 import { useDropzone } from 'react-dropzone';
 import './attachment.css';
 

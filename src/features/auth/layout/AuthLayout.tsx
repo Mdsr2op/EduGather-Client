@@ -1,6 +1,5 @@
 import { useAppSelector } from "@/redux/hook";
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { selectCurrentUser } from "../slices/authSlice";
 
 const AuthLayout = () => {

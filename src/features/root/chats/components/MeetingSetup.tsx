@@ -3,7 +3,6 @@ import {
   DeviceSettings,
   VideoPreview,
   useCall,
-  useCallStateHooks,
 } from '@stream-io/video-react-sdk';
 
 import { Button } from '@/components/ui/button';
@@ -18,10 +17,6 @@ const MeetingSetup = ({
   onClose,
 }: MeetingSetupProps) => {
   // Get call state hooks
-  const { useCallEndedAt, useCallStartsAt } = useCallStateHooks();
-  const callStartsAt = useCallStartsAt();
-  const isScheduledMeeting = callStartsAt && new Date(callStartsAt) > new Date();
-
   const call = useCall();
 
   if (!call) {

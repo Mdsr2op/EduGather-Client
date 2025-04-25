@@ -29,7 +29,7 @@ export function SignInForm() {
     },
   });
 
-  const [signIn, { isLoading, isError, error }] = useSignInMutation();
+  const [signIn, { isLoading }] = useSignInMutation();
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<SignInFormValues> = async (data) => {

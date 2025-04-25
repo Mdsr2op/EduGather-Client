@@ -1,4 +1,3 @@
-import React from "react";
 import PinnedMessagesButton from "./dialogs/PinnedMessagesButton";
 import SearchDialog from "./dialogs/SearchDialog";
 import StartVideoCallDialog from "./dialogs/StartVideoCallDialog";

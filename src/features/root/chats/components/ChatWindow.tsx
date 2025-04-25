@@ -1,5 +1,5 @@
 // ChatWindow.js
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MessageBody from './MessageBody';
 import ChatInput from './ChatInput';
 import { useSelector, useDispatch } from 'react-redux';
