@@ -4,6 +4,7 @@ import ChatPage from "./components/pages/ChatPage";
 import Home from "./components/pages/Home";
 import { SignInForm } from "./features/auth/components/SignInForm";
 import { SignUpForm } from "./features/auth/components/SignUpForm";
+import { GoogleAuthCallback } from "./features/auth/components/GoogleAuthCallback";
 import AuthLayout from "./features/auth/layout/AuthLayout";
 import RootLayout from "./features/root/layout/RootLayout";
 import RequireAuth from "./features/auth/components/RequireAuth";
@@ -12,6 +13,8 @@ import AiQuizGeneration from "./components/pages/AIQuizGeneration";
 import ScheduledMeetings from "./components/pages/ScheduledMeetings";
 import DiscoverGroups from "./components/pages/DiscoverGroups";
 import MeetingPage from "./components/pages/MeetingPage";
+import PrivacyPolicy from "./components/pages/PrivacyPolicy";
+import TermsAndConditions from "./components/pages/TermsAndConditions";
 import { useGetCurrentUserQuery } from "./features/auth/slices/authApiSlice";
 import { SocketProvider } from "./lib/socket";
 import StreamVideoProvider from "./providers/StreamVideoProvider";
@@ -33,7 +36,12 @@ function App() {
                 <Route element={<AuthLayout />}>
                   <Route path="/sign-up" element={<SignUpForm />} />
                   <Route path="/sign-in" element={<SignInForm />} />
+                  <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                 </Route>
+
+                {/* Legal Pages - Public Access */}
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
                 {/* Protected Routes */}
                 <Route element={<RequireAuth />}>

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "./FileUpload";
 import { FiUser, FiImage } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
 import { useSignupMutation } from "../slices/authApiSlice";
 import { toast } from "react-hot-toast";
 
@@ -65,6 +66,10 @@ export function SignUpForm() {
     }
   };
 
+  const handleGoogleAuth = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/users/auth/google`;
+  };
+
   return (
     <Form {...form}>
       <div className="w-full max-w-4xl">
@@ -76,9 +81,38 @@ export function SignUpForm() {
             To use the app, enter your details below.
           </p>
         </div>
+
+        {/* Google Sign Up Button */}
+        <div className="w-full max-w-md mx-auto mt-8">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Quick signup with</span>
+            </div>
+          </div>
+          <Button
+            type="button"
+            onClick={handleGoogleAuth}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 py-2 rounded-md"
+          >
+            <FcGoogle size={20} />
+            <span>Continue with Google</span>
+          </Button>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or sign up with email</span>
+            </div>
+          </div>
+        </div>
+
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full mt-10 grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="w-full mt-6 grid grid-cols-1 md:grid-cols-2 gap-6"
         >
           {/* Left Column: Username to Password */}
           <div className="flex flex-col gap-6">

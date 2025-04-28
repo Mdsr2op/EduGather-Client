@@ -50,8 +50,26 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    // No need for a google auth endpoint since redirect is handled by the backend
+    // We just need to check for auth errors after Google redirect
+    checkGoogleAuthStatus: builder.query<any, void>({
+      query: () => "/users/current-user",
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setUser(data.data));
+        } catch (err) {
+          console.error("Google auth verification error:", err);
+        }
+      },
+    }),
   }),
 });
 
-export const { useSignInMutation, useSignupMutation, useGetCurrentUserQuery } = authApiSlice;
+export const { 
+  useSignInMutation, 
+  useSignupMutation, 
+  useGetCurrentUserQuery,
+  useCheckGoogleAuthStatusQuery
+} = authApiSlice;
   

@@ -44,6 +44,16 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy-policy" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms-and-conditions" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </nav>
           
@@ -81,9 +91,18 @@ export function Footer() {
         {/* Optional: Newsletter Subscription */}
         <div className="mt-12 border-t border-dark-3 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <p className="text-light-3 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} EduGather. All rights reserved.
-            </p>
+            <div className="text-light-3 text-sm mb-4 md:mb-0">
+              <p className="mb-2">© {new Date().getFullYear()} EduGather. All rights reserved.</p>
+              <div className="flex space-x-4">
+                <Link to="/privacy-policy" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Privacy Policy
+                </Link>
+                <span>•</span>
+                <Link to="/terms-and-conditions" className="text-light-3 hover:text-primary-500 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </div>
+            </div>
             <form className="flex space-x-2" aria-label="Subscribe to our newsletter">
               <input
                 type="email"
