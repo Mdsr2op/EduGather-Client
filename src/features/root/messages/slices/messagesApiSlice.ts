@@ -72,12 +72,22 @@ interface EditMessageRequest {
 
 interface ForwardMessageRequest {
   targetChannelId: string;
+  senderId: string;
 }
 
 interface ReplyMessageRequest {
+  channelId: string;
+  senderId: string;
   content: string;
   mentions?: string[];
+  attachment?: string;
 }
+
+interface PinnedMessagesResponse {
+  success: boolean;
+  data: PinnedMessage[];
+}
+
 interface PinnedMessage { 
     _id: string;
     channelId: string;
@@ -104,12 +114,25 @@ interface PinnedMessage {
     attachment: string | null;
     createdAt: string;
     updatedAt: string;
-  };
+  }
 
-interface PinnedMessagesResponse {
-  success: boolean;
-  message: string;
-  data: PinnedMessage[];
+// Search messages response type
+interface SearchMessagesResponse {
+  messages: Message[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+// Search messages request params
+interface SearchMessagesParams {
+  channelId: string;
+  query: string;
+  page?: number;
+  limit?: number;
 }
 
 export const messagesApiSlice = apiSlice.injectEndpoints({
@@ -216,6 +239,17 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
         { type: 'Messages', id: result?.channelId },
       ],
     }),
+    
+    // Search messages in a channel
+    searchMessages: builder.query<SearchMessagesResponse, SearchMessagesParams>({
+      query: ({ channelId, query, page = 1, limit = 20 }) => ({
+        url: `/messages/${channelId}/search?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
+        method: 'GET',
+      }),
+      providesTags: (_, __, { channelId, query }) => [
+        { type: 'Messages', id: `${channelId}-search-${query}` },
+      ],
+    }),
   }),
 });
 
@@ -229,4 +263,5 @@ export const {
   useGetPinnedMessagesQuery,
   useForwardMessageMutation,
   useReplyMessageMutation,
+  useSearchMessagesQuery,
 } = messagesApiSlice; 
