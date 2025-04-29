@@ -159,7 +159,8 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   return (
     <>
       <div
-        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-0.5`}
+        id={`message-${message.id}`}
+        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-0.5 transition-colors duration-500`}
         onContextMenu={handleContextMenu}
       >
         <div 

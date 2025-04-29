@@ -6,31 +6,20 @@ import { useGetPinnedMessagesQuery } from "../../../messages/slices/messagesApiS
 import PinnedMessagesDrawer from "../../../messages/components/PinnedMessagesDrawer";
 import { useAppSelector } from "@/redux/hook";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { selectSelectedGroupId } from "@/features/root/groups/slices/groupSlice";
 
 const PinnedMessagesButton = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const selectedChannelId = useSelector(selectSelectedChannelId);
+  const selectedChannelId = useAppSelector(selectSelectedChannelId);
+  const selectedGroupId = useAppSelector(selectSelectedGroupId);
   const user = useAppSelector(selectCurrentUser);
-  
-  // Get channel details to pass to the drawer
-  const channelName = useSelector((state: any) => {
-    if (!selectedChannelId) return "Channel";
-    // Check if channels exists in the state
-    const channels = state.channel?.channels || [];
-    if (channels.length === 0) return "Channel";
-    
-    const selectedChannel = channels.find((ch: any) => ch._id === selectedChannelId);
-    return selectedChannel?.channelName || "Channel";
-  });
   
   // Use the API to get the pinned messages count
   const { data: pinnedMessages } = useGetPinnedMessagesQuery(
     { channelId: selectedChannelId || '' },
     { skip: !selectedChannelId }
   );
-  
-  const pinnedMessagesCount = pinnedMessages?.length || 0;
-  
+  const pinnedMessagesCount = pinnedMessages?.data?.length || 0;
   const handleOpenDrawer = () => {
     setIsDrawerOpen(true);
   };
@@ -68,7 +57,8 @@ const PinnedMessagesButton = () => {
         open={isDrawerOpen}
         onClose={handleCloseDrawer}
         userId={user?._id || ''}
-        channelName={channelName}
+        channelId={selectedChannelId || ''}
+        groupId={selectedGroupId || ''}
       />
     </>
   );

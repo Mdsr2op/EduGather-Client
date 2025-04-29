@@ -1,5 +1,5 @@
 // ChatWindow.js
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import MessageBody from './MessageBody';
 import ChatInput from './ChatInput';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,6 +12,9 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 interface ChatWindowProps {
   userId: string;
 }
+
+// Create a global reference to the loadMoreMessages function that our hook can access
+let globalLoadMoreMessagesRef: (() => void) | null = null;
 
 const ChatWindow = ({ userId }: ChatWindowProps) => {
   const dispatch = useDispatch();
@@ -341,11 +344,19 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
   }, [messagesData, page]);
 
   // Function to load more messages
-  const loadMoreMessages = () => {
+  const loadMoreMessages = useCallback(() => {
     if (hasMore) {
       setPage(prevPage => prevPage + 1);
     }
-  };
+  }, [hasMore]);
+  
+  // Make loadMoreMessages available globally for the useMessageNavigation hook
+  useEffect(() => {
+    globalLoadMoreMessagesRef = loadMoreMessages;
+    return () => {
+      globalLoadMoreMessagesRef = null;
+    };
+  }, [loadMoreMessages]);
   
   // Function to scroll to bottom
   const scrollToBottom = () => {
@@ -408,6 +419,15 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       )}
     </div>
   );
+};
+
+// Export the function to be used by our hook
+export const loadMoreMessagesGlobal = () => {
+  if (globalLoadMoreMessagesRef) {
+    globalLoadMoreMessagesRef();
+    return true;
+  }
+  return false;
 };
 
 export default ChatWindow;

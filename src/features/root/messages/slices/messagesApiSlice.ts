@@ -78,6 +78,39 @@ interface ReplyMessageRequest {
   content: string;
   mentions?: string[];
 }
+interface PinnedMessage { 
+    _id: string;
+    channelId: string;
+    senderId: {
+      _id: string;
+      username: string;
+      avatar: string;
+    };
+    content: string;
+    mentions: string[];
+    replyTo: string | null;
+    forwardedFrom: {
+      messageId: string | null;
+      channelId: string | null;
+      senderId: string | null;
+    };
+    pinned: boolean;
+    pinnedBy: {
+      _id: string;
+      username: string;
+      avatar: string;
+    };
+    deletedAt: string | null;
+    attachment: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+interface PinnedMessagesResponse {
+  success: boolean;
+  message: string;
+  data: PinnedMessage[];
+}
 
 export const messagesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -150,7 +183,7 @@ export const messagesApiSlice = apiSlice.injectEndpoints({
     }),
     
     // Get pinned messages for a channel
-    getPinnedMessages: builder.query<Message[], { channelId: string }>({
+    getPinnedMessages: builder.query<PinnedMessagesResponse, { channelId: string }>({
       query: ({ channelId }) => ({
         url: `/messages/${channelId}/pinned`,
         method: 'GET',
