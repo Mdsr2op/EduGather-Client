@@ -26,7 +26,7 @@ const MessageEditForm: React.FC<MessageEditFormProps> = ({
         </button>
         <button 
           onClick={onSave}
-          className="text-xs text-primary-500 hover:text-primary-400"
+          className="text-sm  text-light-1 hover:text-light-2 bg-secondary-500 px-3 py-1 rounded-xl"
         >
           Save
         </button>
