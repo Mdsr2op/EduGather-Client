@@ -29,7 +29,6 @@ const SearchResultsDialog: React.FC<SearchResultsDialogProps> = ({
   groupId,
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const navigate = useNavigate();
   const { navigateToMessage, isSearching, loadingProgress, currentAttempt } = useMessageNavigation();
   
   // Use the RTK Query hook to search messages
