@@ -1,5 +1,5 @@
 // EmojiPicker.jsx
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiSmile } from 'react-icons/fi';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
@@ -10,11 +10,28 @@ interface EmojiPickerProps {
 
 const EmojiPicker = ({ onSelectEmoji }: EmojiPickerProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const handleEmojiSelect = (emoji: any) => {
     onSelectEmoji(emoji.native);
     setShowEmojiPicker(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   return (
     <div className="relative">
@@ -27,7 +44,7 @@ const EmojiPicker = ({ onSelectEmoji }: EmojiPickerProps) => {
       </button>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-full mb-2 right-0 z-50">
+        <div className="absolute bottom-full mb-2 right-0 z-50" ref={pickerRef}>
           <Picker data={data} onEmojiSelect={handleEmojiSelect} theme="dark" />
         </div>
       )}
