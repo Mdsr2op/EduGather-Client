@@ -26,7 +26,6 @@ export interface MessageProps {
 const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps) => {
   const messageRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
-  const selectedChannelId = useSelector(selectSelectedChannelId);
   const { groupId = "" } = useParams<{ groupId: string }>();
   const { socket } = useSocket();
   
@@ -143,6 +142,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
         break;
       case "copy":
         navigator.clipboard.writeText(message.text);
+        toast.success('Copied to clipboard' , {
+          position: "top-center",
+        });
         break;
       case "forward":
         setForwardDialogOpen(true);
@@ -244,6 +246,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
                 />
                 {isEdited && (
                   <span className="ml-1 text-gray-400">(edited)</span>
+                )}
+                {message.forwardedFrom && message.forwardedFrom.messageId && (
+                  <span className="ml-1 text-gray-400">(forwarded)</span>
                 )}
                 {message.pinned && (
                   <span className="ml-2 text-yellow-500">📌 Pinned</span>

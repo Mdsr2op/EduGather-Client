@@ -74,7 +74,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinned: message.pinned || false,
         mentions: message.mentions || [],
         replyTo: message.replyTo || null,
-        attachment: message.attachment || null
+        attachment: message.attachment || null,
+        forwardedFrom: message.forwardedFrom || null
       };
       
       // Add to Redux store
@@ -91,6 +92,15 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         updatedAt: message.updatedAt,
         createdAt: message.createdAt
       };
+      
+      // Add forwardedFrom information if available
+      if (message.forwardedFrom) {
+        formattedMessage.forwardedFrom = {
+          messageId: message.forwardedFrom.messageId,
+          channelId: message.forwardedFrom.channelId,
+          senderId: message.forwardedFrom.senderId
+        };
+      }
       
       // Add reply information if available
       if (message.replyTo && message.replyTo.messageId) {
@@ -137,7 +147,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinned: message.pinned || false,
         mentions: message.mentions || [],
         replyTo: message.replyTo || null,
-        attachment: message.attachment || null
+        attachment: message.attachment || null,
+        forwardedFrom: message.forwardedFrom || null
       };
       
       // Update in Redux store
@@ -154,6 +165,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 timestamp: new Date(message.updatedAt).getTime(),
                 updatedAt: message.updatedAt,
                 createdAt: message.createdAt,
+                forwardedFrom: message.forwardedFrom || msg.forwardedFrom,
                 attachment: message.attachment ? {
                   id: message.attachment._id,
                   url: message.attachment.url,
@@ -187,7 +199,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinnedBy: message.pinnedBy,
         mentions: message.mentions || [],
         replyTo: message.replyTo || null,
-        attachment: message.attachment || null
+        attachment: message.attachment || null,
+        forwardedFrom: message.forwardedFrom || null
       };
       
       // Update in Redux store
@@ -202,7 +215,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 pinned: true,
                 timestamp: new Date(message.updatedAt).getTime(),
                 updatedAt: message.updatedAt,
-                createdAt: message.createdAt
+                createdAt: message.createdAt,
+                forwardedFrom: message.forwardedFrom || msg.forwardedFrom
               }
             : msg
         )
@@ -227,7 +241,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         pinnedBy: undefined,
         mentions: message.mentions || [],
         replyTo: message.replyTo || null,
-        attachment: message.attachment || null
+        attachment: message.attachment || null,
+        forwardedFrom: message.forwardedFrom || null
       };
       
       // Update in Redux store
@@ -242,7 +257,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 pinned: false,
                 timestamp: new Date(message.updatedAt).getTime(),
                 updatedAt: message.updatedAt,
-                createdAt: message.createdAt
+                createdAt: message.createdAt,
+                forwardedFrom: message.forwardedFrom || msg.forwardedFrom
               }
             : msg
         )
@@ -298,6 +314,15 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           createdAt: msg.createdAt,
           updatedAt: msg.updatedAt
         };
+        
+        // Add forwardedFrom information if available
+        if (msg.forwardedFrom) {
+          formattedMessage.forwardedFrom = {
+            messageId: msg.forwardedFrom.messageId,
+            channelId: msg.forwardedFrom.channelId,
+            senderId: msg.forwardedFrom.senderId
+          };
+        }
         
         // Add reply information if available
         if (msg.replyTo && msg.replyTo.messageId) {

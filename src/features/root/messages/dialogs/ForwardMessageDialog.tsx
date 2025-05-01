@@ -53,7 +53,8 @@ const ForwardMessageDialog = ({
       await forwardMessage({
         messageId: message.id,
         data: {
-          targetChannelId: selectedChannelId
+          targetChannelId: selectedChannelId,
+          senderId: message.senderId
         }
       }).unwrap();
       
