@@ -36,7 +36,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
             content: message,
             mentions: [],
             // Include reply reference if replying to a message
-            replyTo: replyTo ? replyTo._id : null
+            replyTo: replyTo
           });
           
           // Clear the reply state
@@ -87,7 +87,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       
       // Add reply reference if available
       if (replyTo) {
-        formData.append('replyTo', replyTo._id);
+        formData.append('replyTo', replyTo.messageId);
       }
       
       // Show uploading toast at the bottom center
@@ -138,14 +138,22 @@ const ChatInput = ({ userId }: ChatInputProps) => {
     <div className="bg-dark-3 py-2 px-5 flex flex-col justify-between">
       {/* Reply info */}
       {replyTo && (
-        <div className="mb-2 p-2 bg-dark-4 rounded-md flex justify-between items-center">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400">Replying to {replyTo.senderId.username}</span>
-            <span className="text-sm text-white truncate">{replyTo.content}</span>
+        <div className="px-3 py-2 mb-2 text-sm bg-dark-3 rounded-lg flex justify-between items-start border-l-2 border-primary-500 hover:bg-dark-2 transition-colors">
+          <div className="flex flex-col w-full">
+            <div className="flex items-center mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-primary-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span className="font-semibold text-primary-400">@{replyTo.senderId.username}</span>
+            </div>
+            <p className="text-gray-300 truncate pl-5">
+              {replyTo.content?.substring(0, 120)}
+              {replyTo.content?.length > 120 ? '...' : ''}
+            </p>
           </div>
           <button 
             onClick={clearReply}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white ml-2 flex-shrink-0"
             aria-label="Cancel Reply"
           >
             <FiX size={18} />

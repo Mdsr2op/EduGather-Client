@@ -87,7 +87,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         senderId: typeof message.senderId === 'object' ? message.senderId._id : message.senderId,
         senderName: typeof message.senderId === 'object' ? message.senderId.username : 'User',
         timestamp: new Date(message.createdAt).getTime(),
-        pinned: message.pinned || false
+        pinned: message.pinned || false,
+        updatedAt: message.updatedAt,
+        createdAt: message.createdAt
       };
       
       // Add reply information if available
@@ -115,8 +117,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       
       // Add to UI messages
       setAllMessages(prev => [...prev, formattedMessage]);
-      
-      // No auto-scrolling for new messages
+      console.log('All messages after update:', allMessages);
     };
 
     // Handle updated messages from socket
@@ -151,6 +152,8 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 text: message.content,
                 pinned: message.pinned || false,
                 timestamp: new Date(message.updatedAt).getTime(),
+                updatedAt: message.updatedAt,
+                createdAt: message.createdAt,
                 attachment: message.attachment ? {
                   id: message.attachment._id,
                   url: message.attachment.url,
@@ -197,7 +200,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
             ? {
                 ...msg,
                 pinned: true,
-                timestamp: new Date(message.updatedAt).getTime()
+                timestamp: new Date(message.updatedAt).getTime(),
+                updatedAt: message.updatedAt,
+                createdAt: message.createdAt
               }
             : msg
         )
@@ -235,7 +240,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
             ? {
                 ...msg,
                 pinned: false,
-                timestamp: new Date(message.updatedAt).getTime()
+                timestamp: new Date(message.updatedAt).getTime(),
+                updatedAt: message.updatedAt,
+                createdAt: message.createdAt
               }
             : msg
         )
@@ -287,7 +294,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           senderId: typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId,
           senderName: typeof msg.senderId === 'object' ? msg.senderId.username : 'User',
           timestamp: new Date(msg.createdAt).getTime(),
-          pinned: msg.pinned
+          pinned: msg.pinned,
+          createdAt: msg.createdAt,
+          updatedAt: msg.updatedAt
         };
         
         // Add reply information if available

@@ -7,6 +7,7 @@ type MenuItemProps = {
   onClick: () => void;
   isDanger?: boolean;
   className?: string;
+  disabled?: boolean;
 };
 
 const MenuItem: React.FC<MenuItemProps> = ({ 
@@ -14,11 +15,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
   label, 
   onClick, 
   isDanger,
-  className = "" 
+  className = "",
+  disabled = false
 }) => (
   <li
-    onClick={onClick}
-    className={`flex items-center px-4 py-2.5 text-sm transition-colors duration-150 hover:bg-dark-3 cursor-pointer ${
+    onClick={disabled ? undefined : onClick}
+    className={`flex items-center px-4 py-2.5 text-sm transition-colors duration-150 ${
+      disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-dark-3 cursor-pointer'
+    } ${
       isDanger ? 'text-red hover:text-red' : 'text-light-1 hover:text-light-0'
     } ${className}`}
   >

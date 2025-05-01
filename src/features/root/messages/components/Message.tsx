@@ -16,6 +16,7 @@ import MessageReplyInfo from "./ui/MessageReplyInfo";
 import MessageAttachment from "./ui/MessageAttachment";
 import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
 import MessageContent from "./ui/MessageContent";
+import toast from "react-hot-toast";
 export interface MessageProps {
   message: MessageType;
   isUserMessage: boolean;
@@ -47,6 +48,10 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   } = useMessageActions(socket);
 
   const handleContextMenu = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.message-reply-info')) {
+      return;
+    }
+    
     e.preventDefault();
     
     const menuWidth = 192;
@@ -106,24 +111,31 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   const handleMessageAction = async (action: string) => {
     switch (action) {
       case "edit":
-        setEditMode(true);
-        setEditContent(message.text);
+        // Check if message is within one hour edit window
+        const currentTime = new Date().getTime();
+        const messageTime = message.createdAt 
+          ? new Date(message.createdAt).getTime() 
+          : new Date(message.timestamp).getTime();
+        const oneHourInMs = 60 * 60 * 1000;
+        
+        if (currentTime - messageTime <= oneHourInMs) {
+          setEditMode(true);
+          setEditContent(message.text);
+        } else {
+          toast.error('Editing is not allowed after one hour');
+        }
         break;
       case "delete":
         setDeleteDialogOpen(true);
         break;
       case "reply":
         dispatch(setReplyTo({
-          _id: message.id,
+          messageId: message.id,
           content: message.text,
           senderId: {
             _id: message.senderId,
             username: message.senderName
           },
-          channelId: selectedChannelId || "",
-          createdAt: new Date(message.timestamp).toISOString(),
-          updatedAt: new Date(message.timestamp).toISOString(),
-          pinned: message.pinned || false
         }));
         break;
       case "pin":
@@ -153,8 +165,25 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     }
   };
 
+  // Check if message has been edited
+  const isEdited = message.updatedAt && message.createdAt && new Date(message.updatedAt).getTime() > new Date(message.createdAt).getTime();
+  
   // Check if this is a meeting attachment
   const isMeetingAttachment = message.attachment?.fileType === 'application/meeting';
+
+  // Get classes for message bubble based on message properties
+  const getMessageBubbleClasses = () => {
+    const baseClasses = `py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
+      isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
+    } ${message.pinned ? "border-2 border-yellow-500" : ""}`;
+    
+    // Add appropriate border radius for reply
+    if (message.replyTo) {
+      return `${baseClasses} rounded-tl-none`;
+    }
+    
+    return baseClasses;
+  };
 
   return (
     <>
@@ -169,14 +198,14 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
           <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
-            {message.replyTo && <MessageReplyInfo replyTo={message.replyTo} />}
+            {message.replyTo && (
+              <div className={`${isUserMessage ? "items-end" : "items-start"} message-reply-info`}>
+                <MessageReplyInfo replyTo={message.replyTo} />
+              </div>
+            )}
             
             {!isMeetingAttachment && (
-              <div
-                className={`py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
-                  isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
-                } ${message.pinned ? "border-2 border-yellow-500" : ""} ${message.replyTo ? "rounded-tl-none" : ""}`}
-              >
+              <div className={getMessageBubbleClasses()}>
                 {editMode && isUserMessage ? (
                   <MessageEditForm 
                     content={editContent}
@@ -213,6 +242,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
                   timestamp={message.timestamp}
                   isUserMessage={isUserMessage}
                 />
+                {isEdited && (
+                  <span className="ml-1 text-gray-400">(edited)</span>
+                )}
                 {message.pinned && (
                   <span className="ml-2 text-yellow-500">📌 Pinned</span>
                 )}

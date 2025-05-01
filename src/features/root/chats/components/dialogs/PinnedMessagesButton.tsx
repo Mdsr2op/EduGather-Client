@@ -1,25 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
-import { useSelector } from "react-redux";
 import { selectSelectedChannelId } from "../../../channels/slices/channelSlice";
 import { useGetPinnedMessagesQuery } from "../../../messages/slices/messagesApiSlice";
 import PinnedMessagesDrawer from "../../../messages/components/PinnedMessagesDrawer";
 import { useAppSelector } from "@/redux/hook";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { selectSelectedGroupId } from "@/features/root/groups/slices/groupSlice";
+import { useSocket } from "@/lib/socket";
 
 const PinnedMessagesButton = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const selectedChannelId = useAppSelector(selectSelectedChannelId);
   const selectedGroupId = useAppSelector(selectSelectedGroupId);
   const user = useAppSelector(selectCurrentUser);
+  const { socket } = useSocket();
   
   // Use the API to get the pinned messages count
-  const { data: pinnedMessages } = useGetPinnedMessagesQuery(
+  const { data: pinnedMessages, refetch } = useGetPinnedMessagesQuery(
     { channelId: selectedChannelId || '' },
     { skip: !selectedChannelId }
   );
   const pinnedMessagesCount = pinnedMessages?.data?.length || 0;
+  
+  // Set up socket listeners for real-time pinned message updates
+  useEffect(() => {
+    if (!socket || !selectedChannelId) return;
+    
+    // Listen for message pin events
+    const handleMessagePinned = () => {
+      refetch();
+    };
+    
+    // Listen for message unpin events
+    const handleMessageUnpinned = () => {
+      refetch();
+    };
+    
+    // Add event listeners
+    socket.on("message_pinned", handleMessagePinned);
+    socket.on("message_unpinned", handleMessageUnpinned);
+    
+    // Clean up listeners on unmount or when channel changes
+    return () => {
+      socket.off("message_pinned", handleMessagePinned);
+      socket.off("message_unpinned", handleMessageUnpinned);
+    };
+  }, [socket, selectedChannelId, refetch]);
+  
   const handleOpenDrawer = () => {
     setIsDrawerOpen(true);
   };

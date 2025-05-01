@@ -1,6 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Message } from './messagesApiSlice';
 
+interface ReplyTo {
+  messageId: string;
+  content: string;
+  senderId: {
+    _id: string;
+    username: string;
+  };
+}
+
 interface MessagesState {
   currentChannelId: string | null;
   messages: Message[];
@@ -12,7 +21,7 @@ interface MessagesState {
   };
   isLoading: boolean;
   error: string | null;
-  replyTo: Message | null;
+  replyTo: ReplyTo | null;
   pinnedMessage: Message | null;
 }
 
@@ -59,7 +68,7 @@ const messagesSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-    setReplyTo: (state, action: PayloadAction<Message | null>) => {
+    setReplyTo: (state, action: PayloadAction<ReplyTo | null>) => {
       state.replyTo = action.payload;
     },
     setPinnedMessage: (state, action: PayloadAction<Message | null>) => {

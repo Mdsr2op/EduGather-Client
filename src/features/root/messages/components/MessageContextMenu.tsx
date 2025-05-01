@@ -29,6 +29,17 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
   const [menuPos, setMenuPos] = useState({ ...position });
   const [transformOrigin, setTransformOrigin] = useState("top left");
 
+  // Check if message is within one hour edit window
+  const isWithinEditWindow = () => {
+    const currentTime = new Date().getTime();
+    const messageTime = message.createdAt 
+      ? new Date(message.createdAt).getTime() 
+      : new Date(message.timestamp).getTime();
+    const oneHourInMs = 60 * 60 * 1000;
+    
+    return currentTime - messageTime <= oneHourInMs;
+  };
+
   // Calculate optimal position and transform origin on mount
   useEffect(() => {
     if (menuRef.current) {
@@ -115,8 +126,9 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
           <>
             <MenuItem
               icon={FaEdit}
-              label="Edit Message"
+              label={isWithinEditWindow() ? "Edit Message" : "Edit Message (expired)"}
               onClick={() => onAction("edit")}
+              disabled={!isWithinEditWindow()}
             />
             <MenuItem
               icon={FaTrash}
