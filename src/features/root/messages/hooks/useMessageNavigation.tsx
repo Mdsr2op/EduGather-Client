@@ -4,7 +4,7 @@ import useScrollToElement from './useScrollToElement';
 import { createPollingController } from '../utils/elementPolling';
 
 // Configuration constants
-const MAX_LOAD_ATTEMPTS = 10;
+const MAX_LOAD_ATTEMPTS = 100;
 
 /**
  * Hook for navigating to specific messages in chat, loading older messages if needed

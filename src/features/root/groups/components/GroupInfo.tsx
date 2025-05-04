@@ -25,6 +25,14 @@ const GroupInfo = () => {
     member => member._id === currentUserId && member.role === "admin"
   ) || false;
 
+  // Check if current user is a moderator in this group
+  const isModerator = currentUserId && groupDetails?.members?.some(
+    member => member._id === currentUserId && member.role === "moderator"
+  ) || false;
+
+  // Determine the current user's role
+  const currentUserRole = isAdmin ? "admin" : isModerator ? "moderator" : "member";
+
   if (isLoading) return (
     <div className="flex justify-center items-center h-full">
       <div className="animate-pulse text-light-3">Loading group information...</div>
@@ -130,7 +138,13 @@ const GroupInfo = () => {
         <div className="bg-dark-4/30 rounded-lg shadow-inner h-60 overflow-y-auto custom-scrollbar p-3">
           {groupDetails.members?.length ? (
             groupDetails.members.map((member) => (
-              <GroupMemberCard key={member._id} member={member} isAdmin={isAdmin} groupId={groupId!} />
+              <GroupMemberCard 
+                key={member._id} 
+                member={member} 
+                isAdmin={isAdmin} 
+                groupId={groupId!}
+                currentUserRole={currentUserRole}
+              />
             ))
           ) : (
             <div className="flex justify-center items-center h-full text-light-3">

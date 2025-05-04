@@ -33,16 +33,18 @@ const MenuItem = ({ icon: Icon, label, onClick, isDanger = false, isLoading = fa
 interface RoleMenuProps {
   member: GroupMember;
   isOpen: boolean;
+  isAdmin: boolean;
+  isModerator?: boolean;
   onClose: () => void;
   groupId: string;
 }
 
-const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
+
+const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, groupId }: RoleMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [assignRole, { isLoading: isAssigningRole }] = useAssignRoleMutation();
   const [removeUser, { isLoading: isRemovingUser }] = useRemoveUserFromGroupMutation();
   
-  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogAction, setDialogAction] = useState<"removeUser" | "removeAdminRole" | "removeModeratorRole">("removeUser");
   const [pendingRole, setPendingRole] = useState<"member" | "moderator" | "admin" | null>(null);
@@ -135,7 +137,7 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
           </div>
           
           <div className="py-1">
-            {member.role === 'admin' ? (
+            {isAdmin && member.role === 'admin' ? (
               <MenuItem
                 icon={MdPersonRemove}
                 label="Remove Admin Role"
@@ -143,7 +145,7 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
                 isLoading={isAssigningRole}
                 isDanger={true}
               />
-            ) : member.role === 'moderator' ? (
+            ) : isAdmin && member.role === 'moderator' ? (
               <>
                 <MenuItem
                   icon={MdAdminPanelSettings}
@@ -159,7 +161,7 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
                   isDanger={true}
                 />
               </>
-            ) : (
+            ) : isAdmin ? (
               <>
                 <MenuItem
                   icon={MdSupervisorAccount}
@@ -175,6 +177,22 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
                   isLoading={isRemovingUser}
                 />
               </>
+            ) : isModerator ? (
+              <MenuItem
+                icon={MdPersonRemove}
+                label={`Remove ${member.username}`}
+                onClick={showRemoveUserDialog}
+                isDanger={true}
+                isLoading={isRemovingUser}
+              />
+            ) : (
+              <MenuItem
+                icon={MdPersonRemove}
+                label={`Remove ${member.username}`}
+                onClick={showRemoveUserDialog}
+                isDanger={true}
+                isLoading={isRemovingUser}
+              />
             )}
           </div>
           

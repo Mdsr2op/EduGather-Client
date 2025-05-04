@@ -14,22 +14,32 @@ interface GroupMemberCardProps {
   member: GroupMember;
   isAdmin?: boolean;
   groupId: string;
+  currentUserRole?: string;
 }
 
 const GroupMemberCard = ({ 
   member, 
   isAdmin = false,
-  groupId
+  groupId,
+  currentUserRole = 'member'
 }: GroupMemberCardProps) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   
   const isAdminMember = member.role === 'admin';
   const isModeratorMember = member.role === 'moderator';
+  const isRegularMember = !isAdminMember && !isModeratorMember;
   
   const handleToggleMenu = () => {
     setShowRoleMenu(prev => !prev);
   };
+
+  // Determine if we should show the gear icon
+  const shouldShowGear = 
+    // Admins can manage all users
+    isAdmin || 
+    // Moderators can only manage regular members
+    (currentUserRole === 'moderator' && isRegularMember);
   
   return (
     <div 
@@ -66,7 +76,7 @@ const GroupMemberCard = ({
         </div>
       </div>
       
-      {isAdmin && (
+      {shouldShowGear && (
         <div className="relative">
           <button 
             ref={buttonRef}
@@ -80,6 +90,8 @@ const GroupMemberCard = ({
           <RoleMenu 
             member={member}
             isOpen={showRoleMenu}
+            isAdmin={isAdmin}
+            isModerator={currentUserRole === 'moderator'}
             onClose={() => setShowRoleMenu(false)}
             groupId={groupId}
           />
