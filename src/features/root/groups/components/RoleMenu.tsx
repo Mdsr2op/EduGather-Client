@@ -4,7 +4,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import type { GroupMember } from './GroupMemberCard';
 import { useAssignRoleMutation, useRemoveUserFromGroupMutation } from '../slices/groupApiSlice';
 import { toast } from 'react-hot-toast';
-import RemoveConfirmationDialog from './RemoveConfirmationDialog';
+import RemoveUserDialog from './RemoveUserDialog';
 
 type MenuItemProps = {
   icon: React.ComponentType<{ className?: string }>;
@@ -44,11 +44,8 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
   
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogProps, setDialogProps] = useState({
-    title: '',
-    description: '',
-    onConfirm: async () => {},
-  });
+  const [dialogAction, setDialogAction] = useState<"removeUser" | "removeAdminRole" | "removeModeratorRole">("removeUser");
+  const [pendingRole, setPendingRole] = useState<"member" | "moderator" | "admin" | null>(null);
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,6 +63,23 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
     };
   }, [isOpen, onClose]);
 
+  const showRemoveRoleDialog = (role: "member" | "moderator" | "admin") => {
+    if (role === "moderator" && member.role === "admin") {
+      setDialogAction("removeAdminRole");
+    } else if (role === "member" && member.role === "moderator") {
+      setDialogAction("removeModeratorRole");
+    }
+    setPendingRole(role);
+    setDialogOpen(true);
+    onClose(); // Close the menu
+  };
+
+  const showRemoveUserDialog = () => {
+    setDialogAction("removeUser");
+    setDialogOpen(true);
+    onClose(); // Close the menu
+  };
+
   const handleAssignRole = async (role: "member" | "moderator" | "admin") => {
     try {
       await assignRole({ 
@@ -76,7 +90,6 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
       
       toast.success(`${member.username} is now a ${role}`);
       onClose();
-      setDialogOpen(false);
     } catch (error) {
       console.error('Failed to update role:', error);
       toast.error('Failed to update member role');
@@ -92,115 +105,97 @@ const RoleMenu = ({ member, isOpen, onClose, groupId }: RoleMenuProps) => {
       
       toast.success(`${member.username} has been removed from the group`);
       onClose();
-      setDialogOpen(false);
     } catch (error) {
       console.error('Failed to remove member:', error);
       toast.error('Failed to remove member from group');
     }
   };
 
-  const openRemoveAdminDialog = () => {
-    setDialogProps({
-      title: "Remove Admin Role",
-      description: `Are you sure you want to remove admin privileges from ${member.username}? They will be demoted to a moderator.`,
-      onConfirm: () => handleAssignRole('moderator'),
-    });
-    setDialogOpen(true);
+  const handleDialogConfirm = async () => {
+    if (dialogAction === "removeUser") {
+      await handleRemoveMember();
+    } else if (pendingRole && (dialogAction === "removeAdminRole" || dialogAction === "removeModeratorRole")) {
+      await handleAssignRole(pendingRole);
+    }
+    setDialogOpen(false);
   };
 
-  const openRemoveModeratorDialog = () => {
-    setDialogProps({
-      title: "Remove Moderator Role",
-      description: `Are you sure you want to remove moderator privileges from ${member.username}? They will become a regular member.`,
-      onConfirm: () => handleAssignRole('member'),
-    });
-    setDialogOpen(true);
-  };
-
-  const openRemoveMemberDialog = () => {
-    setDialogProps({
-      title: "Remove Member",
-      description: `Are you sure you want to remove ${member.username} from this group? This action cannot be undone.`,
-      onConfirm: handleRemoveMember,
-    });
-    setDialogOpen(true);
-  };
-
-  if (!isOpen) return null;
+  if (!isOpen && !dialogOpen) return null;
   
   return (
     <>
-      <div 
-        ref={menuRef}
-        className="absolute right-0 top-full mt-1 bg-dark-2 text-light-1 rounded-xl shadow-lg z-50 border border-dark-4 backdrop-blur-lg overflow-hidden min-w-[180px]"
-        style={{ animation: "menuFadeIn 0.15s ease-in-out" }}
-      >
-        <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
-          <h3 className="text-sm font-medium truncate">Manage {member.username}</h3>
-        </div>
-        
-        <div className="py-1">
-          {member.role === 'admin' ? (
-            <MenuItem
-              icon={MdPersonRemove}
-              label="Remove Admin Role"
-              onClick={openRemoveAdminDialog}
-              isLoading={isAssigningRole}
-              isDanger={true}
-            />
-          ) : member.role === 'moderator' ? (
-            <>
-              <MenuItem
-                icon={MdAdminPanelSettings}
-                label="Make Admin"
-                onClick={() => handleAssignRole('admin')}
-                isLoading={isAssigningRole}
-              />
+      {isOpen && (
+        <div 
+          ref={menuRef}
+          className="absolute right-0 top-full mt-1 bg-dark-2 text-light-1 rounded-xl shadow-lg z-50 border border-dark-4 backdrop-blur-lg overflow-hidden min-w-[180px]"
+          style={{ animation: "menuFadeIn 0.15s ease-in-out" }}
+        >
+          <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+            <h3 className="text-sm font-medium truncate">Manage {member.username}</h3>
+          </div>
+          
+          <div className="py-1">
+            {member.role === 'admin' ? (
               <MenuItem
                 icon={MdPersonRemove}
-                label="Remove Moderator Role"
-                onClick={openRemoveModeratorDialog}
+                label="Remove Admin Role"
+                onClick={() => showRemoveRoleDialog('moderator')}
                 isLoading={isAssigningRole}
                 isDanger={true}
               />
-            </>
-          ) : (
-            <>
-              <MenuItem
-                icon={MdSupervisorAccount}
-                label="Make Moderator"
-                onClick={() => handleAssignRole('moderator')}
-                isLoading={isAssigningRole}
-              />
-              <MenuItem
-                icon={MdPersonRemove}
-                label={`Remove ${member.username}`}
-                onClick={openRemoveMemberDialog}
-                isDanger={true}
-                isLoading={isRemovingUser}
-              />
-            </>
-          )}
+            ) : member.role === 'moderator' ? (
+              <>
+                <MenuItem
+                  icon={MdAdminPanelSettings}
+                  label="Make Admin"
+                  onClick={() => handleAssignRole('admin')}
+                  isLoading={isAssigningRole}
+                />
+                <MenuItem
+                  icon={MdPersonRemove}
+                  label="Remove Moderator Role"
+                  onClick={() => showRemoveRoleDialog('member')}
+                  isLoading={isAssigningRole}
+                  isDanger={true}
+                />
+              </>
+            ) : (
+              <>
+                <MenuItem
+                  icon={MdSupervisorAccount}
+                  label="Make Moderator"
+                  onClick={() => handleAssignRole('moderator')}
+                  isLoading={isAssigningRole}
+                />
+                <MenuItem
+                  icon={MdPersonRemove}
+                  label={`Remove ${member.username}`}
+                  onClick={showRemoveUserDialog}
+                  isDanger={true}
+                  isLoading={isRemovingUser}
+                />
+              </>
+            )}
+          </div>
+          
+          <style>
+            {`
+              @keyframes menuFadeIn {
+                from { opacity: 0; transform: translateY(-5px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `}
+          </style>
         </div>
-        
-        <style>
-          {`
-            @keyframes menuFadeIn {
-              from { opacity: 0; transform: translateY(-5px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-          `}
-        </style>
-      </div>
+      )}
 
-      <RemoveConfirmationDialog
+      <RemoveUserDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={dialogProps.title}
-        description={dialogProps.description}
-        username={member.username}
-        onConfirm={dialogProps.onConfirm}
-        isLoading={isAssigningRole || isRemovingUser}
+        member={member}
+        onConfirm={handleDialogConfirm}
+        isLoading={dialogAction === "removeUser" ? isRemovingUser : isAssigningRole}
+        actionType={dialogAction}
       />
     </>
   );

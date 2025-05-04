@@ -8,29 +8,50 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { GroupMember } from "./GroupMemberCard";
 
-interface RemoveConfirmationDialogProps {
+interface RemoveUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  username: string;
+  member: GroupMember;
   onConfirm: () => Promise<void>;
   isLoading: boolean;
+  actionType: "removeUser" | "removeAdminRole" | "removeModeratorRole";
 }
 
-const RemoveConfirmationDialog = ({
+const RemoveUserDialog = ({
   open,
   onOpenChange,
-  title,
-  description,
-  username,
+  member,
   onConfirm,
   isLoading,
-}: RemoveConfirmationDialogProps) => {
+  actionType,
+}: RemoveUserDialogProps) => {
   const handleClose = () => {
     onOpenChange(false);
   };
+
+  const getTitleAndDescription = () => {
+    switch (actionType) {
+      case "removeUser":
+        return {
+          title: `Remove ${member.username}`,
+          description: `Are you sure you want to remove ${member.username} from this group? This action cannot be undone.`
+        };
+      case "removeAdminRole":
+        return {
+          title: "Remove Admin Role",
+          description: `Are you sure you want to remove admin privileges from ${member.username}? They will be downgraded to moderator.`
+        };
+      case "removeModeratorRole":
+        return {
+          title: "Remove Moderator Role",
+          description: `Are you sure you want to remove moderator privileges from ${member.username}? They will be downgraded to regular member.`
+        };
+    }
+  };
+
+  const { title, description } = getTitleAndDescription();
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -46,8 +67,14 @@ const RemoveConfirmationDialog = ({
 
         <div className="mt-4 p-4 bg-dark-3 rounded-xl border border-dark-5">
           <div className="text-sm text-light-2 mb-2">User:</div>
-          <div className="text-sm text-light-1 break-words">
-            {username}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
+              {member.username.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div className="text-light-1 font-medium">{member.username}</div>
+              <div className="text-xs text-light-3 capitalize">{member.role}</div>
+            </div>
           </div>
         </div>
 
@@ -64,6 +91,7 @@ const RemoveConfirmationDialog = ({
           <Button
             className="bg-[#FF4C4C] text-white rounded-full shadow-md hover:bg-[#FF4C4C] hover:opacity-80"
             onClick={onConfirm}
+            disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
@@ -80,4 +108,4 @@ const RemoveConfirmationDialog = ({
   );
 };
 
-export default RemoveConfirmationDialog; 
+export default RemoveUserDialog; 
