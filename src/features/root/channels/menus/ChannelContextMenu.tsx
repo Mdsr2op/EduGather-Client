@@ -15,6 +15,7 @@ type Channel = {
 type ChannelContextMenuProps = {
   channel: Channel;
   position: { x: number; y: number };
+  canManageChannels: boolean;
   onClose: () => void;
   onAction: (action: string) => void;
 };
@@ -22,6 +23,7 @@ type ChannelContextMenuProps = {
 const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
   channel,
   position,
+  canManageChannels,
   onClose,
   onAction,
 }) => {
@@ -44,8 +46,6 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
     };
   }, [onClose]);
 
-  // Determine if the user has permissions to edit/delete
-  const isChannelOwner = true; // Replace with actual logic
 
   return (
     <div
@@ -67,7 +67,7 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
           label="View Channel Details"
           onClick={() => onAction("view")}
         />
-        {isChannelOwner && (
+        {canManageChannels && (
           <>
             <MenuItem
               icon={FiEdit2}

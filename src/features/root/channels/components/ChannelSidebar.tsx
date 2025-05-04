@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/redux/hook";
 
 // Import RTK Query hooks
 import {
   useGetChannelsQuery,
 } from "../slices/channelApiSlice";
+import { useGetGroupDetailsQuery } from "../../groups/slices/groupApiSlice";
 
 import {
   selectSelectedChannelId,
@@ -61,6 +63,9 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const isDeleteChannelDialogOpen = useSelector(selectIsDeleteChannelDialogOpen);
   const deleteChannelData = useSelector(selectDeleteChannelData);
 
+  // Get current user ID from auth state
+  const currentUserId = useAppSelector(state => state.auth.user?._id);
+  
   // ===================
   // Data Fetching
   // ===================
@@ -73,7 +78,20 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     skip: !groupId,
   });
 
+  // Get group details to check user role
+  const { data: groupDetails } = useGetGroupDetailsQuery(groupId, {
+    skip: !groupId,
+  });
+
   const channels = channelData?.data.channels ?? [];
+  
+  // Check if current user is an admin or moderator in this group
+  const userRole = currentUserId && groupDetails?.members?.find(
+    member => member._id === currentUserId
+  )?.role || "member";
+  
+  const canCreateChannel = userRole === "admin" || userRole === "moderator";
+  const canManageChannels = canCreateChannel;
   
   // For local state controlling the "Create Channel" button
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -167,14 +185,16 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
       {/* Header with Create Channel Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-3 md:pb-4 border-b-[1px] border-dark-4 -mx-3 md:-mx-4 lg:-mx-5 px-3 md:px-4 lg:px-5">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-1 sm:mb-0">Channels</h1>
-        <button
-          onClick={handleCreateChannelButtonClick}
-          className="bg-primary-500 hover:bg-primary-600 text-light-1 px-3 py-2 sm:p-2 md:p-3 rounded-lg md:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 flex items-center justify-center w-full sm:w-auto"
-          title="Create Channel"
-        >
-          <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="ml-2 text-sm md:text-base font-medium sm:hidden md:inline-block">Create</span>
-        </button>
+        {canCreateChannel && (
+          <button
+            onClick={handleCreateChannelButtonClick}
+            className="bg-primary-500 hover:bg-primary-600 text-light-1 px-3 py-2 sm:p-2 md:p-3 rounded-lg md:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 flex items-center justify-center w-full sm:w-auto"
+            title="Create Channel"
+          >
+            <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="ml-2 text-sm md:text-base font-medium sm:hidden md:inline-block">Create</span>
+          </button>
+        )}
       </div>
 
       {/* Channel List Container */}
@@ -205,6 +225,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
           channel={channelInContext}
           position={channelContextMenu.position}
           onClose={handleCloseContextMenu}
+          canManageChannels={canManageChannels}
           onAction={(action) => handleContextMenuAction(action, channelInContext._id)}
         />
       )}
