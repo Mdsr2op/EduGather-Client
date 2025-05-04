@@ -13,11 +13,13 @@ interface GroupMember {
 interface GroupMemberCardProps {
   member: GroupMember;
   isAdmin?: boolean;
+  groupId: string;
 }
 
 const GroupMemberCard = ({ 
   member, 
-  isAdmin = false 
+  isAdmin = false,
+  groupId
 }: GroupMemberCardProps) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -79,6 +81,7 @@ const GroupMemberCard = ({
             member={member}
             isOpen={showRoleMenu}
             onClose={() => setShowRoleMenu(false)}
+            groupId={groupId}
           />
         </div>
       )}

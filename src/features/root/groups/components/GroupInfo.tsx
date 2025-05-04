@@ -130,7 +130,7 @@ const GroupInfo = () => {
         <div className="bg-dark-4/30 rounded-lg shadow-inner h-60 overflow-y-auto custom-scrollbar p-3">
           {groupDetails.members?.length ? (
             groupDetails.members.map((member) => (
-              <GroupMemberCard key={member._id} member={member} isAdmin={isAdmin} />
+              <GroupMemberCard key={member._id} member={member} isAdmin={isAdmin} groupId={groupId!} />
             ))
           ) : (
             <div className="flex justify-center items-center h-full text-light-3">
