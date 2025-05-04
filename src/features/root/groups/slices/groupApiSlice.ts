@@ -180,6 +180,51 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       transformResponse: (response: any) => response.data,
       providesTags: (_, __, groupId) => [{ type: "Groups", id: groupId }],
     }),
+
+    // New endpoints for group membership management
+    inviteToGroup: builder.mutation<any, { groupId: string; userId: string }>({
+      query: ({ groupId, userId }) => ({
+        url: `/study-groups/${groupId}/invite`,
+        method: "POST",
+        body: { userId },
+      }),
+      invalidatesTags: (_, __, { groupId }) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: "LIST" },
+      ],
+    }),
+
+    removeUserFromGroup: builder.mutation<any, { groupId: string; userId: string }>({
+      query: ({ groupId, userId }) => ({
+        url: `/study-groups/${groupId}/users/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_, __, { groupId }) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: "LIST" },
+      ],
+    }),
+
+    getGroupMembers: builder.query<any, string>({
+      query: (groupId) => `/study-groups/${groupId}/members`,
+      transformResponse: (response: any) => response.members,
+      providesTags: (_, __, groupId) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: `members-${groupId}` },
+      ],
+    }),
+
+    assignRole: builder.mutation<any, { groupId: string; userId: string; role: "member" | "moderator" | "admin" }>({
+      query: ({ groupId, userId, role }) => ({
+        url: `/study-groups/${groupId}/users/${userId}/role`,
+        method: "PUT",
+        body: { role },
+      }),
+      invalidatesTags: (_, __, { groupId }) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: `members-${groupId}` },
+      ],
+    }),
   }),
   overrideExisting: false,
 });
@@ -194,5 +239,10 @@ export const {
   useDeleteGroupMutation,
   useJoinGroupMutation,
   useLeaveGroupMutation,
-  useGetGroupDetailsQuery, // Newly added hook
+  useGetGroupDetailsQuery,
+  // New hooks for group membership management
+  useInviteToGroupMutation,
+  useRemoveUserFromGroupMutation,
+  useGetGroupMembersQuery,
+  useAssignRoleMutation,
 } = groupApiSlice;

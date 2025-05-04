@@ -10,7 +10,6 @@ import MenuItem from "../../components/MenuItem";
 type Channel = {
   _id: string;
   channelName: string;
-  // Add other relevant properties if needed
 };
 
 type ChannelContextMenuProps = {
