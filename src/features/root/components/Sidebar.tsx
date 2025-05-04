@@ -19,6 +19,7 @@ import CreateChannelDialog from "../chats/components/dialogs/CreateChannelDialog
 import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
 import LeaveGroupDialog from "../groups/dialogs/LeaveGroupDialog";
 import EditGroupDialog from "../groups/dialogs/EditGroupDialog";
+import ViewGroupDetails from "../groups/dialogs/ViewGroupDetails";
 
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
@@ -330,12 +331,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         // Create group
         isCreateGroupModalOpen={isCreateGroupModalOpen}
         closeCreateGroupModal={() => setCreateGroupModalOpen(false)}
-        // View group details (if using Redux-based approach)
-        isViewGroupDetailsModalOpen={isViewGroupDetailsModalOpen}
-        closeViewGroupDetailsModal={() =>
-          dispatch(closeViewGroupDetailsModal())
-        }
       />
+
+      {/* View Group Details Dialog */}
+      {isViewGroupDetailsModalOpen && (
+        <ViewGroupDetails
+          isOpen={isViewGroupDetailsModalOpen}
+          onClose={() => dispatch(closeViewGroupDetailsModal())}
+        />
+      )}
 
       {/* Create Channel Dialog */}
       {isChannelDialogOpen && (
