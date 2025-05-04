@@ -5,9 +5,10 @@ import Message from '../../messages/components/Message';
 interface MessageBodyProps {
   messages: MessageType[];
   userId: string;
+  initialLoad?: boolean;
 }
 
-const MessageBody = ({ messages, userId }: MessageBodyProps) => {
+const MessageBody = ({ messages, userId, initialLoad = false }: MessageBodyProps) => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [prevMessageCount, setPrevMessageCount] = useState(0);
@@ -15,6 +16,12 @@ const MessageBody = ({ messages, userId }: MessageBodyProps) => {
   useLayoutEffect(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
+    
+    // Skip scroll adjustment for initial load, we'll handle it in the parent
+    if (initialLoad) {
+      setPrevMessageCount(messages.length);
+      return;
+    }
     
     const oldScrollHeight = container.scrollHeight;
     const oldScrollTop = container.scrollTop;
@@ -27,7 +34,7 @@ const MessageBody = ({ messages, userId }: MessageBodyProps) => {
     }
 
     setPrevMessageCount(messages.length);
-  }, [messages]);
+  }, [messages, initialLoad]);
 
   const shouldShowTimestamp = (message: MessageType, index: number) => {
     if (index === messages.length - 1) return true;
@@ -48,7 +55,7 @@ const MessageBody = ({ messages, userId }: MessageBodyProps) => {
       ) : (
         <>
           {messages.map((message, index) => (
-            <div key={message.id}>
+            <div key={`message-${message.id}-${index}`} id={`message-${message.id}`}>
               <Message
                 message={message}
                 isUserMessage={message.senderId === userId}

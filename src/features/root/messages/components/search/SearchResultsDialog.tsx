@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiX } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
 import SearchResultItem from './SearchResultItem';

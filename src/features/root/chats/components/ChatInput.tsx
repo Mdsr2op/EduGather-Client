@@ -112,6 +112,12 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         id: 'uploading',
         position: 'bottom-center'
       });
+
+      if (socket) {
+        socket.emit('attachment_message_created', {
+          messageId: response.data.message._id,
+        });
+      }
       
       console.log('Attachment uploaded successfully:', response);
       

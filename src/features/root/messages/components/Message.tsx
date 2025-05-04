@@ -1,9 +1,5 @@
 import { useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { selectSelectedChannelId } from "../../channels/slices/channelSlice";
-import { setReplyTo } from "../slices/messagesSlice";
 import { useSocket } from "@/lib/socket";
 import MessageAvatar from "./MessageAvatar";
 import MessageTimestamp from "./MessageTimestamp";
@@ -16,7 +12,9 @@ import MessageReplyInfo from "./ui/MessageReplyInfo";
 import MessageAttachment from "./ui/MessageAttachment";
 import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
 import MessageContent from "./ui/MessageContent";
+import DeletedMessage from "./ui/DeletedMessage";
 import toast from "react-hot-toast";
+
 export interface MessageProps {
   message: MessageType;
   isUserMessage: boolean;
@@ -25,7 +23,6 @@ export interface MessageProps {
 
 const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps) => {
   const messageRef = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
   const { groupId = "" } = useParams<{ groupId: string }>();
   const { socket } = useSocket();
   
@@ -40,10 +37,14 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     position: { x: 0, y: 0 }
   });
 
+  // Use our enhanced message actions hook for all operations
   const { 
     handleDeleteMessage, 
     handlePinMessage, 
-    handleEditMessage 
+    handleEditMessage,
+    handleReplyToMessage,
+    handleCopyMessage,
+    canEditMessage
   } = useMessageActions(socket);
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -110,14 +111,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   const handleMessageAction = async (action: string) => {
     switch (action) {
       case "edit":
-        // Check if message is within one hour edit window
-        const currentTime = new Date().getTime();
-        const messageTime = message.createdAt 
-          ? new Date(message.createdAt).getTime() 
-          : new Date(message.timestamp).getTime();
-        const oneHourInMs = 60 * 60 * 1000;
-        
-        if (currentTime - messageTime <= oneHourInMs) {
+        if (canEditMessage(message)) {
           setEditMode(true);
           setEditContent(message.text);
         } else {
@@ -128,23 +122,13 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
         setDeleteDialogOpen(true);
         break;
       case "reply":
-        dispatch(setReplyTo({
-          messageId: message.id,
-          content: message.text,
-          senderId: {
-            _id: message.senderId,
-            username: message.senderName
-          },
-        }));
+        handleReplyToMessage(message);
         break;
       case "pin":
         await handlePinMessage(message.id, !message.pinned);
         break;
       case "copy":
-        navigator.clipboard.writeText(message.text);
-        toast.success('Copied to clipboard' , {
-          position: "top-center",
-        });
+        handleCopyMessage(message.text);
         break;
       case "forward":
         setForwardDialogOpen(true);
@@ -186,6 +170,19 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     
     return baseClasses;
   };
+
+  // If message is deleted, display the DeletedMessage component instead
+  if (message.deletedAt) {
+    console.log("Message is deleted", message);
+    return (
+      <DeletedMessage 
+        message={{...message, id: `${message.id}-deleted`}} 
+        isUserMessage={isUserMessage} 
+        showTimestamp={showTimestamp} 
+      />
+    );
+  }
+  
 
   return (
     <>

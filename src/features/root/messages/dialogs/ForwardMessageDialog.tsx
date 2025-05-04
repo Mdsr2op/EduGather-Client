@@ -8,9 +8,10 @@ import {
   DialogTitle 
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useForwardMessageMutation } from '../slices/messagesApiSlice';
 import { useGetChannelsQuery } from '../../channels/slices/channelApiSlice';
 import { MessageType } from '../types/messageTypes';
+import { useSocket } from '@/lib/socket';
+import { useMessageActions } from '@/hooks/useMessageActions';
 
 interface ForwardMessageDialogProps {
   open: boolean;
@@ -28,8 +29,10 @@ const ForwardMessageDialog = ({
   const [selectedChannelId, setSelectedChannelId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   
-  const [forwardMessage, { isLoading }] = useForwardMessageMutation();
+  const { socket } = useSocket();
+  const { handleForwardMessage } = useMessageActions(socket);
   const { data: channelsData } = useGetChannelsQuery(groupId, { skip: !groupId });
   
   const channels = channelsData?.data?.channels || [];
@@ -50,21 +53,22 @@ const ForwardMessageDialog = ({
     }
     
     try {
-      await forwardMessage({
-        messageId: message.id,
-        data: {
-          targetChannelId: selectedChannelId,
-          senderId: message.senderId
-        }
-      }).unwrap();
+      setIsLoading(true);
+      const result = await handleForwardMessage(message.id, selectedChannelId);
       
-      setSuccess(true);
-      setTimeout(() => {
-        onOpenChange(false);
-      }, 1500);
+      if (result) {
+        setSuccess(true);
+        setTimeout(() => {
+          onOpenChange(false);
+        }, 1500);
+      } else {
+        setError('Failed to forward message. Please try again.');
+      }
     } catch (err) {
       setError('Failed to forward message. Please try again.');
       console.error('Error forwarding message:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
   

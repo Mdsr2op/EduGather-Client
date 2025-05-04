@@ -1,5 +1,6 @@
 import Message from "./models/message.model.js";
 import Attachment from "./models/attachment.model.js";
+import { sendMessageToKafka } from './config/kafka.config.js';
 
 export function setupSocket(io) {
     // Track online users by channel
@@ -120,8 +121,8 @@ export function setupSocket(io) {
                 }
             });
             
-            // For tracking when a participant joins a meeting
-            socket.on("joinedMeeting", (data) => {
+             // For tracking when a participant joins a meeting
+             socket.on("joinedMeeting", (data) => {
                 try {
                     const { meetingId, sessionId } = data;
                     if (!meetingId || !sessionId) return;
@@ -198,6 +199,7 @@ export function setupSocket(io) {
                     console.error("Error handling joined meeting:", error);
                 }
             });
+            
             
             // For tracking when a participant leaves a meeting
             socket.on("leftMeeting", (data) => {
@@ -443,23 +445,24 @@ export function setupSocket(io) {
             // Handle new message
             socket.on("new_message", async (data) => {
                 try {
-                    const message = new Message({
+                    const messageData = {
                         channelId: socket.channelId,
                         senderId: data.senderId,
                         content: data.content,
                         mentions: data.mentions || [],
                         replyTo: data.replyTo || null
-                    });
-
-                    await message.save();
-                    await message.populate('senderId', 'username avatar');
-                    if (message.replyTo) {
-                        await message.populate('replyTo.senderId', 'username');
-                    }
-
+                    };
+                    
                     // Broadcast to everyone in the channel including sender
-                    io.to(socket.channelId).emit("message", message);
-                    console.log("Message broadcasted to channel:", socket.channelId);
+                    // The actual database save will be handled by the Kafka consumer
+                    io.to(socket.channelId).emit("message", {
+                        ...messageData,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    });
+                    // Send message to Kafka
+                    await sendMessageToKafka(messageData);
+                    console.log("Message sent to Kafka and broadcasted to channel:", socket.channelId);
                 } catch (error) {
                     console.error("Error handling new message:", error);
                     socket.emit("error", { message: "Failed to send message" });
@@ -639,4 +642,4 @@ export function setupSocket(io) {
             }
         });
     });
-} 
+}

@@ -42,7 +42,6 @@ const SearchDialog = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: zodResolver(searchSchema),
     defaultValues: {

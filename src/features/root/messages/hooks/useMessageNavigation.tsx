@@ -1,28 +1,23 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { selectSelectedChannelId } from '../../channels/slices/channelSlice';
 import { loadMoreMessagesGlobal } from '../../chats/components/ChatWindow';
 import useScrollToElement from './useScrollToElement';
-import { pollForElement, createPollingController } from '../utils/elementPolling';
+import { createPollingController } from '../utils/elementPolling';
 
 // Configuration constants
 const MAX_LOAD_ATTEMPTS = 10;
-const ELEMENT_POLL_INTERVAL = 200;  // ms
-const ELEMENT_POLL_DURATION = 3000; // ms
 
 /**
  * Hook for navigating to specific messages in chat, loading older messages if needed
  */
 const useMessageNavigation = () => {
   // State for UI feedback
-  const [targetMessageId, setTargetMessageId] = useState<string | null>(null);
+  const [, setTargetMessageId] = useState<string | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   // References to maintain across renders
   const abortControllerRef = useRef<AbortController | null>(null);
-  const selectedChannelId = useSelector(selectSelectedChannelId);
   const { scrollAndHighlight } = useScrollToElement();
 
   /**
@@ -96,13 +91,11 @@ const useMessageNavigation = () => {
         return;
       }
       
-      // Poll for the message after triggering load
-      const foundElement = await pollForElement(messageElementId, {
-        interval: ELEMENT_POLL_INTERVAL,
-        maxDuration: ELEMENT_POLL_DURATION,
-        signal: abortControllerRef.current.signal
-      });
+      // We need to wait for messages to load
+      // Give more time for the loading to complete (loading spinner is visible to the user)
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
+      const foundElement = document.getElementById(messageElementId);
       if (foundElement) {
         // Message found after loading, scroll to it
         await scrollAndHighlight(foundElement);

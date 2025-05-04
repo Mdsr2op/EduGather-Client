@@ -1,6 +1,5 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Message } from '../../slices/messagesApiSlice';
 import { SearchResultMessage } from '../../pages/SearchResultsPage';
 
 interface SearchResultItemProps {
