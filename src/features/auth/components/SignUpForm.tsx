@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "./FileUpload";
-import { FiUser, FiImage } from "react-icons/fi";
+import { FiUser } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useSignupMutation } from "../slices/authApiSlice";
 import { toast } from "react-hot-toast";
@@ -23,7 +23,6 @@ interface SignUpFormValues {
   email: string;
   fullName: string;
   avatar: File | null;
-  coverImage: File | null;
   password: string;
 }
 
@@ -36,7 +35,6 @@ export function SignUpForm() {
       email: "",
       fullName: "",
       avatar: null,
-      coverImage: null,
       password: "",
     },
   });
@@ -51,9 +49,6 @@ export function SignUpForm() {
     formData.append("fullName", data.fullName);
     if (data.avatar) {
       formData.append("avatar", data.avatar);
-    }
-    if (data.coverImage) {
-      formData.append("coverImage", data.coverImage);
     }
     formData.append("password", data.password);
 
@@ -201,7 +196,7 @@ export function SignUpForm() {
             />
           </div>
 
-          {/* Right Column: Avatar and Cover Image Uploads */}
+          {/* Right Column: Avatar Upload */}
           <div className="flex flex-col gap-6">
             {/* Avatar Upload Field */}
             <FormField
@@ -226,50 +221,16 @@ export function SignUpForm() {
                 </FormItem>
               )}
             />
-
-            {/* Cover Image Upload Field */}
-            <FormField
-              name="coverImage"
-              control={form.control}
-              render={() => (
-                <FormItem>
-                  <FormLabel>Cover Image (Upload)</FormLabel>
-                  <FormControl>
-                    <FileUpload
-                      onFileUpload={(file) => form.setValue("coverImage", file)}
-                      label="Cover Photo"
-                      accept={{
-                        'image/jpeg': ['.jpeg', '.jpg'],
-                        'image/png': ['.png'],
-                        'image/gif': ['.gif'],
-                      }}
-                      icon={<FiImage size={24} className="text-gray-500" />}
-                    />
-                  </FormControl>
-                  <FormMessage className="shad-form_message" />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="col-span-1 md:col-span-2">
-            <Button
+            
+            {/* Submit Button */}
+            <Button 
               type="submit"
+              className="shad-button_primary mt-6"
               disabled={isLoading}
-              className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 rounded-md shad-button_primary"
             >
-              {isLoading ? "Processing..." : "Submit"}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </div>
-
-          {/* Sign In Link */}
-          <p className="col-span-1 md:col-span-2 text-sm text-gray-600 text-center mt-4">
-            Already have an account?
-            <a href="/sign-in" className="text-primary-500 font-semibold ml-1">
-              Sign in
-            </a>
-          </p>
         </form>
       </div>
     </Form>

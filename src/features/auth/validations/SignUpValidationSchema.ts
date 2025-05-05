@@ -21,14 +21,6 @@ export const SignUpValidationSchema = z.object({
       "Avatar must be an image file"
     ),
   
-  coverImage: z
-    .instanceof(File)
-    .optional()
-    .refine(
-      (file) => !file || file.type.startsWith("image/"),
-      "Cover image must be an image file"
-    ),
-  
   password: z.string()
     .min(8, "Password must be at least 8 characters long")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")

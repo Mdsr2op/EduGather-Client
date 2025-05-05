@@ -5,7 +5,6 @@ export interface User {
   email: string;
   fullName: string;
   avatar?: string;
-  coverImage?: string;
 }
 
 export interface SignUpFormValues {
@@ -13,7 +12,6 @@ export interface SignUpFormValues {
   email: string;
   fullname: string;
   avatar?: File | null;
-  coverImage?: File | null;
   password: string;
 }
 
