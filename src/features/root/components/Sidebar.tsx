@@ -11,7 +11,6 @@ import {
 } from "react-icons/fi";
 
 // UI components
-import SidebarLogo from "../groups/components/Logo";
 import SidebarDivider from "../groups/components/SidebarDivider";
 import AddGroupButton from "../groups/components/AddGroupButton";
 import ModalsManager from "./ModalsManager";
@@ -46,6 +45,7 @@ import {
 } from "../groups/slices/groupSlice";
 
 import Groups from "../groups/components/Groups";
+import UserAvatar from "./UserAvatar";
 
 interface SidebarProps {
   onCloseDrawer?: () => void;
@@ -62,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
 
   // Logged-in user
-  const userId = useSelector(
-    (state: { auth: AuthState }) => state.auth.user?._id ?? ""
+  const user = useSelector(
+    (state: { auth: AuthState }) => state.auth.user
   );
 
   // Group selection and context menu
@@ -89,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     isLoading,
     isError,
     error,
-  } = useGetJoinedGroupsQuery(userId, { skip: !userId });
+  } = useGetJoinedGroupsQuery(user?._id ?? "", { skip: !user?._id });
 
   // ----------------------------------
   // Local state for modals
@@ -199,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   if (isLoading) {
     return (
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
-        <SidebarLogo onClick={handleLogoClick} />
+        <UserAvatar onClick={handleLogoClick} user={user} />
         <SidebarDivider />
         <div className="text-light-3 mt-4">Loading your groups...</div>
       </div>
@@ -210,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     console.error(error);
     return (
       <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
-        <SidebarLogo onClick={handleLogoClick} />
+        <UserAvatar onClick={handleLogoClick} user={user} />
         <SidebarDivider />
         <div className="text-red mt-4">Error loading groups</div>
       </div>
@@ -220,7 +220,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
       <div className="mt-4 mb-2 hidden md:block">
-        <SidebarLogo onClick={handleLogoClick} />
+        <UserAvatar onClick={handleLogoClick} user={user} />
       </div>
 
       {/* Only show divider if logo is visible */}

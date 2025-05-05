@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { MdSettings } from 'react-icons/md';
 import RoleMenu from './RoleMenu';
+import { useAppSelector } from '@/redux/hook';
 
 interface GroupMember {
   _id: string;
@@ -25,6 +26,10 @@ const GroupMemberCard = ({
 }: GroupMemberCardProps) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  
+  // Get current user ID from auth state
+  const currentUserId = useAppSelector(state => state.auth.user?._id);
+  const isCurrentUser = currentUserId === member._id;
   
   const isAdminMember = member.role === 'admin';
   const isModeratorMember = member.role === 'moderator';
@@ -70,7 +75,7 @@ const GroupMemberCard = ({
         
         <div>
           <p className="text-sm font-semibold text-light-1 flex items-center gap-1">
-            {member.username}
+            {member.username}{isCurrentUser && <span className="text-light-1 text-xs font-normal">(You)</span>}
           </p>
           <p className="text-xs text-light-3 truncate max-w-[180px]">{member.email}</p>
         </div>

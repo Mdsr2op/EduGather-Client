@@ -4,8 +4,8 @@ export interface User {
   username: string;
   email: string;
   fullName: string;
-  avatarUrl?: string;
-  coverImageUrl?: string;
+  avatar?: string;
+  coverImage?: string;
 }
 
 export interface SignUpFormValues {

@@ -9,6 +9,11 @@ import {
 } from "react-icons/fa";
 import MenuItem from "../../components/MenuItem";
 import { MessageType } from "../types/messageTypes";
+import { useAppSelector } from "@/redux/hook";
+import { useParams } from "react-router-dom";
+import { useGetGroupDetailsQuery } from "../../groups/slices/groupApiSlice";
+import { useSelector } from "react-redux";
+import { selectSelectedGroupId } from "../../groups/slices/groupSlice";
 
 interface MessageContextMenuProps {
   message: MessageType;
@@ -16,6 +21,8 @@ interface MessageContextMenuProps {
   onClose: () => void;
   onAction: (action: string) => void;
   isUserMessage: boolean;
+  isAdmin?: boolean;
+  isModerator?: boolean;
 }
 
 const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
@@ -23,11 +30,37 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
   position,
   onClose,
   onAction,
-  isUserMessage
+  isUserMessage,
+  isAdmin = false,
+  isModerator = false
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState({ ...position });
   const [transformOrigin, setTransformOrigin] = useState("top left");
+  
+  // Get current user ID from auth state
+  const currentUserId = useAppSelector(state => state.auth.user?._id);
+  
+  // Get the current group ID from URL params or Redux state
+  const { groupId: paramGroupId } = useParams<{ groupId: string }>();
+  const selectedGroupId = useSelector(selectSelectedGroupId);
+  const groupId = paramGroupId || selectedGroupId;
+  
+  // Fetch group details to check user roles
+  const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
+    skip: !groupId
+  });
+  
+  // Determine if current user is admin or moderator
+  const userRole = currentUserId && groupDetails?.members?.find(
+    member => member._id === currentUserId
+  )?.role || "member";
+  
+  const isUserAdmin = userRole === "admin" || isAdmin;
+  const isUserModerator = userRole === "moderator" || isModerator;
+  
+  // Check if user can delete message (author, admin or moderator)
+  const canDeleteMessage = isUserMessage || isUserAdmin || isUserModerator;
 
   // Check if message is within one hour edit window
   const isWithinEditWindow = () => {
@@ -123,20 +156,20 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
           className={message.pinned ? "text-yellow-500" : ""}
         />
         {isUserMessage && (
-          <>
-            <MenuItem
-              icon={FaEdit}
-              label={isWithinEditWindow() ? "Edit Message" : "Edit Message (expired)"}
-              onClick={() => onAction("edit")}
-              disabled={!isWithinEditWindow()}
-            />
-            <MenuItem
-              icon={FaTrash}
-              label="Delete Message"
-              onClick={() => onAction("delete")}
-              isDanger={true}
-            />
-          </>
+          <MenuItem
+            icon={FaEdit}
+            label={isWithinEditWindow() ? "Edit Message" : "Edit Message (expired)"}
+            onClick={() => onAction("edit")}
+            disabled={!isWithinEditWindow()}
+          />
+        )}
+        {canDeleteMessage && (
+          <MenuItem
+            icon={FaTrash}
+            label="Delete Message"
+            onClick={() => onAction("delete")}
+            isDanger={true}
+          />
         )}
       </ul>
     </div>
