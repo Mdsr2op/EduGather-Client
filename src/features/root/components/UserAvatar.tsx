@@ -1,5 +1,6 @@
 import React from "react";
 import { User } from "@/features/auth/types";
+import { MdAccountCircle } from "react-icons/md";
 
 interface UserAvatarProps {
   user: User | null;
@@ -14,6 +15,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
       <div
         className="w-12 h-12 rounded-full bg-dark-4 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all duration-300"
         onClick={onClick}
+        title="Sign in"
       >
         <span className="text-light-2 text-lg font-semibold">?</span>
       </div>
@@ -26,21 +28,31 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, onClick }) => {
 
   return (
     <div 
-      className="relative cursor-pointer hover:scale-110 transition-transform duration-300"
-        onClick={onClick}
-      >
+      className="relative cursor-pointer group"
+      onClick={onClick}
+      title="View profile"
+    >
+      <div className="relative overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-lg rounded-full">
         {displayAvatar ? (
           <img
             src={user.avatar}
             alt={`${user.username}'s avatar`}
-            className="w-12 h-12 rounded-full object-cover border-2 border-light-3 hover:border-primary-500 transition-colors duration-300"
+            className="w-12 h-12 rounded-full object-cover border-2 border-light-3 group-hover:border-primary-500 transition-colors duration-300"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-dark-1 text-lg font-bold border-2 border-light-3 hover:border-primary-500 transition-colors duration-300">
+          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-dark-1 text-lg font-bold border-2 border-light-3 group-hover:border-primary-500 transition-colors duration-300">
             {userInitial}
           </div>
         )}
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-dark-1"></div>
+        
+        {/* Hover overlay with profile icon */}
+        <div className="absolute inset-0 bg-dark-1 bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <MdAccountCircle className="text-primary-500 text-lg" />
+        </div>
+      </div>
+      
+      {/* Online status indicator */}
+      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-dark-1"></div>
     </div>
   );
 };

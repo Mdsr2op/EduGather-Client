@@ -19,6 +19,7 @@ import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
 import LeaveGroupDialog from "../groups/dialogs/LeaveGroupDialog";
 import EditGroupDialog from "../groups/dialogs/EditGroupDialog";
 import ViewGroupDetails from "../groups/dialogs/ViewGroupDetails";
+import ViewUserProfile from "@/features/auth/components/ViewUserProfile";
 
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
@@ -98,6 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     React.useState(false);
   const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
   const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
+  const [isUserProfileOpen, setUserProfileOpen] = React.useState(false);
   
   // ----------------------------------
   // Listen for context menu actions from RootLayout
@@ -143,7 +145,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   // ----------------------------------
   // Handlers
   // ----------------------------------
-  const handleLogoClick = () => {
+  const handleLogoClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    
+    // Open user profile dialog
+    setUserProfileOpen(true);
+  };
+
+  const handleHomeClick = () => {
     // First set navigation source
     dispatch(setNavigationSource('user_action'));
     // Then navigate
@@ -375,6 +384,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           setIsOpen={() => dispatch(closeLeaveGroupDialog())}
         />
       )}
+
+      {/* User Profile Dialog */}
+      <ViewUserProfile
+        isOpen={isUserProfileOpen}
+        onClose={() => setUserProfileOpen(false)}
+        user={user}
+      />
     </div>
   );
 };
