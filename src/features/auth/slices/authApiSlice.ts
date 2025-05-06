@@ -1,5 +1,5 @@
 import { apiSlice } from "@/redux/api/apiSlice";
-import { setUser, setAccessToken } from "./authSlice";
+import { setUser, setAccessToken, logOut } from "./authSlice";
 import { AuthResponse, SignInFormValues } from "../types";
 
 // The backend's response has { data: { user, accessToken, refreshToken } } in some form
@@ -18,6 +18,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
           dispatch(setAccessToken(result.data.accessToken));
         } catch (err) {
           console.error("Login error:", err);
+        }
+      },
+    }),
+    logout: builder.mutation<any, void>({
+      query: () => ({
+        url: "/users/logout",
+        method: "POST",
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(logOut());
+        } catch (err) {
+          console.error("Logout error:", err);
         }
       },
     }),
@@ -70,6 +84,7 @@ export const {
   useSignInMutation, 
   useSignupMutation, 
   useGetCurrentUserQuery,
-  useCheckGoogleAuthStatusQuery
+  useCheckGoogleAuthStatusQuery,
+  useLogoutMutation
 } = authApiSlice;
   

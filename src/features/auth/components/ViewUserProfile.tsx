@@ -9,6 +9,7 @@ import { User } from "@/features/auth/types";
 import { MdEmail, MdPerson, MdSettings, MdInfo, MdNotifications, MdBrightness4, MdLogout, MdEdit, MdVpnKey } from 'react-icons/md';
 import { cn } from '@/lib/utils';
 import { Switch } from "@/components/ui/switch";
+import { useLogoutMutation } from '../slices/authApiSlice';
 
 type ViewUserProfileProps = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ type TabType = 'profile' | 'settings';
 const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user }) => {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [logout] = useLogoutMutation();
   
   if (!user) return null;
 
@@ -31,6 +33,15 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
         setActiveTab(tab);
         setIsAnimating(false);
       }, 150); // Match with animation duration
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+      onClose(); // Close the profile dialog after logout
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -225,6 +236,7 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                   <div className="w-full">
                     <button 
                       className="py-2.5 px-4 bg-transparent hover:bg-red-500/10 text-red-400 rounded-lg transition-colors font-medium border border-red-500/30 text-sm flex items-center justify-center gap-2 mt-2 w-full"
+                      onClick={handleLogout}
                     >
                       <MdLogout className="text-lg" />
                       Logout
