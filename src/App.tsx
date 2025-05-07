@@ -9,7 +9,6 @@ import AuthLayout from "./features/auth/layout/AuthLayout";
 import RootLayout from "./features/root/layout/RootLayout";
 import RequireAuth from "./features/auth/components/RequireAuth";
 import MeetingRecordings from "./components/pages/MeetingRecordings";
-import AiQuizGeneration from "./components/pages/AIQuizGeneration";
 import ScheduledMeetings from "./components/pages/ScheduledMeetings";
 import DiscoverGroups from "./components/pages/DiscoverGroups";
 import MeetingPage from "./components/pages/MeetingPage";
@@ -19,6 +18,7 @@ import { useGetCurrentUserQuery } from "./features/auth/slices/authApiSlice";
 import { SocketProvider } from "./lib/socket";
 import StreamVideoProvider from "./providers/StreamVideoProvider";
 import ToastProvider from "./components/ToastProvider";
+import NotificationsPage from "./components/pages/NotificationsPage";
 
 function App() {
   const { isLoading } = useGetCurrentUserQuery();
@@ -62,8 +62,8 @@ function App() {
                       element={<ScheduledMeetings />}
                     />
                     <Route
-                      path="/ai-quiz-generation"
-                      element={<AiQuizGeneration />}
+                      path="/notifications"
+                      element={<NotificationsPage />}
                     />
                     <Route
                       path="/meeting-recordings"

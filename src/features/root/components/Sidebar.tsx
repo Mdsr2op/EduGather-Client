@@ -6,7 +6,7 @@ import {
   FiHome,
   FiUsers,
   FiCalendar,
-  FiCpu,
+  FiBell,
   FiVideo,
 } from "react-icons/fi";
 
@@ -279,16 +279,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         </NavLink>
 
         <NavLink
-          to="/ai-quiz-generation"
+          to="/notifications"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
               isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
             }`
           }
-          onClick={() => handleNavigationClick('/ai-quiz-generation')}
-          title="AI Quiz Generation"
+          onClick={() => handleNavigationClick('/notifications')}
+          title="Notifications"
         >
-          <FiCpu size={20} className="text-light-3" />
+          <FiBell size={20} className="text-light-3" />
         </NavLink>
 
         <NavLink
