@@ -1,5 +1,6 @@
 import Message from "./models/message.model.js";
 import Attachment from "./models/attachment.model.js";
+import Notification from "./models/notification.model.js";
 import { sendMessageToKafka } from './config/kafka.config.js';
 
 export function setupSocket(io) {
@@ -589,6 +590,39 @@ export function setupSocket(io) {
                 } catch (error) {
                     console.error("Error handling attachment message notification:", error);
                     socket.emit("error", { message: "Failed to notify about attachment message" });
+                }
+            });
+
+            // Handle new notifications for messages
+            socket.on("create_notification", async (data) => {
+                try {
+                    const { type, groupId, channelId, senderId, content } = data;
+                    
+                    // Get all users in the channel except the sender
+                    const messages = await Message.find({ channelId }).distinct('senderId');
+                    const recipients = messages.filter(id => id.toString() !== senderId.toString());
+                    
+                    // Create notifications for all recipients
+                    const notifications = [];
+                    for (const recipientId of recipients) {
+                        const notification = new Notification({
+                            type: 'channel_message',
+                            title: `New message in ${channelId}`,
+                            message: content.length > 100 ? `${content.substring(0, 100)}...` : content,
+                            isRead: false,
+                            groupId,
+                            channelId,
+                            senderId,
+                            recipient: recipientId
+                        });
+                        
+                        await notification.save();
+                        notifications.push(notification);
+                    }
+                    
+                    console.log(`Created ${notifications.length} notifications for message in channel ${channelId}`);
+                } catch (error) {
+                    console.error("Error creating notifications:", error);
                 }
             });
         }

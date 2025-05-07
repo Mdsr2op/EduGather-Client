@@ -47,6 +47,19 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
   // Use our centralized socket event handler hook
   useMessageSocketEvents(socket, selectedChannelId, setAllMessages);
   
+  const {
+    data: messagesData,
+    isLoading,
+    isError,
+    refetch
+  } = useGetMessagesQuery({ 
+    channelId: selectedChannelId || '',
+    page,
+    limit: 20
+  }, {
+    skip: !selectedChannelId
+  });
+  
   // Connect to channel via socket when channel is selected
   useEffect(() => {
     if (selectedChannelId && userId && selectedChannelId !== prevChannelIdRef.current) {
@@ -59,20 +72,13 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       setAllMessages([]);
       setIsAtBottom(true);
       initialLoadRef.current = true;
+      
+      // Fetch messages from database when channel changes
+      if (selectedChannelId) {
+        refetch();
+      }
     }
-  }, [selectedChannelId, userId]);
-  
-  const {
-    data: messagesData,
-    isLoading,
-    isError
-  } = useGetMessagesQuery({ 
-    channelId: selectedChannelId || '',
-    page,
-    limit: 20
-  }, {
-    skip: !selectedChannelId
-  });
+  }, [selectedChannelId, userId, refetch]);
 
   // Function to load more messages
   const loadMoreMessages = useCallback(() => {

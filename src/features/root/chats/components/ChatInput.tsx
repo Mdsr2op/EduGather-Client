@@ -10,6 +10,7 @@ import { setReplyTo } from '../../messages/slices/messagesSlice';
 import { useSocket } from '@/lib/socket';
 import { useUploadAttachmentMutation } from '../../attachments/slices/attachmentsApiSlice';
 import { toast } from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
 
 interface ChatInputProps {
   userId: string;
@@ -23,11 +24,12 @@ const ChatInput = ({ userId }: ChatInputProps) => {
   const dispatch = useDispatch();
   const { socket } = useSocket();
   const [uploadAttachment, { isLoading: isUploading }] = useUploadAttachmentMutation();
+  const { groupId } = useParams();
 
   const handleSend = async () => {
     if (message.trim() && selectedChannelId) {
       try {
-      setIsLoading(true);
+        setIsLoading(true);
         
         if (socket) {
           // The server expects 'new_message' event
@@ -37,6 +39,15 @@ const ChatInput = ({ userId }: ChatInputProps) => {
             mentions: [],
             // Include reply reference if replying to a message
             replyTo: replyTo
+          });
+          
+          // Emit notification event for the new message
+          socket.emit('create_notification', {
+            type: 'channel_message',
+            groupId,
+            channelId: selectedChannelId,
+            senderId: userId,
+            content: message,
           });
           
           // Clear the reply state
