@@ -1,89 +1,82 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiBell, FiMessageSquare } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { 
+  useGetNotificationsQuery,
+  useMarkNotificationAsReadMutation,
+  useMarkAllNotificationsAsReadMutation,
+  selectUnreadCount,
+  setUnreadCount
+} from "@/features/notifications";
+import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
+import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { formatDistanceToNow } from "date-fns";
 
-interface Notification {
-  id: string;
+interface NotificationUI {
+  _id: string;
   type: 'channel_message';
   title: string;
   message: string;
-  time: string;
   isRead: boolean;
   groupId: string;
-  groupName: string;
   channelId: string;
-  channelName: string;
   senderId?: string;
+  recipient: string;
+  createdAt: string;
+  updatedAt: string;
+  groupName?: string;
+  channelName?: string;
   senderName?: string;
 }
 
-// Dummy channel message notifications for display
-const DUMMY_NOTIFICATIONS: Notification[] = [
-  {
-    id: "1",
-    type: "channel_message",
-    title: "New message in General",
-    message: "Alex: Does anyone have the notes from yesterday's lecture?",
-    time: "2 hours ago",
-    isRead: false,
-    groupId: "g123",
-    groupName: "CS 101 Study Group",
-    channelId: "c456",
-    channelName: "General",
-    senderId: "u789",
-    senderName: "Alex"
-  },
-  {
-    id: "2",
-    type: "channel_message",
-    title: "New message in Project-updates",
-    message: "Taylor: I've uploaded the final presentation slides",
-    time: "15 minutes ago",
-    isRead: false,
-    groupId: "g456",
-    groupName: "Project Team",
-    channelId: "c789",
-    channelName: "Project-updates",
-    senderId: "u123",
-    senderName: "Taylor"
-  },
-  {
-    id: "3",
-    type: "channel_message",
-    title: "New message in Homework-help",
-    message: "Jamie: Can someone explain problem #4 from the assignment?",
-    time: "1 day ago",
-    isRead: true,
-    groupId: "g789",
-    groupName: "Math Group",
-    channelId: "c321",
-    channelName: "Homework-help",
-    senderId: "u456",
-    senderName: "Jamie"
-  },
-  {
-    id: "4",
-    type: "channel_message",
-    title: "New message in Resources",
-    message: "Sarah: I've shared notes from today's lecture",
-    time: "3 days ago",
-    isRead: true,
-    groupId: "g321",
-    groupName: "History Class",
-    channelId: "c654",
-    channelName: "Resources",
-    senderId: "u987",
-    senderName: "Sarah"
-  }
-];
-
-const NotificationItem: React.FC<{ notification: Notification }> = ({ notification }) => {
+const NotificationItem: React.FC<{ notification: NotificationUI; onMarkAsRead: (id: string) => void }> = ({ 
+  notification, 
+  onMarkAsRead 
+}) => {
   const navigate = useNavigate();
+  const [groupName, setGroupName] = useState<string>('');
+  const [channelName, setChannelName] = useState<string>('');
+
+  // Fetch group details
+  const { data: groupDetails } = useGetGroupDetailsQuery(notification.groupId, {
+    skip: !notification.groupId,
+  });
+
+  // Fetch channel details
+  const { data: channelDetails } = useGetChannelDetailsQuery({
+    groupId: notification.groupId,
+    channelId: notification.channelId
+  }, {
+    skip: !notification.groupId || !notification.channelId,
+  });
+
+  // Update group and channel names when data is loaded
+  useEffect(() => {
+    if (groupDetails) {
+      setGroupName(groupDetails.name);
+    }
+  }, [groupDetails]);
+
+  useEffect(() => {
+    if (channelDetails?.data) {
+      setChannelName(channelDetails.data.channelName);
+    }
+  }, [channelDetails]);
 
   const handleClick = () => {
+    // Mark as read if not already read
+    if (!notification.isRead) {
+      onMarkAsRead(notification._id);
+    }
+    
     // Navigate to the specific channel where the message was posted
     navigate(`/${notification.groupId}/${notification.channelId}`);
   };
+
+  const formattedTime = notification.createdAt 
+    ? formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })
+    : '';
 
   return (
     <div 
@@ -101,9 +94,9 @@ const NotificationItem: React.FC<{ notification: Notification }> = ({ notificati
           <p className="text-light-3 text-sm mt-1">{notification.message}</p>
           <div className="flex justify-between mt-2">
             <span className="text-light-4 text-xs">
-              {notification.groupName} • {notification.channelName}
+              {groupName || 'Loading...'} • {channelName || 'Loading...'}
             </span>
-            <span className="text-light-4 text-xs">{notification.time}</span>
+            <span className="text-light-4 text-xs">{formattedTime}</span>
           </div>
         </div>
         {!notification.isRead && (
@@ -115,13 +108,45 @@ const NotificationItem: React.FC<{ notification: Notification }> = ({ notificati
 };
 
 const NotificationsPage: React.FC = () => {
-  // Count unread notifications
-  const unreadCount = DUMMY_NOTIFICATIONS.filter(n => !n.isRead).length;
+  const dispatch = useDispatch();
+  const unreadCount = useSelector(selectUnreadCount);
+  
+  // Fetch notifications
+  const { data: notificationsData, isLoading, isError, refetch } = useGetNotificationsQuery({});
+  
+  // Mutations for marking notifications as read
+  const [markAsRead] = useMarkNotificationAsReadMutation();
+  const [markAllAsRead] = useMarkAllNotificationsAsReadMutation();
+
+  // Extract notifications from response
+  const notifications: NotificationUI[] = notificationsData?.data?.notifications || [];
+
+  // Update unread count when notifications are loaded
+  useEffect(() => {
+    if (notificationsData) {
+      const unreadNotifications = notifications.filter(n => !n.isRead).length;
+      dispatch(setUnreadCount(unreadNotifications));
+    }
+  }, [notificationsData, dispatch]);
+
+  // Handler for marking a specific notification as read
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await markAsRead(notificationId).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
 
   // Handler for marking all notifications as read
-  const handleMarkAllAsRead = () => {
-    // In a real app, this would update the notifications in state/database
-    console.log("Marking all notifications as read");
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead().unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
   };
 
   return (
@@ -145,13 +170,35 @@ const NotificationsPage: React.FC = () => {
         )}
       </div>
 
-      {DUMMY_NOTIFICATIONS.length > 0 ? (
+      {isLoading && (
+        <div className="text-light-3 text-center p-8 bg-dark-3 rounded-xl border border-dark-5">
+          <p>Loading notifications...</p>
+        </div>
+      )}
+
+      {isError && (
+        <div className="text-red-400 text-center p-8 bg-dark-3 rounded-xl border border-dark-5">
+          <p>Error loading notifications. Please try again.</p>
+          <button 
+            onClick={() => refetch()}
+            className="mt-2 px-4 py-2 bg-dark-4 hover:bg-dark-5 rounded-md"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !isError && notifications.length > 0 ? (
         <div className="bg-dark-1 rounded-xl overflow-hidden shadow-lg">
-          {DUMMY_NOTIFICATIONS.map((notification) => (
-            <NotificationItem key={notification.id} notification={notification} />
+          {notifications.map((notification) => (
+            <NotificationItem 
+              key={notification._id} 
+              notification={notification}
+              onMarkAsRead={handleMarkAsRead}
+            />
           ))}
         </div>
-      ) : (
+      ) : (!isLoading && !isError) ? (
         <div className="text-light-3 text-center p-8 bg-dark-3 rounded-xl border border-dark-5">
           <div className="flex justify-center mb-4">
             <FiBell size={32} className="text-light-4" />
@@ -159,7 +206,7 @@ const NotificationsPage: React.FC = () => {
           <p className="text-lg mb-2">No new messages</p>
           <p className="text-sm">You're all caught up!</p>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
