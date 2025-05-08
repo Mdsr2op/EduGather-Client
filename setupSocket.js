@@ -1,7 +1,12 @@
 import Message from "./models/message.model.js";
 import Attachment from "./models/attachment.model.js";
 import Notification from "./models/notification.model.js";
+import {Group} from "./models/group.model.js";
+import { User } from "./models/user.model.js";
+import { Channel } from "./models/channel.model.js";
 import { sendMessageToKafka } from './config/kafka.config.js';
+import {GroupMembership} from "./models/groupMembership.model.js";
+import mongoose from 'mongoose';
 
 export function setupSocket(io) {
     // Track online users by channel
@@ -595,19 +600,60 @@ export function setupSocket(io) {
 
             // Handle new notifications for messages
             socket.on("create_notification", async (data) => {
+                console.log("[NOTIFICATION_EVENT] Received create_notification event:", JSON.stringify(data));
                 try {
                     const { type, groupId, channelId, senderId, content } = data;
+                    console.log(`[NOTIFICATION_EVENT] Processing notification - Type: ${type}, GroupID: ${groupId}, ChannelID: ${channelId}, SenderID: ${senderId}`);
                     
-                    // Get all users in the channel except the sender
-                    const messages = await Message.find({ channelId }).distinct('senderId');
-                    const recipients = messages.filter(id => id.toString() !== senderId.toString());
+                    // Get all members of the group instead of just message senders
+                    console.log(`[NOTIFICATION_EVENT] Looking up group with ID: ${groupId}`);
+                    // Populate members to get the full GroupMembership objects
+                    const group = await Group.findById(groupId).populate('members');
+                    
+                    if (!group) {
+                        console.error(`[NOTIFICATION_EVENT] Group not found for notification: ${groupId}`);
+                        return;
+                    }
+                    console.log(`[NOTIFICATION_EVENT] Found group: ${group.name} with ${group.members.length} members`);
+                    
+                    // Get message sender user data for notification display
+                    console.log(`[NOTIFICATION_EVENT] Looking up sender with ID: ${senderId}`);
+                    const sender = await User.findById(senderId).select('username avatar');
+                    console.log(`[NOTIFICATION_EVENT] Found sender: ${sender ? sender.username : 'unknown'}`);
+                    
+                    // Get channel details for better notification info
+                    console.log(`[NOTIFICATION_EVENT] Looking up channel with ID: ${channelId}`);
+                    const channel = await Channel.findById(channelId).select('channelName');
+                    console.log(`[NOTIFICATION_EVENT] Found channel: ${channel ? channel.channelName : 'unknown'}`);
+                    
+                    
+                    // Extract all user IDs from the group memberships
+                    console.log(`[NOTIFICATION_EVENT] Fetching user IDs from group memberships`);
+                    let recipients = [];
+                    
+                    if (group.members.length > 0 && group.members[0].userId) {
+                        // If members are already populated with userId
+                        recipients = group.members
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    } else {
+                        // Fallback: Fetch all group memberships for this group and extract userIds
+                        const memberships = await GroupMembership.find({ groupId: groupId });
+                        console.log(`[NOTIFICATION_EVENT] Found ${memberships.length} group memberships`);
+                        recipients = memberships
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    }
+                    
+                    console.log(`[NOTIFICATION_EVENT] Will create notifications for ${recipients.length} recipients`);
                     
                     // Create notifications for all recipients
                     const notifications = [];
                     for (const recipientId of recipients) {
+                        console.log(`[NOTIFICATION_EVENT] Creating notification for recipient: ${recipientId}`);
                         const notification = new Notification({
                             type: 'channel_message',
-                            title: `New message in ${channelId}`,
+                            title: `New message in ${channel ? channel.channelName : 'channel'}`,
                             message: content.length > 100 ? `${content.substring(0, 100)}...` : content,
                             isRead: false,
                             groupId,
@@ -617,12 +663,33 @@ export function setupSocket(io) {
                         });
                         
                         await notification.save();
+                        console.log(`[NOTIFICATION_EVENT] Saved notification with ID: ${notification._id}`);
                         notifications.push(notification);
+                        
+                        // Emit individual notification to the recipient's socket
+                        console.log(`[NOTIFICATION_EVENT] Emitting notification to channel: ${socket.channelId}`);
+                        io.to(socket.channelId).emit("notification_created", {
+                            _id: notification._id.toString(),
+                            type: notification.type,
+                            title: notification.title,
+                            message: notification.message,
+                            isRead: notification.isRead,
+                            groupId: notification.groupId.toString(),
+                            channelId: notification.channelId.toString(),
+                            senderId: notification.senderId.toString(),
+                            recipient: notification.recipient.toString(),
+                            createdAt: notification.createdAt.toISOString(),
+                            updatedAt: notification.updatedAt.toISOString(),
+                            groupName: group ? group.name : undefined,
+                            channelName: channel ? channel.channelName : undefined,
+                            senderName: sender ? sender.username : undefined
+                        });
                     }
                     
-                    console.log(`Created ${notifications.length} notifications for message in channel ${channelId}`);
+                    console.log(`[NOTIFICATION_EVENT] Successfully created ${notifications.length} notifications for all members in group ${groupId}`);
                 } catch (error) {
-                    console.error("Error creating notifications:", error);
+                    console.error("[NOTIFICATION_EVENT] Error creating notifications:", error);
+                    console.error("[NOTIFICATION_EVENT] Error stack:", error.stack);
                 }
             });
         }

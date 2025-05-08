@@ -24,6 +24,11 @@ import ViewUserProfile from "@/features/auth/components/ViewUserProfile";
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
+import { 
+  useGetNotificationsQuery,
+  setUnreadCount,
+  selectUnreadCount
+} from "@/features/notifications";
 import {
   selectSelectedGroupId,
   setSelectedGroupId,
@@ -66,6 +71,25 @@ const Sidebar: React.FC<SidebarProps> = ({
   const user = useSelector(
     (state: { auth: AuthState }) => state.auth.user
   );
+
+  // Get unread notification count from Redux store
+  const unreadCount = useSelector(selectUnreadCount);
+  
+  // Fetch notifications data to set unread count
+  const { data: notificationsData } = useGetNotificationsQuery({}, {
+    skip: !user?._id, // Skip if user is not logged in
+  });
+  
+  // Update unread count in Redux store when notifications data changes
+  useEffect(() => {
+    if (notificationsData?.data?.notifications) {
+      const unreadNotifications = notificationsData.data.notifications.filter(
+        (notification: any) => !notification.isRead
+      ).length;
+      
+      dispatch(setUnreadCount(unreadNotifications));
+    }
+  }, [notificationsData, dispatch]);
 
   // Group selection and context menu
   const selectedGroupId = useSelector(selectSelectedGroupId);
@@ -288,7 +312,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => handleNavigationClick('/notifications')}
           title="Notifications"
         >
-          <FiBell size={20} className="text-light-3" />
+          <div className="relative group p-1">
+            <FiBell size={20} className={`text-light-3 ${unreadCount > 0 ? 'text-yellow-500' : ''}`} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 right-0 translate-x-1/2 bg-secondary-500 text-dark-1 font-bold text-xs rounded-full w-4 h-4 flex items-center justify-center shadow-md">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </div>
         </NavLink>
 
         <NavLink

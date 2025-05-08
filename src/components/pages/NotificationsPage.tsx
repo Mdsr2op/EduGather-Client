@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiBell, FiMessageSquare } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -10,8 +10,9 @@ import {
 } from "@/features/notifications";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
+import { useSocket } from "@/lib/socket";
 
 interface NotificationUI {
   _id: string;
@@ -35,8 +36,6 @@ const NotificationItem: React.FC<{ notification: NotificationUI; onMarkAsRead: (
   onMarkAsRead 
 }) => {
   const navigate = useNavigate();
-  const [groupName, setGroupName] = useState<string>('');
-  const [channelName, setChannelName] = useState<string>('');
 
   // Fetch group details
   const { data: groupDetails } = useGetGroupDetailsQuery(notification.groupId, {
@@ -51,18 +50,8 @@ const NotificationItem: React.FC<{ notification: NotificationUI; onMarkAsRead: (
     skip: !notification.groupId || !notification.channelId,
   });
 
-  // Update group and channel names when data is loaded
-  useEffect(() => {
-    if (groupDetails) {
-      setGroupName(groupDetails.name);
-    }
-  }, [groupDetails]);
-
-  useEffect(() => {
-    if (channelDetails?.data) {
-      setChannelName(channelDetails.data.channelName);
-    }
-  }, [channelDetails]);
+  const groupName = groupDetails?.name || 'Loading...';
+  const channelName = channelDetails?.data?.channelName || 'Loading...';
 
   const handleClick = () => {
     // Mark as read if not already read
@@ -94,7 +83,7 @@ const NotificationItem: React.FC<{ notification: NotificationUI; onMarkAsRead: (
           <p className="text-light-3 text-sm mt-1">{notification.message}</p>
           <div className="flex justify-between mt-2">
             <span className="text-light-4 text-xs">
-              {groupName || 'Loading...'} • {channelName || 'Loading...'}
+              {groupName} • {channelName}
             </span>
             <span className="text-light-4 text-xs">{formattedTime}</span>
           </div>
@@ -110,30 +99,80 @@ const NotificationItem: React.FC<{ notification: NotificationUI; onMarkAsRead: (
 const NotificationsPage: React.FC = () => {
   const dispatch = useDispatch();
   const unreadCount = useSelector(selectUnreadCount);
+  const { socket } = useSocket();
+  
+  // Local state for notifications
+  const [localNotifications, setLocalNotifications] = useState<NotificationUI[]>([]);
   
   // Fetch notifications
   const { data: notificationsData, isLoading, isError, refetch } = useGetNotificationsQuery({});
+  
+  // Update local state when notifications data changes
+  useEffect(() => {
+    if (notificationsData?.data?.notifications) {
+      setLocalNotifications(notificationsData.data.notifications);
+      
+      // Calculate and update unread count in Redux store
+      const unreadNotifications = notificationsData.data.notifications.filter(
+        (notification: NotificationUI) => !notification.isRead
+      ).length;
+      
+      dispatch(setUnreadCount(unreadNotifications));
+    }
+  }, [notificationsData, dispatch]);
+
+  // Setup socket listener for new notifications
+  useEffect(() => {
+    if (!socket) return;
+    
+    // Listen for new notifications
+    const handleNewNotification = (notification: NotificationUI) => {
+      setLocalNotifications(prevNotifications => {
+        // Add the new notification to the beginning of the array
+        const updatedNotifications = [notification, ...prevNotifications];
+        
+        // Update unread count in Redux store
+        const newUnreadCount = updatedNotifications.filter(
+          notification => !notification.isRead
+        ).length;
+        
+        dispatch(setUnreadCount(newUnreadCount));
+        
+        return updatedNotifications;
+      });
+    };
+    
+    // Subscribe to notification_created event
+    socket.on("notification_created", handleNewNotification);
+    
+    // Cleanup function to unsubscribe
+    return () => {
+      socket.off("notification_created", handleNewNotification);
+    };
+  }, [socket, dispatch]);
   
   // Mutations for marking notifications as read
   const [markAsRead] = useMarkNotificationAsReadMutation();
   const [markAllAsRead] = useMarkAllNotificationsAsReadMutation();
 
-  // Extract notifications from response
-  const notifications: NotificationUI[] = notificationsData?.data?.notifications || [];
-
-  // Update unread count when notifications are loaded
-  useEffect(() => {
-    if (notificationsData) {
-      const unreadNotifications = notifications.filter(n => !n.isRead).length;
-      dispatch(setUnreadCount(unreadNotifications));
-    }
-  }, [notificationsData, dispatch]);
-
   // Handler for marking a specific notification as read
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       await markAsRead(notificationId).unwrap();
-      refetch();
+      // Update local state immediately for better UX
+      setLocalNotifications(prevNotifications => {
+        const updatedNotifications = prevNotifications.map(notification => 
+          notification._id === notificationId 
+            ? { ...notification, isRead: true } 
+            : notification
+        );
+        
+        // Update unread count in Redux store
+        const newUnreadCount = updatedNotifications.filter(notification => !notification.isRead).length;
+        dispatch(setUnreadCount(newUnreadCount));
+        
+        return updatedNotifications;
+      });
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
     }
@@ -143,11 +182,22 @@ const NotificationsPage: React.FC = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead().unwrap();
-      refetch();
+      // Update local state immediately
+      setLocalNotifications(prevNotifications => {
+        const updatedNotifications = prevNotifications.map(notification => ({ ...notification, isRead: true }));
+        
+        // Update unread count in Redux store
+        dispatch(setUnreadCount(0));
+        
+        return updatedNotifications;
+      });
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
     }
   };
+  
+  // Use local state for rendering
+  const notifications = localNotifications;
 
   return (
     <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2">
@@ -170,13 +220,13 @@ const NotificationsPage: React.FC = () => {
         )}
       </div>
 
-      {isLoading && (
+      {isLoading && !notifications.length && (
         <div className="text-light-3 text-center p-8 bg-dark-3 rounded-xl border border-dark-5">
           <p>Loading notifications...</p>
         </div>
       )}
 
-      {isError && (
+      {isError && !notifications.length && (
         <div className="text-red-400 text-center p-8 bg-dark-3 rounded-xl border border-dark-5">
           <p>Error loading notifications. Please try again.</p>
           <button 
@@ -188,7 +238,7 @@ const NotificationsPage: React.FC = () => {
         </div>
       )}
 
-      {!isLoading && !isError && notifications.length > 0 ? (
+      {notifications.length > 0 ? (
         <div className="bg-dark-1 rounded-xl overflow-hidden shadow-lg">
           {notifications.map((notification) => (
             <NotificationItem 

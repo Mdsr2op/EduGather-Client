@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  connectToChannel: (channelId: string, userId: string) => void;
+  connectToChannel: (channelId: string, userId: string, isNotification?: boolean) => void;
   currentChannelId: string | null;
 }
 
@@ -58,8 +58,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const connectToChannel = useCallback((channelId: string, userId: string) => {
+  const connectToChannel = useCallback((channelId: string, userId: string, isNotification: boolean = false) => {
     if (!socket) return;
+    
+    // Determine the connection type
+    const connectionType = isNotification ? 'notifications' : 'channel';
     
     // Check if we're already connected to this channel
     const currentAuth = socket.auth as { channelId?: string; userId?: string; type?: string } | undefined;
@@ -68,9 +71,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     if (
       socket.connected && 
       currentAuth?.channelId === channelId && 
-      currentAuth?.userId === userId
+      currentAuth?.userId === userId &&
+      currentAuth?.type === connectionType
     ) {
-      console.log('Already connected to this channel');
+      console.log(`Already connected to this ${connectionType}`);
       return;
     }
     
@@ -81,7 +85,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     
     // Set auth data before connecting
     socket.auth = {
-      type: 'channel',
+      type: connectionType,
       channelId,
       userId
     };
@@ -92,7 +96,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     // Now connect with the auth data
     socket.connect();
     
-    console.log('Connecting to channel with auth:', socket.auth);
+    console.log(`Connecting to ${connectionType} with auth:`, socket.auth);
   }, [socket]);
 
   return (
