@@ -19,6 +19,7 @@ import { useSignupMutation } from "../slices/authApiSlice";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface SignUpFormValues {
   username: string;
@@ -30,7 +31,7 @@ interface SignUpFormValues {
 
 export function SignUpForm() {
   const [step, setStep] = useState<1 | 2>(1);
- 
+
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(SignUpValidationSchema),
     defaultValues: {
@@ -65,16 +66,21 @@ export function SignUpForm() {
   };
 
   const handleGoogleAuth = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/users/auth/google`;
+    window.location.href = `${
+      import.meta.env.VITE_API_URL || "http://localhost:8000"
+    }/api/v1/users/auth/google`;
   };
 
   const nextStep = () => {
     const { username, email, password } = form.getValues();
-    const isValid = !!username && !!email && !!password && 
-                  !form.formState.errors.username && 
-                  !form.formState.errors.email && 
-                  !form.formState.errors.password;
-                  
+    const isValid =
+      !!username &&
+      !!email &&
+      !!password &&
+      !form.formState.errors.username &&
+      !form.formState.errors.email &&
+      !form.formState.errors.password;
+
     if (isValid) setStep(2);
     else {
       form.trigger(["username", "email", "password"]);
@@ -204,7 +210,7 @@ export function SignUpForm() {
                     )}
                   />
 
-                  <Button 
+                  <Button
                     type="button"
                     onClick={nextStep}
                     className="w-full py-6 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200 mt-3"
@@ -253,14 +259,18 @@ export function SignUpForm() {
                       <FormControl>
                         <div className="mt-2">
                           <FileUpload
-                            onFileUpload={(file) => form.setValue("avatar", file)}
+                            onFileUpload={(file) =>
+                              form.setValue("avatar", file)
+                            }
                             label="Upload Avatar"
                             accept={{
-                              'image/jpeg': ['.jpeg', '.jpg'],
-                              'image/png': ['.png'],
-                              'image/gif': ['.gif'],
+                              "image/jpeg": [".jpeg", ".jpg"],
+                              "image/png": [".png"],
+                              "image/gif": [".gif"],
                             }}
-                            icon={<FiUser size={24} className="text-primary-500" />}
+                            icon={
+                              <FiUser size={24} className="text-primary-500" />
+                            }
                           />
                         </div>
                       </FormControl>
@@ -270,15 +280,15 @@ export function SignUpForm() {
                 />
 
                 <div className="flex gap-4 pt-4">
-                  <Button 
+                  <Button
                     type="button"
                     onClick={prevStep}
                     className="w-1/3 py-6 bg-dark-4 text-light-2 font-medium rounded-xl hover:bg-dark-5 transition-all duration-200"
                   >
                     Back
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     type="button"
                     onClick={form.handleSubmit(onSubmit)}
                     disabled={isLoading}
@@ -286,18 +296,47 @@ export function SignUpForm() {
                   >
                     {isLoading ? (
                       <div className="flex items-center gap-2">
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         <span>Creating Account...</span>
                       </div>
-                    ) : "Create Account"}
+                    ) : (
+                      "Create Account"
+                    )}
                   </Button>
                 </div>
               </motion.div>
             )}
           </div>
+        </div>
+        <div className="text-center mb-4">
+          <p className="text-light-3 text-sm">
+            Already have an account?{" "}
+            <Link
+              to="/sign-in"
+              className="text-primary-500 font-medium hover:text-primary-600 transition-colors"
+            >
+              Sign In
+            </Link>
+          </p>
         </div>
       </div>
     </Form>
