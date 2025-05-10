@@ -51,16 +51,16 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
   return (
     <div 
       className={cn(
-        "relative w-full sm:w-80 md:w-96 rounded-xl overflow-hidden group mb-2 mt-1",
+        "relative w-full sm:w-80 md:w-96 rounded-xl overflow-hidden group mb-1.5 sm:mb-2 mt-0.5 sm:mt-1",
         "transition-all duration-300 shadow-md hover:shadow-lg",
-        "bg-dark-4", // Always use the same background color regardless of isUserMessage
+        "bg-dark-4",
         status === 'ended' && "opacity-85",
-        isUserMessage && "ml-auto" // Align to the right side if it's a user message
+        isUserMessage && "ml-auto"
       )}
     >
       {/* Status Badge */}
       <div className={cn(
-        "absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1.5",
+        "absolute top-2 sm:top-3 right-2 sm:right-3 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5",
         statusConfig.color
       )}>
         {statusConfig.icon}
@@ -68,41 +68,41 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
       </div>
 
       {/* Card content */}
-      <div className="p-4 pb-3">
+      <div className="p-3 sm:p-4 pb-2 sm:pb-3">
         {/* Title with video icon */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="bg-primary-500/20 p-1.5 rounded-lg">
-            <Video className="w-5 h-5 text-primary-500" />
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+          <div className="bg-primary-500/20 p-1 sm:p-1.5 rounded-lg">
+            <Video className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500" />
           </div>
-          <h3 className="font-bold text-sm truncate pr-16">{title}</h3>
+          <h3 className="font-bold text-xs sm:text-sm truncate pr-12 sm:pr-16">{title}</h3>
         </div>
         
         {/* Meeting details */}
-        <div className="space-y-2 mb-3">
-          <div className="flex items-center gap-2 text-sm">
-            <Calendar className="w-4 h-4 text-light-3" />
+        <div className="space-y-1.5 sm:space-y-2 mb-2 sm:mb-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-light-3" />
             <span>{format(new Date(startTime), 'EEE, MMM dd, yyyy')}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4 text-light-3" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-light-3" />
             <span>
               {format(new Date(startTime), 'h:mm a')}
               {endTime && ` - ${format(new Date(endTime), 'h:mm a')}`}
             </span>
           </div>
           
-          <div className="flex items-center gap-2 text-sm">
-            <Users className="w-4 h-4 text-light-3" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-light-3" />
             <span>{participantsCount} {participantsCount === 1 ? 'participant' : 'participants'}</span>
           </div>
         </div>
         
-        {/* Action button - always show join/open button for both creators and participants */}
+        {/* Action button */}
         <button 
           onClick={handleMeetingClick}
           className={cn(
-            "w-full py-2 mt-1 rounded-lg flex items-center justify-center gap-1.5 text-sm font-medium transition-colors",
+            "w-full py-1.5 sm:py-2 mt-0.5 sm:mt-1 rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-medium transition-colors",
             "focus:outline-none focus:ring-2 focus:ring-offset-2",
             status === 'ended'
               ? "bg-gray-500/10 text-light-3 cursor-default"
@@ -110,7 +110,7 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
           )}
           disabled={status === 'ended'}
         >
-          {status !== 'ended' && <ExternalLink className="w-4 h-4" />}
+          {status !== 'ended' && <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           {status === 'ongoing' ? 'Join Now' : status === 'ended' ? 'Meeting Ended' : 'Open Meeting'}
         </button>
       </div>

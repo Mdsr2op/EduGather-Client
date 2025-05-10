@@ -159,7 +159,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
 
   // Get classes for message bubble based on message properties
   const getMessageBubbleClasses = () => {
-    const baseClasses = `py-2 px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
+    const baseClasses = `py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
       isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
     } ${message.pinned ? "border-2 border-yellow-500" : ""}`;
     
@@ -193,7 +193,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
       >
         <div 
           ref={messageRef}
-          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
+          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
           <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
@@ -221,7 +221,11 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
                     {message.attachment && !isMeetingAttachment && (
                       <MessageAttachment attachment={message.attachment} isUserMessage={isUserMessage} />
                     )}
-                    {message.text && <MessageContent text={message.text} />}
+                    {message.text && (
+                      <div className="text-sm sm:text-base">
+                        <MessageContent text={message.text} />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -234,7 +238,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
             )}
             
             {showTimestamp && (
-              <div className={`flex items-center text-xs text-gray-400 mt-1 ${
+              <div className={`flex items-center text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 ${
                 isMeetingAttachment && isUserMessage ? 'justify-end' : ''
               }`}>
                 <MessageTimestamp

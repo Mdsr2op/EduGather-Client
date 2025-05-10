@@ -46,10 +46,10 @@ const MessageBody = ({ messages, userId, initialLoad = false }: MessageBodyProps
   return (
     <div
       ref={messagesContainerRef}
-      className="bg-dark-3 p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-0 rounded-lg"
+      className="bg-dark-3 p-2 sm:p-4 h-full overflow-y-auto custom-scrollbar flex flex-col space-y-0 rounded-lg"
     >
       {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-light-3">
+        <div className="flex items-center justify-center h-full text-light-3 text-sm sm:text-base">
           No messages yet. Start the conversation!
         </div>
       ) : (

@@ -190,24 +190,24 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <div 
         id="scrollableDiv"
         ref={scrollableDivRef}
-        className="flex-1 overflow-y-auto custom-scrollbar px-4 pt-4 flex flex-col-reverse"
+        className="flex-1 overflow-y-auto custom-scrollbar px-2 sm:px-4 pt-2 sm:pt-4 flex flex-col-reverse"
         onScroll={handleScroll}
       >
         <InfiniteScroll
           dataLength={allMessages.length}
           next={loadMoreMessages}
           hasMore={hasMore}
-          scrollThreshold={-1} // Disable automatic loading on scroll
+          scrollThreshold={-1}
           loader={
-            <div className="flex justify-center items-center p-4">
+            <div className="flex justify-center items-center p-2 sm:p-4">
               <button 
                 onClick={loadMoreMessages}
-                className="px-4 py-2 text-primary-500 hover:text-primary-600 transition-colors flex items-center gap-2 bg-transparent"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-primary-500 hover:text-primary-600 transition-colors flex items-center gap-1.5 sm:gap-2 bg-transparent"
                 disabled={isLoadingMore}
               >
                 {isLoadingMore ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary-500"></div>
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-t-2 border-b-2 border-primary-500"></div>
                     Loading...
                   </>
                 ) : (
@@ -231,11 +231,11 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <ChatInput userId={userId} />
       {!isAtBottom && (
         <button 
-          className="absolute bottom-20 right-8 bg-primary-500 text-white rounded-full p-2 shadow-lg"
+          className="fixed bottom-16 sm:bottom-20 right-4 sm:right-8 bg-primary-500 text-white rounded-full p-1.5 sm:p-2 shadow-lg z-10"
           onClick={scrollToBottom}
           aria-label="Scroll to bottom"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L10 15.586l5.293-5.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </button>

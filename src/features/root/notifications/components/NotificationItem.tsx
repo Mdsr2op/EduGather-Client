@@ -109,48 +109,48 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
 
   return (
     <div 
-      className={`relative p-5 ${notification.isRead ? 'bg-dark-2' : 'bg-dark-3'} hover:bg-dark-4 transition-all duration-200 cursor-pointer border-b border-dark-4`}
+      className={`relative p-3 sm:p-5 ${notification.isRead ? 'bg-dark-2' : 'bg-dark-3'} hover:bg-dark-4 transition-all duration-200 cursor-pointer border-b border-dark-4`}
       onClick={handleClick}
     >
       <div className="flex items-start">
         {/* Left side with icon */}
-        <div className={`shrink-0 p-3 rounded-full ${notification.isRead ? 'bg-dark-4' : getTypeColor()} text-white shadow-md mr-4`}>
+        <div className={`shrink-0 p-2 sm:p-3 rounded-full ${notification.isRead ? 'bg-dark-4' : getTypeColor()} text-white shadow-md mr-3 sm:mr-4`}>
           {renderIcon()}
         </div>
         
         {/* Content area */}
         <div className="flex-1 min-w-0">
           {/* Header with title and timestamp */}
-          <div className="flex items-center justify-between mb-2">
-            <h3 className={`font-bold text-base truncate ${notification.isRead ? 'text-light-2' : 'text-light-1'}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-2">
+            <h3 className={`font-bold text-sm sm:text-base truncate ${notification.isRead ? 'text-light-2' : 'text-light-1'}`}>
               {notification.title}
             </h3>
-            <div className="flex items-center text-xs text-light-4 whitespace-nowrap ml-2">
+            <div className="flex items-center text-xs text-light-4 whitespace-nowrap">
               <FiClock className="mr-1" size={12} />
               {formattedTime}
             </div>
           </div>
           
           {/* Message content */}
-          <p className="text-light-3 text-sm mb-3 line-clamp-2">
+          <p className="text-light-3 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">
             {notification.type === 'meeting_created' ? notification.content : notification.message}
           </p>
           
           {/* Footer with tags */}
           {['channel_message', 'meeting_created'].includes(notification.type) && (
-            <div className="flex items-center flex-wrap gap-2 mt-1">
+            <div className="flex items-center flex-wrap gap-1 sm:gap-2 mt-1">
               {/* Type tag */}
-              <span className={`px-2 py-1 text-xs font-medium rounded-full text-white ${getTypeColor()}`}>
+              <span className={`px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full text-white ${getTypeColor()}`}>
                 {getTypeLabel()}
               </span>
               
               {/* Group tag */}
-              <span className="px-2 py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
+              <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
                 {groupName}
               </span>
               
               {/* Channel tag */}
-              <span className="px-2 py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
+              <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
                 # {channelName}
               </span>
             </div>
@@ -159,7 +159,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         
         {/* Unread indicator */}
         {!notification.isRead && (
-          <div className="absolute top-5 right-5 h-3 w-3 bg-primary-600 rounded-full"></div>
+          <div className="absolute top-3 sm:top-5 right-3 sm:right-5 h-2 w-2 sm:h-3 sm:w-3 bg-primary-600 rounded-full"></div>
         )}
       </div>
     </div>
