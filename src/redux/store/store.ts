@@ -5,8 +5,7 @@ import authReducer from "../../features/auth/slices/authSlice";
 import groupReducer from "../../features/root/groups/slices/groupSlice";
 import channelReducer from "../../features/root/channels/slices/channelSlice";
 import messagesReducer from "../../features/root/messages/slices/messagesSlice";
-import notificationReducer from "../../features/notifications/slices/notificationSlice";
-
+import notificationReducer from "../../features/root/notifications/slices/notificationSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,

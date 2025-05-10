@@ -13,6 +13,7 @@ import {
 } from "../groups/slices/groupSlice";
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import { AuthState } from "@/features/auth/slices/authSlice";
+import { useSocket } from "@/lib/socket";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,6 +21,7 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { connectToChannel } = useSocket();
   
   // Group context menu from Redux
   const groupContextMenu = useSelector(selectGroupContextMenu);
@@ -33,6 +35,17 @@ const Layout = () => {
   const { data: joinedGroups = [] } = useGetJoinedGroupsQuery(userId, { 
     skip: !userId 
   });
+
+  // Connect to socket for notifications when the layout mounts
+  useEffect(() => {
+    if (userId) {
+      // Use any group ID the user belongs to, or a special notifications channel
+      // For notifications, we set isNotification to true
+      const notificationChannelId = joinedGroups[0]?._id || 'notifications';
+      connectToChannel(notificationChannelId, userId, true);
+      console.log('Connected to socket for notifications');
+    }
+  }, [userId, joinedGroups, connectToChannel]);
 
   // Check for mobile screen size on mount and resize
   useEffect(() => {
@@ -133,7 +146,7 @@ const Layout = () => {
         />
       </div>
 
-      {/* Main content section - add padding on mobile for the menu button */}
+      {/* Main content section */}
       <div className="overflow-y-auto custom-scrollbar w-full h-full md:ml-0 pt-2 md:pt-0">
         <div className="md:hidden h-12"></div> {/* Spacer for mobile menu button */}
         <Outlet />

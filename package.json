@@ -37,6 +37,7 @@
     "date-fns": "^4.1.0",
     "emoji-mart": "^5.6.0",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.10.5",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-datepicker": "^7.5.0",

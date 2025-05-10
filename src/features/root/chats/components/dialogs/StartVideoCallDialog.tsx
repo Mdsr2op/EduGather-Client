@@ -219,6 +219,14 @@ const StartVideoCallDialog: React.FC = () => {
           }
         });
         
+        socket.emit('create_notification', {
+          type: 'meeting_created',
+          groupId,
+          channelId,
+          senderId: user._id,
+          content: `${user.username} created a ${meetingType} meeting in ${groupName} / ${channelName}: ${description}`,
+        });
+
         // Mark this meeting as active in the channel
         socket.emit("setActiveMeetingInChannel", {
           channelId,

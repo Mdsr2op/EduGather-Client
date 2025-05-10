@@ -18,6 +18,9 @@ module.exports = {
   		}
   	},
   	extend: {
+  		fontSize: {
+  			'xxs': '0.65rem',
+  		},
   		colors: {
   			'primary-500': '#877EFF',
   			'primary-600': '#5D5FEF',

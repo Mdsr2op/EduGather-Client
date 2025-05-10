@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useDispatch } from 'react-redux';
+import { incrementUnreadCount, setLastNotification } from '@/features/root/notifications';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -27,6 +29,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [currentChannelId, setCurrentChannelId] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   // Initialize socket only once without connecting
   useEffect(() => {
@@ -49,6 +52,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.error('Socket error:', error);
     });
 
+    // Listen for notifications
+    socketInstance.on('notification_created', (notification) => {
+      console.log('Notification received:', notification);
+      // Update Redux with the new notification
+      dispatch(incrementUnreadCount());
+      dispatch(setLastNotification(notification));
+    });
+
     setSocket(socketInstance);
 
     return () => {
@@ -56,7 +67,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketInstance.disconnect();
       }
     };
-  }, []);
+  }, [dispatch]);
 
   const connectToChannel = useCallback((channelId: string, userId: string, isNotification: boolean = false) => {
     if (!socket) return;

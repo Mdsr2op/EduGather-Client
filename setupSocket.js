@@ -18,23 +18,39 @@ export function setupSocket(io) {
     // Track active meetings by channelId
     const activeChannelMeetings = new Map();
     
+    // Track users who are connected for notifications (userId -> socketId)
+    const notificationUsers = new Map();
+    
     // Middleware for channel-based authentication
     io.use((socket, next) => {
         const channelId = socket.handshake.auth.channelId;
         const userId = socket.handshake.auth.userId;
+        const connectionType = socket.handshake.auth.type;
         
-        // Only apply middleware for channel-based connections
-        if (socket.handshake.auth.type === 'channel') {
+        // Always require user ID
+        if (!userId) {
+            return next(new Error("User ID is required"));
+        }
+        
+        // Store userId in socket for easy access
+        socket.userId = userId;
+        
+        // Handle different connection types
+        if (connectionType === 'channel') {
+            // For channel connections, require channel ID
             if (!channelId) {
                 return next(new Error("Channel ID is required"));
             }
             
-            if (!userId) {
-                return next(new Error("User ID is required"));
-            }
-            
             socket.channelId = channelId;
-            socket.userId = userId;
+        } 
+        else if (connectionType === 'notifications') {
+            // For notification connections, save in the notifications map
+            socket.isNotificationConnection = true;
+            // We can still store the channel ID for organization
+            if (channelId) {
+                socket.channelId = channelId;
+            }
         }
         
         next();
@@ -47,6 +63,18 @@ export function setupSocket(io) {
         socket.onAny((event, ...args) => {
             console.log(`Received event: ${event}`, args);
         });
+        
+        // Store notification connections in the map for quick access
+        if (socket.isNotificationConnection) {
+            notificationUsers.set(socket.userId, socket.id);
+            console.log(`User ${socket.userId} connected for notifications with socket ${socket.id}`);
+            
+            // Clean up on disconnect
+            socket.on("disconnect", () => {
+                notificationUsers.delete(socket.userId);
+                console.log(`User ${socket.userId} disconnected from notifications`);
+            });
+        }
 
         // Handle channel-based functionality if this is a channel connection
         if (socket.handshake.auth.type === 'channel') {
@@ -666,9 +694,8 @@ export function setupSocket(io) {
                         console.log(`[NOTIFICATION_EVENT] Saved notification with ID: ${notification._id}`);
                         notifications.push(notification);
                         
-                        // Emit individual notification to the recipient's socket
-                        console.log(`[NOTIFICATION_EVENT] Emitting notification to channel: ${socket.channelId}`);
-                        io.to(socket.channelId).emit("notification_created", {
+                        // Emit individual notification to the recipient
+                        const notificationData = {
                             _id: notification._id.toString(),
                             type: notification.type,
                             title: notification.title,
@@ -683,7 +710,28 @@ export function setupSocket(io) {
                             groupName: group ? group.name : undefined,
                             channelName: channel ? channel.channelName : undefined,
                             senderName: sender ? sender.username : undefined
-                        });
+                        };
+                        
+                        // Try to send to the notification-specific socket if available
+                        if (notificationUsers.has(recipientId)) {
+                            console.log(`[NOTIFICATION_EVENT] Emitting to notification socket for user ${recipientId}`);
+                            const socketId = notificationUsers.get(recipientId);
+                            io.to(socketId).emit("notification_created", notificationData);
+                        } else {
+                            // Otherwise, look for any socket this user might be connected with
+                            let recipientFound = false;
+                            for (const [socketId, connectedSocket] of io.sockets.sockets.entries()) {
+                                if (connectedSocket.userId === recipientId) {
+                                    console.log(`[NOTIFICATION_EVENT] Found socket ${socketId} for recipient ${recipientId}`);
+                                    io.to(socketId).emit("notification_created", notificationData);
+                                    recipientFound = true;
+                                }
+                            }
+                            
+                            if (!recipientFound) {
+                                console.log(`[NOTIFICATION_EVENT] No active socket found for recipient ${recipientId}`);
+                            }
+                        }
                     }
                     
                     console.log(`[NOTIFICATION_EVENT] Successfully created ${notifications.length} notifications for all members in group ${groupId}`);

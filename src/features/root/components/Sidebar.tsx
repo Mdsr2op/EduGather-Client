@@ -24,11 +24,7 @@ import ViewUserProfile from "@/features/auth/components/ViewUserProfile";
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
-import { 
-  useGetNotificationsQuery,
-  setUnreadCount,
-  selectUnreadCount
-} from "@/features/notifications";
+
 import {
   selectSelectedGroupId,
   setSelectedGroupId,
@@ -52,6 +48,7 @@ import {
 
 import Groups from "../groups/components/Groups";
 import UserAvatar from "./UserAvatar";
+import { selectUnreadCount, setUnreadCount, useGetNotificationsQuery } from "../notifications";
 
 interface SidebarProps {
   onCloseDrawer?: () => void;
@@ -315,7 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="relative group p-1">
             <FiBell size={20} className={`text-light-3 ${unreadCount > 0 ? 'text-yellow-500' : ''}`} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 right-0 translate-x-1/2 bg-secondary-500 text-dark-1 font-bold text-xs rounded-full w-4 h-4 flex items-center justify-center shadow-md">
+              <span className="absolute -top-1 right-0 translate-x-1/2 bg-secondary-500 text-dark-1 font-bold text-xs rounded-full w-4 h-4 flex items-center justify-center shadow-md animate-pulse">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
