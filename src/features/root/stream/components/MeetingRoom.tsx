@@ -61,6 +61,58 @@ const MeetingRoom = () => {
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }, [participants]);
   
+  // Handle call max duration limit
+  useEffect(() => {
+    if (!call || !socket) return;
+    
+    // Get the start time and max duration from call state
+    const maxDurationSeconds = call.state.settings?.limits?.max_duration_seconds || 1000; // Default to 1000 seconds
+    const startTime = call.state.startsAt ? new Date(call.state.startsAt) : new Date();
+    
+    // Calculate when the call should end
+    const endTime = new Date(startTime.getTime() + (maxDurationSeconds * 1000));
+    
+    // Calculate remaining time
+    const remainingTime = endTime.getTime() - Date.now();
+    
+    // Only set timeout if there's remaining time
+    if (remainingTime > 0) {
+      // Set a timeout to end the call when max duration is reached
+      const timeoutId = setTimeout(async () => {
+        // End the call
+        try {
+          await call.endCall();
+          
+          // Emit meeting end event to all participants
+          if (socket) {
+            socket.emit("meetingEnded");
+            
+            // Also emit a message to update the meeting status in the channel
+            const callId = call.id;
+            
+            socket.emit("updateMeetingStatus", {
+              meetingId: callId,
+              status: "ended",
+              endTime: new Date().toISOString(),
+              participantsCount: validParticipants.length
+            });
+          }
+          
+          // Show notification
+          toast.success('Meeting ended due to maximum duration reached', { position: 'bottom-center' });
+          
+          // Navigate back
+          navigate('/');
+        } catch (error) {
+          console.error("Error ending call after max duration:", error);
+        }
+      }, remainingTime);
+      
+      // Clean up the timeout if the component unmounts
+      return () => clearTimeout(timeoutId);
+    }
+  }, [call, socket, navigate, validParticipants.length]);
+  
   // Handle call end event and navigation
   useEffect(() => {
     if (!call) return;
