@@ -20,6 +20,10 @@ export interface SignInFormValues {
   password: string;
 }
 
+export interface ForgotPasswordFormValues {
+  email: string;
+}
+
 // The auth response from the backend
 export interface AuthResponse {
   data: {

@@ -1,6 +1,6 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 import { setUser, setAccessToken, logOut } from "./authSlice";
-import { AuthResponse, SignInFormValues } from "../types";
+import { AuthResponse, SignInFormValues, ForgotPasswordFormValues } from "../types";
 
 // The backend's response has { data: { user, accessToken, refreshToken } } in some form
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -50,6 +50,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordFormValues>({
+      query: (data) => ({
+        url: "/users/forgot-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
     getCurrentUser: builder.query<any, void>({
       query: () => "/users/current-user",
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
@@ -85,6 +92,7 @@ export const {
   useSignupMutation, 
   useGetCurrentUserQuery,
   useCheckGoogleAuthStatusQuery,
-  useLogoutMutation
+  useLogoutMutation,
+  useForgotPasswordMutation
 } = authApiSlice;
   

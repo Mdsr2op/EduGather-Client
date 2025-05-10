@@ -4,6 +4,7 @@ import ChatPage from "./components/pages/ChatPage";
 import Home from "./components/pages/Home";
 import { SignInForm } from "./features/auth/components/SignInForm";
 import { SignUpForm } from "./features/auth/components/SignUpForm";
+import { ForgotPasswordForm } from "./features/auth/components/ForgotPasswordForm";
 import { GoogleAuthCallback } from "./features/auth/components/GoogleAuthCallback";
 import AuthLayout from "./features/auth/layout/AuthLayout";
 import RootLayout from "./features/root/layout/RootLayout";
@@ -36,6 +37,7 @@ function App() {
                 <Route element={<AuthLayout />}>
                   <Route path="/sign-up" element={<SignUpForm />} />
                   <Route path="/sign-in" element={<SignInForm />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordForm />} />
                   <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                 </Route>
 
