@@ -55,6 +55,11 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
   }, [position]);
 
   const isGroupOwner = group.createdBy._id === currentUserId;
+  
+  // Find current user's role in the group
+  const currentUserMember = group.members.find(member => member._id === currentUserId);
+  const isAdminOrModerator = isGroupOwner || 
+    (currentUserMember?.role === 'admin' || currentUserMember?.role === 'moderator');
 
   return (
     <div
@@ -83,16 +88,20 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
             onClick={() => onAction("edit")}
           />
         )}
-        <MenuItem
-          icon={FaUserPlus}
-          label="Invite to Group"
-          onClick={() => onAction("invite")}
-        />
-        <MenuItem
-          icon={FaPlus}
-          label="Create Channel"
-          onClick={() => onAction("create-channel")}
-        />
+        {isAdminOrModerator && (
+          <>
+            <MenuItem
+              icon={FaUserPlus}
+              label="Invite to Group"
+              onClick={() => onAction("invite")}
+            />
+            <MenuItem
+              icon={FaPlus}
+              label="Create Channel"
+              onClick={() => onAction("create-channel")}
+            />
+          </>
+        )}
         {isGroupOwner && (
           <MenuItem
             icon={FaTrash}
