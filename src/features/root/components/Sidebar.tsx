@@ -49,6 +49,7 @@ import {
 import Groups from "../groups/components/Groups";
 import UserAvatar from "./UserAvatar";
 import { selectUnreadCount, setUnreadCount, useGetNotificationsQuery } from "../notifications";
+import InviteToGroupDialog from "../groups/dialogs/InviteToGroupDialog";
 
 interface SidebarProps {
   onCloseDrawer?: () => void;
@@ -121,6 +122,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
   const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
   const [isUserProfileOpen, setUserProfileOpen] = React.useState(false);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = React.useState(false);
+  const [inviteGroupData, setInviteGroupData] = React.useState<any>(null);
   
   // ----------------------------------
   // Listen for context menu actions from RootLayout
@@ -152,6 +155,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           dispatch(openLeaveGroupDialog(groupInContext));
           break;
 
+        case "invite":
+          setInviteGroupData(groupInContext);
+          setIsInviteDialogOpen(true);
+          break;
         default:
           break;
       }
@@ -419,6 +426,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         onClose={() => setUserProfileOpen(false)}
         user={user}
       />
+
+      {/* Invite to Group Dialog */}
+      {isInviteDialogOpen && inviteGroupData && (
+        <InviteToGroupDialog
+          isOpen={isInviteDialogOpen}
+          onClose={() => setIsInviteDialogOpen(false)}
+          group={inviteGroupData}
+        />
+      )}
     </div>
   );
 };

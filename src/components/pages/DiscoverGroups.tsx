@@ -88,7 +88,7 @@ const DiscoverGroups: React.FC = () => {
         <ScrollArea className="w-full">
           <div className="bg-dark-3 rounded-xl p-1 shadow-sm min-w-full">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-              <TabsList className="w-auto justify-start bg-transparent p-0 flex-nowrap overflow-x-auto">
+              <TabsList className="w-auto justify-start bg-transparent p-0 flex-nowrap ">
                 {categories.map((category) => (
                   <TabsTrigger
                     key={category.id}

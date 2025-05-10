@@ -20,6 +20,7 @@ import { SocketProvider } from "./lib/socket";
 import StreamVideoProvider from "./providers/StreamVideoProvider";
 import ToastProvider from "./components/ToastProvider";
 import NotificationsPage from "./components/pages/NotificationsPage";
+import JoinGroupRedirect from "./features/root/groups/components/JoinGroupRedirect";
 
 function App() {
   const { isLoading } = useGetCurrentUserQuery();
@@ -47,6 +48,9 @@ function App() {
 
                 {/* Protected Routes */}
                 <Route element={<RequireAuth />}>
+                  {/* Group Join Route */}
+                  <Route path="/groups/join/:groupId" element={<JoinGroupRedirect />} />
+                  
                   <Route element={<RootLayout />}>
                     <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
                     

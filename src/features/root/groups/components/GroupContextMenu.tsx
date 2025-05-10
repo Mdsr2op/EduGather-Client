@@ -1,7 +1,7 @@
 // GroupContextMenu.tsx
 
 import React, { useEffect, useRef } from "react";
-import { FaEye, FaEdit, FaTrash, FaPlus, FaSignOutAlt } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash, FaPlus, FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import MenuItem from "../../components/MenuItem";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import { useSelector } from "react-redux";
@@ -10,7 +10,7 @@ type GroupContextMenuProps = {
   group: UserJoinedGroups;
   position: { x: number; y: number };
   onClose: () => void;
-  onAction: (action: 'view' | 'edit' | 'delete' | 'create-channel' | 'leave') => void;
+  onAction: (action: 'view' | 'edit' | 'delete' | 'create-channel' | 'leave' | 'invite') => void;
 };
 
 const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
@@ -55,13 +55,21 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
   }, [position]);
 
   const isGroupOwner = group.createdBy._id === currentUserId;
-  console.log(isGroupOwner)
+
   return (
     <div
       ref={menuRef}
-      className="fixed z-[9999] bg-[rgba(31,31,34,0.9)] text-white rounded-md shadow-lg"
-      style={{ top: position.y, left: position.x, width: "12rem" }}
+      className="fixed z-50 bg-dark-2 text-light-1 rounded-xl shadow-lg border border-dark-4 backdrop-blur-lg overflow-hidden"
+      style={{ 
+        top: position.y, 
+        left: position.x, 
+        width: "13rem",
+        animation: "fadeIn 0.15s ease-in-out"
+      }}
     >
+      <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+        <h3 className="text-sm font-medium truncate">{group.name}</h3>
+      </div>
       <ul className="py-1">
         <MenuItem
           icon={FaEye}
@@ -75,6 +83,16 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
             onClick={() => onAction("edit")}
           />
         )}
+        <MenuItem
+          icon={FaUserPlus}
+          label="Invite to Group"
+          onClick={() => onAction("invite")}
+        />
+        <MenuItem
+          icon={FaPlus}
+          label="Create Channel"
+          onClick={() => onAction("create-channel")}
+        />
         {isGroupOwner && (
           <MenuItem
             icon={FaTrash}
@@ -84,17 +102,20 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
           />
         )}
         <MenuItem
-          icon={FaPlus}
-          label="Create Channel"
-          onClick={() => onAction("create-channel")}
-        />
-        <MenuItem
           icon={FaSignOutAlt}
           label="Leave Group"
           onClick={() => onAction("leave")}
           isDanger
         />
       </ul>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+        `}
+      </style>
     </div>
   );
 };
