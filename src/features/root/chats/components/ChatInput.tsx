@@ -152,28 +152,28 @@ const ChatInput = ({ userId }: ChatInputProps) => {
   };
 
   return (
-    <div className="bg-dark-3 py-2 px-5 flex flex-col justify-between">
+    <div className="bg-dark-3 py-2 px-3 sm:px-5 flex flex-col justify-between">
       {/* Reply info */}
       {replyTo && (
-        <div className="px-3 py-2 mb-2 text-sm bg-dark-3 rounded-lg flex justify-between items-start border-l-2 border-primary-500 hover:bg-dark-2 transition-colors">
+        <div className="px-2 sm:px-3 py-1.5 sm:py-2 mb-1.5 sm:mb-2 text-xs sm:text-sm bg-dark-3 rounded-lg flex justify-between items-start border-l-2 border-primary-500 hover:bg-dark-2 transition-colors">
           <div className="flex flex-col w-full">
-            <div className="flex items-center mb-1">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-primary-500" viewBox="0 0 20 20" fill="currentColor">
+            <div className="flex items-center mb-0.5 sm:mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-primary-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
               <span className="font-semibold text-primary-400">@{replyTo.senderId.username}</span>
             </div>
-            <p className="text-gray-300 truncate pl-5">
-              {replyTo.content?.substring(0, 120)}
-              {replyTo.content?.length > 120 ? '...' : ''}
+            <p className="text-gray-300 truncate pl-4 sm:pl-5">
+              {replyTo.content?.substring(0, 80)}
+              {replyTo.content?.length > 80 ? '...' : ''}
             </p>
           </div>
           <button 
             onClick={clearReply}
-            className="text-gray-400 hover:text-white ml-2 flex-shrink-0"
+            className="text-gray-400 hover:text-white ml-1 sm:ml-2 flex-shrink-0"
             aria-label="Cancel Reply"
           >
-            <FiX size={18} />
+            <FiX size={16} className="sm:size-18" />
           </button>
         </div>
       )}
@@ -189,10 +189,10 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         <button
           onClick={handleSend}
           disabled={isLoading || isUploading || !message.trim()}
-          className={`${isLoading || isUploading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-2 mr-3`}
+          className={`${isLoading || isUploading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-1 sm:ml-2 mr-2 sm:mr-3`}
           aria-label="Send Message"
         >
-          <FiSend size={24} />
+          <FiSend size={20} className="sm:size-24" />
         </button>
       </div>
     </div>
