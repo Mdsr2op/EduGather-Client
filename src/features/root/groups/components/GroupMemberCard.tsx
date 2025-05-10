@@ -44,7 +44,9 @@ const GroupMemberCard = ({
     // Admins can manage all users
     isAdmin || 
     // Moderators can only manage regular members
-    (currentUserRole === 'moderator' && isRegularMember);
+    (currentUserRole === 'moderator' && isRegularMember) ||
+    // Allow moderators to see settings for their own card
+    (isCurrentUser && currentUserRole === 'moderator');
   
   return (
     <div 
