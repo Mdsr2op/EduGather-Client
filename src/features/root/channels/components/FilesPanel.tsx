@@ -4,8 +4,13 @@ import { Input } from "@/components/ui/input";
 import { useGetChannelAttachmentsQuery } from "../../attachments/slices/attachmentsApiSlice";
 import { useParams } from "react-router-dom";
 import { Message } from "../../messages/slices/messagesApiSlice";
+import { FiX } from "react-icons/fi";
 
-const FilesPanel: React.FC = () => {
+interface FilesPanelProps {
+  onClose?: () => void;
+}
+
+const FilesPanel: React.FC<FilesPanelProps> = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { channelId } = useParams();
   const { data: attachmentsData, isLoading } = useGetChannelAttachmentsQuery(
@@ -32,7 +37,16 @@ const FilesPanel: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="p-6 overflow-auto bg-dark-3">
+      <div className="p-6 overflow-auto bg-dark-3 relative">
+        {onClose && (
+          <button
+            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-dark-4 text-light-3"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <FiX size={20} />
+          </button>
+        )}
         <h2 className="text-xl font-semibold mb-4">Files</h2>
         <p className="text-light-3">Loading files...</p>
       </div>
@@ -40,7 +54,16 @@ const FilesPanel: React.FC = () => {
   }
 
   return (
-    <div className="p-6 overflow-auto bg-dark-3">
+    <div className="p-6 overflow-auto bg-dark-3 relative">
+      {onClose && (
+        <button
+          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-dark-4 text-light-3"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          <FiX size={20} />
+        </button>
+      )}
       <h2 className="text-xl font-semibold mb-4">Files</h2>
 
       {/* Search Bar */}
