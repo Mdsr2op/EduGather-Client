@@ -9,11 +9,16 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import type { GroupMember } from "./GroupMemberCard";
 import {
   useAssignRoleMutation,
+  useGetGroupDetailsQuery,
   useRemoveUserFromGroupMutation,
 } from "../slices/groupApiSlice";
 import { toast } from "react-hot-toast";
 import RemoveUserDialog from "./RemoveUserDialog";
 import { useAppSelector } from "@/redux/hook";
+import { useSocket } from "@/lib/socket";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { useParams } from "react-router-dom";
 
 
 type MenuItemProps = {
@@ -76,7 +81,12 @@ const RoleMenu = ({
     "member" | "moderator" | "admin" | null
   >(null);
   const [isRequestingUpgrade, setIsRequestingUpgrade] = useState(false);
+  const { socket } = useSocket();
+  const user = useSelector(selectCurrentUser);
 
+  const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
+    skip: !groupId
+  });
   // Check if this is the current user's card
   const isOwnCard =
     useAppSelector((state: any) => state.auth.user?._id) === member._id;
@@ -160,16 +170,31 @@ const RoleMenu = ({
 
   const handleRequestRoleUpgrade = async () => {
     setIsRequestingUpgrade(true);
+    if (!socket || !socket.connected) {
+      toast.error("Socket connection not available");
+      return;
+    }
+
+    if (!user?._id || !groupDetails?.name) {
+      toast.error("Missing user or group information");
+      return;
+    }
+
     try {
-      // Here you would implement the API call to request a role upgrade
-      // This is a placeholder for now
-      // socket.emit("create_notification", {
-      //   type: "meeting_created",
-      //   groupId,
-      //   channelId,
-      //   senderId: user._id,
-      //   content: `${user.username} created a ${meetingType} meeting in ${groupName} / ${channelName}: ${description}`,
-      // });
+      socket.emit("create_notification", {
+        type: "role_upgrade_requested",
+        groupId: groupId,
+        channelId: null,
+        senderId: user._id,
+        content: `${user.username} requested a role upgrade in ${groupDetails.name}`,
+      });
+      
+      console.log("Emitted role upgrade request", {
+        groupId,
+        senderId: user._id,
+        groupName: groupDetails.name
+      });
+      
       toast.success("Role upgrade request sent to admin");
       onClose();
     } catch (error) {
