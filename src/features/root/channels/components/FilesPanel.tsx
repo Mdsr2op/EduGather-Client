@@ -55,16 +55,7 @@ const FilesPanel: React.FC<FilesPanelProps> = ({ onClose }) => {
 
   return (
     <div className="p-6 overflow-auto bg-dark-3 relative">
-      {onClose && (
-        <button
-          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-dark-4 text-light-3"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <FiX size={20} />
-        </button>
-      )}
-      <h2 className="text-xl font-semibold mb-4">Files</h2>
+     
 
       {/* Search Bar */}
       <div className="mb-4">
