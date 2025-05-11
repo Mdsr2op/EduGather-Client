@@ -258,7 +258,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
-      <div className={`mt-4 mb-2 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="mt-4 mb-2 transition-opacity duration-300 opacity-0 lg:opacity-100 sm:opacity-100 md:opacity-100">
         <UserAvatar onClick={handleLogoClick} user={user} />
       </div>
 
