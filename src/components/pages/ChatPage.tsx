@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthState } from "@/features/auth/slices/authSlice";
 
 function ChatPage() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function ChatPage() {
   const { groupId } = useParams();
   const navigationSource = useSelector(selectNavigationSource);
   const selectedChannelId = useSelector(selectSelectedChannelId);
-  const userId = useSelector((state: any) => state.auth.user?._id) || "";
+  const userId = useSelector((state: { auth: AuthState }) => state.auth.user?._id) || "";
   const [showSidebar, setShowSidebar] = useState(true);
 
   // Note: We're removing the redirects based on selectedGroupId to stop unwanted navigation
@@ -67,6 +68,20 @@ function ChatPage() {
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+
+  // Listen for the close-mobile-sidebar event
+  useEffect(() => {
+    const handleCloseSidebar = () => {
+      if (window.innerWidth < 768) { // Only close on mobile screens
+        setShowSidebar(false);
+      }
+    };
+
+    document.addEventListener('close-mobile-sidebar', handleCloseSidebar);
+    return () => {
+      document.removeEventListener('close-mobile-sidebar', handleCloseSidebar);
+    };
+  }, []);
 
   // Loading state
   if (isLoadingChannels) {
@@ -218,49 +233,12 @@ function ChatPage() {
         <ChatHeader
           channelName={selectedChannel?.channelName || "Channel"}
           membersCount={membersCount}
+          onToggleSidebar={toggleSidebar}
         />
         <div className="flex flex-col flex-grow justify-between overflow-hidden">
           <ChatWindow userId={userId} />
         </div>
       </div>
-
-      {/* Mobile toggle button */}
-      <button
-        onClick={toggleSidebar}
-        className="fixed bottom-4 right-4 lg:hidden bg-primary-500 text-white p-3 rounded-full shadow-lg z-10"
-      >
-        {showSidebar ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        )}
-      </button>
     </div>
   );
 }

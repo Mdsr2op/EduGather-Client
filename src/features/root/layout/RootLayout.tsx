@@ -2,8 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
-import { useLocation, useNavigate } from "react-router-dom";
-import SidebarLogo from "../groups/components/Logo";
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import GroupContextMenu from "../groups/components/GroupContextMenu";
 import { 
@@ -19,7 +18,6 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { connectToChannel } = useSocket();
   
@@ -70,10 +68,6 @@ const Layout = () => {
     }
   }, [location.pathname, isMobile]);
 
-  const handleLogoClick = () => {
-    navigate('/');
-  };
-
   // Context menu handlers
   const handleGroupContextMenu = (e: React.MouseEvent, groupId: string) => {
     e.preventDefault();
@@ -103,13 +97,6 @@ const Layout = () => {
 
   return (
     <div className="flex w-full h-screen overflow-hidden">
-      {/* Mobile logo - only visible on small screens and positioned with lower z-index */}
-      {isMobile && (
-        <div className="md:hidden fixed top-4 left-4 z-[100]">
-          <SidebarLogo onClick={handleLogoClick} />
-        </div>
-      )}
-
       {/* Mobile menu button - positioned in top-right for better placement */}
       <button 
         className="md:hidden fixed top-4 right-4 z-[100] bg-dark-2 p-2.5 rounded-full shadow-lg hover:bg-dark-3 transition-colors"

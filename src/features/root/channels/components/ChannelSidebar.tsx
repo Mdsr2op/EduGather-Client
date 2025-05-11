@@ -104,6 +104,10 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const handleSelectChannel = (channelId: string) => {
     dispatch(setSelectedChannelId(channelId));
     navigate(`/${groupId}/${channelId}`);
+    
+    // Close sidebar on mobile by dispatching a custom event
+    const event = new CustomEvent('close-mobile-sidebar');
+    document.dispatchEvent(event);
   };
 
   // Right-click a channel to open context menu
