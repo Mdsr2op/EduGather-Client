@@ -13,6 +13,7 @@ import {
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import { AuthState } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
+import SidebarLogo from "../groups/components/Logo";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,25 +26,25 @@ const Layout = () => {
   const groupContextMenu = useSelector(selectGroupContextMenu);
   
   // Logged-in user
-  const userId = useSelector(
-    (state: { auth: AuthState }) => state.auth.user?._id ?? ""
+  const user = useSelector(
+    (state: { auth: AuthState }) => state.auth.user
   );
   
   // Fetch joined groups to get group details
-  const { data: joinedGroups = [] } = useGetJoinedGroupsQuery(userId, { 
-    skip: !userId 
+  const { data: joinedGroups = [] } = useGetJoinedGroupsQuery(user?._id ?? "", { 
+    skip: !user?._id 
   });
 
   // Connect to socket for notifications when the layout mounts
   useEffect(() => {
-    if (userId) {
+    if (user?._id) {
       // Use any group ID the user belongs to, or a special notifications channel
       // For notifications, we set isNotification to true
       const notificationChannelId = joinedGroups[0]?._id || 'notifications';
-      connectToChannel(notificationChannelId, userId, true);
+      connectToChannel(notificationChannelId, user._id, true);
       console.log('Connected to socket for notifications');
     }
-  }, [userId, joinedGroups, connectToChannel]);
+  }, [user?._id, joinedGroups, connectToChannel]);
 
   // Check for mobile screen size on mount and resize
   useEffect(() => {
@@ -109,6 +110,11 @@ const Layout = () => {
           <FiMenu size={24} className="text-light-1" />
         )}
       </button>
+
+      {/* EduGather Logo - positioned in top-left */}
+      <div className="md:hidden fixed top-4 left-4 z-[100]">
+        <SidebarLogo onClick={() => {}} />
+      </div>
 
       {/* Overlay for mobile - closes sidebar when clicking outside */}
       {isMobile && isSidebarOpen && (
