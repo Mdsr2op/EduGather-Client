@@ -55,12 +55,14 @@ interface SidebarProps {
   onCloseDrawer?: () => void;
   onGroupContextMenu: (e: React.MouseEvent, groupId: string) => void;
   onCloseContextMenu: () => void;
+  isSidebarOpen: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
   onCloseDrawer, 
   onGroupContextMenu, 
-  onCloseContextMenu 
+  onCloseContextMenu,
+  isSidebarOpen
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -256,12 +258,12 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
-      <div className="mt-4 mb-2 hidden md:block">
+      <div className={`mt-4 mb-2 hidden md:block transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
         <UserAvatar onClick={handleLogoClick} user={user} />
       </div>
 
       {/* Only show divider if logo is visible */}
-      <div className="hidden md:block">
+      <div className={`hidden md:block transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
         <SidebarDivider />
       </div>
 

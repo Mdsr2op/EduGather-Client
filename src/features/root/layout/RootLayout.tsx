@@ -112,7 +112,7 @@ const Layout = () => {
       </button>
 
       {/* EduGather Logo - positioned in top-left */}
-      <div className="md:hidden fixed top-4 left-4 z-[100]">
+      <div className={`md:hidden fixed top-4 left-4 z-[100] transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
         <SidebarLogo onClick={() => {}} />
       </div>
 
@@ -136,6 +136,7 @@ const Layout = () => {
           onCloseDrawer={() => setIsSidebarOpen(false)} 
           onGroupContextMenu={handleGroupContextMenu}
           onCloseContextMenu={handleCloseContextMenu}
+          isSidebarOpen={isSidebarOpen}
         />
       </div>
 
