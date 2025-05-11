@@ -118,7 +118,7 @@ const ScheduledMeetings: React.FC = () => {
   }, [calls, isLoading, error]);
 
   return (
-    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2">
+    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2 pt-16">
       <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-2 sm:mb-3 md:mb-4">Scheduled Meetings</h2>
       
       {isLoadingData ? (
