@@ -147,7 +147,7 @@ const NotificationsPage: React.FC = () => {
     <div className="flex-1 p-3 sm:p-6 overflow-auto bg-dark-1">
       <div className="max-w-4xl mx-auto">
         {/* Header section with title and mark all button */}
-        <div className="bg-dark-2 rounded-t-xl p-4 sm:p-6 shadow-md border border-dark-4 border-b-0">
+        <div className="bg-dark-2 rounded-t-xl p-4 sm:p-6 shadow-md border border-dark-4 border-b-0 pt-16">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div className="flex items-center space-x-3">
               <div className="p-2.5 bg-dark-3 rounded-full">
