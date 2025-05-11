@@ -58,7 +58,7 @@ const DiscoverGroups: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col p-3 sm:p-4 md:p-6 bg-dark-2 h-full overflow-hidden">
+    <div className="flex flex-col p-3 sm:p-4 md:p-6 bg-dark-2 h-full overflow-hidden pt-16">
       <header className="flex flex-col gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
