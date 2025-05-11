@@ -313,7 +313,7 @@ const Home = () => {
                   whileHover={{ scale: 1.02 }}
                   onClick={() => navigateToGroups()}
                 >
-                  <div className="p-2 bg-primary-500/20 rounded-lg group-hover:bg-primary-500/30 transition-colors">
+                  <div className="p-2 bg-primary-500/20 rounded-xl group-hover:bg-primary-500/30 transition-colors">
                     <RiTeamLine className="text-primary-500" size={24} />
                   </div>
                   <div>
@@ -328,7 +328,7 @@ const Home = () => {
                   whileHover={{ scale: 1.02 }}
                   onClick={() => navigateToNotifications()}
                 >
-                  <div className="p-2 bg-secondary-500/20 rounded-lg group-hover:bg-secondary-500/30 transition-colors">
+                  <div className="p-2 bg-secondary-500/20 rounded-xl group-hover:bg-secondary-500/30 transition-colors">
                     <FiBell className={unreadCount > 0 ? "text-secondary-500" : "text-light-3"} size={24} />
                   </div>
                   <div>
@@ -352,7 +352,7 @@ const Home = () => {
                   whileHover={{ scale: 1.02 }}
                   onClick={() => navigateToMeetings()}
                 >
-                  <div className="p-2 bg-primary-500/20 rounded-lg group-hover:bg-primary-500/30 transition-colors">
+                  <div className="p-2 bg-primary-500/20 rounded-xl group-hover:bg-primary-500/30 transition-colors">
                     <FiCalendar className="text-primary-500" size={24} />
                   </div>
                   <div>
@@ -366,7 +366,7 @@ const Home = () => {
                   className="bg-dark-4/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 flex items-center gap-3 border border-dark-5 hover:border-secondary-500/50 transition-colors group"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="p-2 bg-secondary-500/20 rounded-lg group-hover:bg-secondary-500/30 transition-colors">
+                  <div className="p-2 bg-secondary-500/20 rounded-xl group-hover:bg-secondary-500/30 transition-colors">
                     <FiActivity className="text-secondary-500" size={24} />
                   </div>
                   <div>
@@ -429,7 +429,7 @@ const Home = () => {
             </div>
             
             {searchQuery && filteredGroups.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 bg-dark-3 border border-dark-4 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
+              <div className="absolute left-0 right-0 top-full mt-2 bg-dark-3 border border-dark-4 rounded-xl shadow-lg z-20 max-h-64 overflow-y-auto">
                 <div className="p-2">
                   <h4 className="text-xs text-light-3 uppercase font-semibold mb-2 px-2">Search Results</h4>
                   {filteredGroups.map(group => (
@@ -479,7 +479,7 @@ const Home = () => {
                 <button
                   key={tab.id}
                   className={cn(
-                    "flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-sm font-medium transition-all",
+                    "flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
                     activeTab === tab.id
                       ? "bg-primary-500 text-light-1 shadow-md"
                       : "bg-transparent text-light-3 hover:bg-dark-4 hover:text-light-2"
@@ -541,7 +541,7 @@ const Home = () => {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -10 }}
                               transition={{ duration: 0.2, delay: index * 0.05 }}
-                              className="group p-3 sm:p-4 bg-dark-4 hover:bg-dark-5 rounded-lg cursor-pointer transition-all duration-200"
+                              className="group p-3 sm:p-4 bg-dark-4 hover:bg-dark-5 rounded-xl cursor-pointer transition-all duration-200"
                               onClick={() => navigateToGroup(group._id)}
                             >
                               <div className="flex items-start gap-3">
@@ -597,7 +597,7 @@ const Home = () => {
                         <p className="text-light-3 mb-4">No groups found</p>
                         <button 
                           onClick={navigateToGroups}
-                          className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-lg transition-colors inline-flex items-center gap-2"
+                          className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl transition-colors inline-flex items-center gap-2"
                         >
                           <FiPlus size={16} />
                           <span>Join or Create</span>
@@ -640,12 +640,12 @@ const Home = () => {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -10 }}
                               transition={{ duration: 0.2, delay: index * 0.05 }}
-                              className="group p-3 sm:p-4 bg-dark-4 hover:bg-dark-5 rounded-lg cursor-pointer transition-all duration-200"
+                              className="group p-3 sm:p-4 bg-dark-4 hover:bg-dark-5 rounded-xl cursor-pointer transition-all duration-200"
                               onClick={() => navigateToMeeting(meeting)}
                             >
                               <div className="flex items-start gap-3">
                                 {/* Calendar Icon with Date */}
-                                <div className="shrink-0 w-12 h-14 flex flex-col items-center justify-center bg-primary-500/20 rounded-lg border border-primary-500/30">
+                                <div className="shrink-0 w-12 h-14 flex flex-col items-center justify-center bg-primary-500/20 rounded-xl border border-primary-500/30">
                                   <span className="text-xs text-primary-500 font-semibold">{meeting.date.split(' ')[0]}</span>
                                   <span className="text-lg text-light-1 font-bold">{meeting.date.split(' ')[1]}</span>
                                 </div>
@@ -749,7 +749,7 @@ const Home = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2, delay: index * 0.05 }}
-                                className={`group p-3 sm:p-4 ${notification.isRead ? 'bg-dark-4' : 'bg-dark-4 border-l-2 border-secondary-500'} hover:bg-dark-5 rounded-lg cursor-pointer transition-all duration-200`}
+                                className={`group p-3 sm:p-4 ${notification.isRead ? 'bg-dark-4' : 'bg-dark-4 border-l-2 border-secondary-500'} hover:bg-dark-5 rounded-xl cursor-pointer transition-all duration-200`}
                                 onClick={() => navigateToNotifications()}
                               >
                                 <div className="flex gap-3">
@@ -826,14 +826,14 @@ const Home = () => {
                 <div className="flex gap-3 w-full sm:w-auto">
                   <button
                     onClick={navigateToGroups}
-                    className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-4 py-2 rounded-lg transition-colors flex-1 sm:flex-initial"
+                    className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-4 py-2 rounded-xl transition-colors flex-1 sm:flex-initial"
                   >
                     <FiPlus size={16} />
                     <span>Join Group</span>
                   </button>
                   
                   <button
-                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-lg transition-colors flex-1 sm:flex-initial"
+                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-xl transition-colors flex-1 sm:flex-initial"
                   >
                     <FiSettings size={16} />
                     <span>Manage</span>
@@ -862,10 +862,10 @@ const Home = () => {
                             <img
                               src={group.avatar}
                               alt={group.name}
-                              className="w-14 h-14 rounded-lg object-cover"
+                              className="w-14 h-14 rounded-xl object-cover"
                             />
                           ) : (
-                            <div className="w-14 h-14 bg-gradient-to-br from-primary-500/20 to-primary-500/10 rounded-lg flex items-center justify-center">
+                            <div className="w-14 h-14 bg-gradient-to-br from-primary-500/20 to-primary-500/10 rounded-xl flex items-center justify-center">
                               <FiUsers className="text-primary-500" size={24} />
                             </div>
                           )}
@@ -919,7 +919,7 @@ const Home = () => {
                   </p>
                   <button
                     onClick={navigateToGroups}
-                    className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-lg transition-colors inline-flex items-center gap-2"
+                    className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl transition-colors inline-flex items-center gap-2"
                   >
                     <FiPlus size={18} />
                     <span>Join or Create Group</span>
@@ -951,14 +951,14 @@ const Home = () => {
                 <div className="flex gap-3 w-full sm:w-auto">
                   <button
                     onClick={navigateToMeetings}
-                    className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-4 py-2 rounded-lg transition-colors flex-1 sm:flex-initial"
+                    className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-4 py-2 rounded-xl transition-colors flex-1 sm:flex-initial"
                   >
                     <FiPlus size={16} />
                     <span>Schedule</span>
                   </button>
                   
                   <button
-                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-lg transition-colors flex-1 sm:flex-initial"
+                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-xl transition-colors flex-1 sm:flex-initial"
                   >
                     <FiClock size={16} />
                     <span>History</span>
@@ -967,15 +967,15 @@ const Home = () => {
               </div>
               
               {/* Simple calendar header */}
-              <div className="mb-5 bg-dark-4 rounded-lg p-4">
+              <div className="mb-5 bg-dark-4 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <button className="p-2 hover:bg-dark-5 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-dark-5 rounded-xl transition-colors">
                     <FiChevronRight className="rotate-180" />
                   </button>
                   <h3 className="text-lg font-semibold text-light-1">
                     {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </h3>
-                  <button className="p-2 hover:bg-dark-5 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-dark-5 rounded-xl transition-colors">
                     <FiChevronRight />
                   </button>
                 </div>
@@ -1002,11 +1002,11 @@ const Home = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className="group py-4 hover:bg-dark-4 rounded-lg transition-all px-2 cursor-pointer flex items-center"
+                        className="group py-4 hover:bg-dark-4 rounded-xl transition-all px-2 cursor-pointer flex items-center"
                         onClick={() => navigateToMeeting(meeting)}
                       >
                         <div className="flex-shrink-0 mr-4">
-                          <div className="w-16 h-16 bg-primary-500/10 rounded-lg flex flex-col items-center justify-center border border-primary-500/20">
+                          <div className="w-16 h-16 bg-primary-500/10 rounded-xl flex flex-col items-center justify-center border border-primary-500/20">
                             <span className="text-primary-500 text-xs font-medium">{meeting.date.split(' ')[0]}</span>
                             <span className="text-light-1 text-xl font-bold">{meeting.date.split(' ')[1]}</span>
                           </div>
@@ -1033,7 +1033,7 @@ const Home = () => {
                         </div>
                         
                         <div className="flex-shrink-0 ml-2">
-                          <button className="px-3 py-1.5 bg-primary-500 text-dark-1 rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="px-3 py-1.5 bg-primary-500 text-dark-1 rounded-xl text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                             Join
                           </button>
                         </div>
@@ -1052,7 +1052,7 @@ const Home = () => {
                   </p>
                   <button
                     onClick={navigateToMeetings}
-                    className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-lg transition-colors inline-flex items-center gap-2"
+                    className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl transition-colors inline-flex items-center gap-2"
                   >
                     <FiCalendar size={18} />
                     <span>View Meeting Calendar</span>
@@ -1094,7 +1094,7 @@ const Home = () => {
                 
                 {/* Feature preview cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mt-4">
-                  <div className="bg-dark-4 rounded-lg p-4 border border-dark-5">
+                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
                     <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                       <FiBook className="text-primary-500" size={18} />
                     </div>
@@ -1102,7 +1102,7 @@ const Home = () => {
                     <p className="text-xs text-light-3">Access shared notes, documents, and resources</p>
                   </div>
                   
-                  <div className="bg-dark-4 rounded-lg p-4 border border-dark-5">
+                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
                     <div className="w-12 h-12 bg-secondary-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                       <FiAward className="text-secondary-500" size={18} />
                     </div>
@@ -1110,7 +1110,7 @@ const Home = () => {
                     <p className="text-xs text-light-3">Practice with interactive assessments</p>
                   </div>
                   
-                  <div className="bg-dark-4 rounded-lg p-4 border border-dark-5">
+                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
                     <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                       <FiGlobe className="text-green-500" size={18} />
                     </div>
@@ -1149,7 +1149,7 @@ const Home = () => {
                 {notifications.length > 0 && (
                   <button
                     onClick={navigateToNotifications}
-                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
+                    className="flex items-center justify-center gap-2 bg-dark-4 hover:bg-dark-5 text-light-1 px-4 py-2 rounded-xl transition-colors w-full sm:w-auto"
                   >
                     <FiCheckCircle size={16} />
                     <span>Mark All as Read</span>
@@ -1196,7 +1196,7 @@ const Home = () => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}
-                              className="bg-dark-4 border-l-2 border-secondary-500 rounded-lg p-4 hover:bg-dark-5 transition-colors cursor-pointer"
+                              className="bg-dark-4 border-l-2 border-secondary-500 rounded-xl p-4 hover:bg-dark-5 transition-colors cursor-pointer"
                               onClick={() => navigateToNotifications()}
                             >
                               <div className="flex items-start gap-3">
@@ -1266,7 +1266,7 @@ const Home = () => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}
-                              className="bg-dark-4 rounded-lg p-4 hover:bg-dark-5 transition-colors cursor-pointer opacity-80 hover:opacity-100"
+                              className="bg-dark-4 rounded-xl p-4 hover:bg-dark-5 transition-colors cursor-pointer opacity-80 hover:opacity-100"
                               onClick={() => navigateToNotifications()}
                             >
                               <div className="flex items-start gap-3">
@@ -1359,7 +1359,7 @@ const Home = () => {
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.4, delay: 0.4 }}
-                      className="bg-dark-4 rounded-lg p-3 border border-dark-5"
+                      className="bg-dark-4 rounded-xl p-3 border border-dark-5"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
@@ -1376,7 +1376,7 @@ const Home = () => {
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.4, delay: 0.5 }}
-                      className="bg-dark-4 rounded-lg p-3 border border-dark-5"
+                      className="bg-dark-4 rounded-xl p-3 border border-dark-5"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-secondary-500/20 rounded-full flex items-center justify-center">
@@ -1397,7 +1397,7 @@ const Home = () => {
                   >
                     <button 
                       onClick={navigateToGroups}
-                      className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 inline-flex items-center gap-2"
+                      className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 inline-flex items-center gap-2"
                     >
                       <span>Find More Study Groups</span>
                       <FiArrowRight />
@@ -1493,7 +1493,7 @@ const Home = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.2 }}
-                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-lg text-xs"
+                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-xl text-xs"
                       >
                         <span className="text-light-3">Learning Streak</span>
                         <div className="text-primary-500 font-bold flex items-center gap-1">
@@ -1506,7 +1506,7 @@ const Home = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.3 }}
-                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-lg text-xs"
+                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-xl text-xs"
                       >
                         <span className="text-light-3">Meetings Attended</span>
                         <div className="text-primary-500 font-bold flex items-center gap-1">
@@ -1519,7 +1519,7 @@ const Home = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.4 }}
-                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-lg text-xs"
+                        className="bg-dark-2/80 backdrop-blur-sm p-2 rounded-xl text-xs"
                       >
                         <span className="text-light-3">Study Hours</span>
                         <div className="text-primary-500 font-bold flex items-center gap-1">
