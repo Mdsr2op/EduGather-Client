@@ -15,7 +15,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   return (
     <div className="sticky top-0 z-10">
-      <div className="bg-dark-3 flex justify-between items-center border-b-[1px] border-dark-4 shadow-sm px-4 py-8 sm:px-6 sm:py-4 transition-all duration-200 relative">
+      <div className="bg-dark-3 flex justify-between items-center border-b-[1px] border-dark-4 shadow-sm px-4 py-8 pt-16 sm:px-6 sm:py-4 transition-all duration-200 relative">
         <div className="flex items-center gap-2">
           {/* Back button for mobile */}
           <button
