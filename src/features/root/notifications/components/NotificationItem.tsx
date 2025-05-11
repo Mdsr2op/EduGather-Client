@@ -182,10 +182,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           )}
         </div>
         
-        {/* Unread indicator */}
-        {!notification.isRead && (
-          <div className="absolute top-3 sm:top-5 right-3 sm:right-5 h-2 w-2 sm:h-3 sm:w-3 bg-primary-600 rounded-full"></div>
-        )}
+        
       </div>
     </div>
   );
