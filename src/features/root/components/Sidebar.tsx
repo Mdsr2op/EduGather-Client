@@ -258,12 +258,12 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
-      <div className={`mt-4 mb-2 hidden md:block transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`mt-4 mb-2 transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
         <UserAvatar onClick={handleLogoClick} user={user} />
       </div>
 
       {/* Only show divider if logo is visible */}
-      <div className={`hidden md:block transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
         <SidebarDivider />
       </div>
 
