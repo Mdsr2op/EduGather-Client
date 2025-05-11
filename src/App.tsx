@@ -52,7 +52,8 @@ function App() {
                   <Route path="/groups/join/:groupId" element={<JoinGroupRedirect />} />
                   
                   <Route element={<RootLayout />}>
-                    <Route path="/landing" element={<Home />} /> {/* Home/Landing Page */}
+                    <Route path="/home" element={<Home />} /> {/* Home dashboard */}
+                    <Route path="/landing" element={<Home />} /> {/* Alternate path */}
                     
                     {/* Group and Chat Routes */}
                     <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
@@ -79,7 +80,7 @@ function App() {
                     {/* Default Protected Route */}
                     <Route
                       index
-                      element={<Navigate to="/discover-groups" replace />}
+                      element={<Navigate to="/home" replace />}
                     />
                   </Route>
                 </Route>
