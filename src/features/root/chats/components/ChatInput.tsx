@@ -192,7 +192,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
           className={`${isLoading || isUploading ? 'text-gray-500' : 'text-primary-500 hover:text-primary-600'} flex-shrink-0 ml-1 sm:ml-2 mr-2 sm:mr-3`}
           aria-label="Send Message"
         >
-          <FiSend size={20} className="sm:size-24" />
+          <FiSend size={20} className="sm:size-24 lg:size-10" />
         </button>
       </div>
     </div>
