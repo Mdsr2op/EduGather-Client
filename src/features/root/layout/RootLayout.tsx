@@ -105,14 +105,14 @@ const Layout = () => {
     <div className="flex w-full h-screen overflow-hidden">
       {/* Mobile logo - only visible on small screens and positioned with lower z-index */}
       {isMobile && (
-        <div className="md:hidden fixed top-4 left-4 z-30">
+        <div className="md:hidden fixed top-4 left-4 z-[100]">
           <SidebarLogo onClick={handleLogoClick} />
         </div>
       )}
 
       {/* Mobile menu button - positioned in top-right for better placement */}
       <button 
-        className="md:hidden fixed top-4 right-4 z-50 bg-dark-2 p-2.5 rounded-full shadow-lg hover:bg-dark-3 transition-colors"
+        className="md:hidden fixed top-4 right-4 z-[100] bg-dark-2 p-2.5 rounded-full shadow-lg hover:bg-dark-3 transition-colors"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
       >
