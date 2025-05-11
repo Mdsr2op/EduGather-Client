@@ -99,7 +99,7 @@ const Layout = () => {
     <div className="flex w-full h-screen overflow-hidden">
       {/* Mobile menu button - positioned in top-right for better placement */}
       <button 
-        className="md:hidden fixed top-4 right-4 z-[100] bg-dark-2 p-2.5 rounded-full shadow-lg hover:bg-dark-3 transition-colors"
+        className="md:hidden fixed top-4 right-4 z-[100] bg-dark-3 p-2.5 rounded-full shadow-lg hover:bg-dark-4 transition-colors"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
       >
@@ -134,8 +134,7 @@ const Layout = () => {
       </div>
 
       {/* Main content section */}
-      <div className="overflow-y-auto custom-scrollbar w-full h-full md:ml-0 pt-2 md:pt-0">
-        <div className="md:hidden h-12"></div> {/* Spacer for mobile menu button */}
+      <div className="overflow-y-auto custom-scrollbar w-full h-full md:ml-0">
         <Outlet />
       </div>
 
