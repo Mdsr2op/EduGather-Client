@@ -74,6 +74,12 @@ const NotificationsPage: React.FC = () => {
         
         return updatedNotifications;
       });
+      
+      // Optional: Play a sound or show a toast notification based on type
+      if (notification.type === 'role_upgrade_requested') {
+        // You could trigger a special alert for admin users here
+        console.log('Role upgrade requested notification received');
+      }
     };
     
     // Subscribe to notification_created event

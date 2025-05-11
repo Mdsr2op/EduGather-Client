@@ -1,10 +1,25 @@
-import { useRef, useEffect, useState } from 'react';
-import { MdAdminPanelSettings, MdPersonRemove, MdSupervisorAccount } from 'react-icons/md';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import type { GroupMember } from './GroupMemberCard';
-import { useAssignRoleMutation, useRemoveUserFromGroupMutation } from '../slices/groupApiSlice';
-import { toast } from 'react-hot-toast';
-import RemoveUserDialog from './RemoveUserDialog';
+import { useRef, useEffect, useState } from "react";
+import {
+  MdAdminPanelSettings,
+  MdPersonRemove,
+  MdSupervisorAccount,
+  MdArrowUpward,
+} from "react-icons/md";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import type { GroupMember } from "./GroupMemberCard";
+import {
+  useAssignRoleMutation,
+  useGetGroupDetailsQuery,
+  useRemoveUserFromGroupMutation,
+} from "../slices/groupApiSlice";
+import { toast } from "react-hot-toast";
+import RemoveUserDialog from "./RemoveUserDialog";
+import { useAppSelector } from "@/redux/hook";
+import { useSocket } from "@/lib/socket";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { useParams } from "react-router-dom";
+
 
 type MenuItemProps = {
   icon: React.ComponentType<{ className?: string }>;
@@ -14,17 +29,23 @@ type MenuItemProps = {
   isLoading?: boolean;
 };
 
-const MenuItem = ({ icon: Icon, label, onClick, isDanger = false, isLoading = false }: MenuItemProps) => (
+const MenuItem = ({
+  icon: Icon,
+  label,
+  onClick,
+  isDanger = false,
+  isLoading = false,
+}: MenuItemProps) => (
   <button
     className={`w-full text-left px-3 py-2 flex items-center gap-3 text-sm transition-colors hover:bg-dark-1
-       ${isDanger ? 'text-red hover:text-red' : 'text-light-1'}`}
+       ${isDanger ? "text-red hover:text-red" : "text-light-1"}`}
     onClick={onClick}
     disabled={isLoading}
   >
     {isLoading ? (
       <AiOutlineLoading3Quarters className="animate-spin text-light-3" />
     ) : (
-      <Icon className={isDanger ? 'text-red-400' : 'text-light-3'} />
+      <Icon className={isDanger ? "text-red-400" : "text-light-3"} />
     )}
     <span>{label}</span>
   </button>
@@ -39,29 +60,50 @@ interface RoleMenuProps {
   groupId: string;
 }
 
-
-const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, groupId }: RoleMenuProps) => {
+const RoleMenu = ({
+  member,
+  isOpen,
+  isAdmin,
+  isModerator = false,
+  onClose,
+  groupId,
+}: RoleMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [assignRole, { isLoading: isAssigningRole }] = useAssignRoleMutation();
-  const [removeUser, { isLoading: isRemovingUser }] = useRemoveUserFromGroupMutation();
-  
+  const [removeUser, { isLoading: isRemovingUser }] =
+    useRemoveUserFromGroupMutation();
+
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogAction, setDialogAction] = useState<"removeUser" | "removeAdminRole" | "removeModeratorRole">("removeUser");
-  const [pendingRole, setPendingRole] = useState<"member" | "moderator" | "admin" | null>(null);
-  
+  const [dialogAction, setDialogAction] = useState<
+    "removeUser" | "removeAdminRole" | "removeModeratorRole"
+  >("removeUser");
+  const [pendingRole, setPendingRole] = useState<
+    "member" | "moderator" | "admin" | null
+  >(null);
+  const [isRequestingUpgrade, setIsRequestingUpgrade] = useState(false);
+  const { socket } = useSocket();
+  const user = useSelector(selectCurrentUser);
+
+  const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
+    skip: !groupId
+  });
+  // Check if this is the current user's card
+  const isOwnCard =
+    useAppSelector((state: any) => state.auth.user?._id) === member._id;
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
-    
+
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
 
@@ -84,17 +126,17 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
 
   const handleAssignRole = async (role: "member" | "moderator" | "admin") => {
     try {
-      await assignRole({ 
-        groupId, 
-        userId: member._id, 
-        role 
+      await assignRole({
+        groupId,
+        userId: member._id,
+        role,
       }).unwrap();
-      
+
       toast.success(`${member.username} is now a ${role}`);
       onClose();
     } catch (error) {
-      console.error('Failed to update role:', error);
-      toast.error('Failed to update member role');
+      console.error("Failed to update role:", error);
+      toast.error("Failed to update member role");
     }
   };
 
@@ -102,61 +144,104 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
     try {
       await removeUser({
         groupId,
-        userId: member._id
+        userId: member._id,
       }).unwrap();
-      
+
       toast.success(`${member.username} has been removed from the group`);
       onClose();
     } catch (error) {
-      console.error('Failed to remove member:', error);
-      toast.error('Failed to remove member from group');
+      console.error("Failed to remove member:", error);
+      toast.error("Failed to remove member from group");
     }
   };
 
   const handleDialogConfirm = async () => {
     if (dialogAction === "removeUser") {
       await handleRemoveMember();
-    } else if (pendingRole && (dialogAction === "removeAdminRole" || dialogAction === "removeModeratorRole")) {
+    } else if (
+      pendingRole &&
+      (dialogAction === "removeAdminRole" ||
+        dialogAction === "removeModeratorRole")
+    ) {
       await handleAssignRole(pendingRole);
     }
     setDialogOpen(false);
   };
 
+  const handleRequestRoleUpgrade = async () => {
+    setIsRequestingUpgrade(true);
+    if (!socket || !socket.connected) {
+      toast.error("Socket connection not available");
+      return;
+    }
+
+    if (!user?._id || !groupDetails?.name) {
+      toast.error("Missing user or group information");
+      return;
+    }
+
+    try {
+      socket.emit("create_notification", {
+        type: "role_upgrade_requested",
+        groupId: groupId,
+        channelId: null,
+        senderId: user._id,
+        content: `${user.username} requested a role upgrade in ${groupDetails.name}`,
+      });
+      
+      console.log("Emitted role upgrade request", {
+        groupId,
+        senderId: user._id,
+        groupName: groupDetails.name
+      });
+      
+      toast.success("Role upgrade request sent to admin");
+      onClose();
+    } catch (error) {
+      console.error("Failed to request role upgrade:", error);
+      toast.error("Failed to send role upgrade request");
+    } finally {
+      setIsRequestingUpgrade(false);
+    }
+  };
+
   if (!isOpen && !dialogOpen) return null;
-  
+
   return (
     <>
       {isOpen && (
-        <div 
+        <div
           ref={menuRef}
           className="absolute right-0 top-full mt-1 bg-dark-2 text-light-1 rounded-xl shadow-lg z-50 border border-dark-4 backdrop-blur-lg overflow-hidden min-w-[180px]"
           style={{ animation: "menuFadeIn 0.15s ease-in-out" }}
         >
           <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
-            <h3 className="text-sm font-medium truncate">Manage {member.username}</h3>
+            <h3 className="text-sm font-medium truncate">
+              Manage {member.username}
+            </h3>
           </div>
-          
+
           <div className="py-1">
-            {isAdmin && member.role === 'admin' ? (
+            {isAdmin && member.role === "admin" ? (
               <MenuItem
                 icon={MdPersonRemove}
                 label="Remove Admin Role"
-                onClick={() => showRemoveRoleDialog('moderator')}
+                onClick={() => showRemoveRoleDialog("moderator")}
                 isLoading={isAssigningRole}
                 isDanger={true}
               />
-            ) : isAdmin && member.role === 'moderator' ? (
+            ) : isAdmin && member.role === "moderator" ? (
               <>
                 <MenuItem
                   icon={MdAdminPanelSettings}
                   label="Make Admin"
-                  onClick={() => handleAssignRole('admin')}
+                  onClick={() => handleAssignRole("admin")}
                   isLoading={isAssigningRole}
                 />
                 <MenuItem
                   icon={MdPersonRemove}
                   label="Remove Moderator Role"
-                  onClick={() => showRemoveRoleDialog('member')}
+                  onClick={() => showRemoveRoleDialog("member")}
                   isLoading={isAssigningRole}
                   isDanger={true}
                 />
@@ -166,7 +251,7 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
                 <MenuItem
                   icon={MdSupervisorAccount}
                   label="Make Moderator"
-                  onClick={() => handleAssignRole('moderator')}
+                  onClick={() => handleAssignRole("moderator")}
                   isLoading={isAssigningRole}
                 />
                 <MenuItem
@@ -177,6 +262,13 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
                   isLoading={isRemovingUser}
                 />
               </>
+            ) : isOwnCard && member.role === "moderator" ? (
+              <MenuItem
+                icon={MdArrowUpward}
+                label="Request Role Upgrade"
+                onClick={handleRequestRoleUpgrade}
+                isLoading={isRequestingUpgrade}
+              />
             ) : isModerator ? (
               <MenuItem
                 icon={MdPersonRemove}
@@ -195,7 +287,7 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
               />
             )}
           </div>
-          
+
           <style>
             {`
               @keyframes menuFadeIn {
@@ -212,11 +304,13 @@ const RoleMenu = ({ member, isOpen, isAdmin, isModerator = false, onClose, group
         onOpenChange={setDialogOpen}
         member={member}
         onConfirm={handleDialogConfirm}
-        isLoading={dialogAction === "removeUser" ? isRemovingUser : isAssigningRole}
+        isLoading={
+          dialogAction === "removeUser" ? isRemovingUser : isAssigningRole
+        }
         actionType={dialogAction}
       />
     </>
   );
 };
 
-export default RoleMenu; 
+export default RoleMenu;

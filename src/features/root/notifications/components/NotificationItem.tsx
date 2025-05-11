@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMessageSquare, FiVideo, FiClock } from "react-icons/fi";
+import { FiMessageSquare, FiVideo, FiClock, FiUserPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export interface NotificationUI {
   _id: string;
-  type: 'channel_message' | 'meeting_created' | string;
+  type: 'channel_message' | 'meeting_created' | 'role_upgrade_requested' | string;
   title: string;
   message: string;
   isRead: boolean;
@@ -64,6 +64,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       case 'meeting_created':
         navigate(`/${notification.groupId}/${notification.channelId}`);
         break;
+      case 'role_upgrade_requested':
+        navigate(`/settings/users`); // Navigate to user management page
+        break;
       default:
         console.warn(`Unhandled notification type: ${notification.type}`);
         break;
@@ -80,6 +83,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         return <FiMessageSquare className="w-5 h-5" />;
       case 'meeting_created':
         return <FiVideo className="w-5 h-5" />;
+      case 'role_upgrade_requested':
+        return <FiUserPlus className="w-5 h-5" />;
       default:
         return null;
     }
@@ -91,6 +96,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         return 'Message';
       case 'meeting_created':
         return 'Meeting';
+      case 'role_upgrade_requested':
+        return 'Role Request';
       default:
         return 'Notification';
     }
@@ -102,6 +109,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         return 'bg-blue-600';
       case 'meeting_created':
         return 'bg-green-600';
+      case 'role_upgrade_requested':
+        return 'bg-purple-600';
       default:
         return 'bg-gray-600';
     }
@@ -153,6 +162,22 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
                 # {channelName}
               </span>
+            </div>
+          )}
+
+          {notification.type === 'role_upgrade_requested' && (
+            <div className="flex items-center flex-wrap gap-1 sm:gap-2 mt-1">
+              {/* Type tag */}
+              <span className={`px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full text-white ${getTypeColor()}`}>
+                {getTypeLabel()}
+              </span>
+              
+              {/* User name tag if available */}
+              {notification.senderName && (
+                <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
+                  {notification.senderName}
+                </span>
+              )}
             </div>
           )}
         </div>
