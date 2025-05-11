@@ -185,7 +185,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   );
 
   return (
-    <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 max-h-[100dvh] p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col relative overflow-hidden">
+    <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 max-h-[100dvh] p-3 pt-16 sm:p-3 md:p-4 lg:p-5 flex flex-col relative overflow-hidden ">
       {/* Header with Create Channel Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-3 md:pb-4 border-b-[1px] border-dark-4 -mx-3 md:-mx-4 lg:-mx-5 px-3 md:px-4 lg:px-5">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-1 sm:mb-0">Channels</h1>
