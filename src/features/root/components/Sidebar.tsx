@@ -186,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     // First set navigation source
     dispatch(setNavigationSource('user_action'));
     // Then navigate
-    navigate('/');
+    navigate('/home');
     // Finally set selected group ID to null
     setTimeout(() => {
       dispatch(setSelectedGroupId(null));
