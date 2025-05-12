@@ -13,25 +13,25 @@ const steps: Step[] = [
     icon: <UserPlus className="h-8 w-8 text-primary-500" />,
     title: "Create an Account",
     description: "Simple registration with secure password encryption.",
-    imageSrc: "public/CreateANewAccount.png", // Replace with actual image URL
+    imageSrc: "/CreateANewAccount.png", // Replace with actual image URL
   },
   {
     icon: <Users className="h-8 w-8 text-primary-500" />,
     title: "Join or Create a Study Group",
     description: "Connect with peers and form learning communities.",
-    imageSrc: "public/NewGroup.png", // Replace with actual image URL
+    imageSrc: "/NewGroup.png", // Replace with actual image URL
   },
   {
     icon: <MessageCircle className="h-8 w-8 text-primary-500" />,
     title: "Collaborate in Real-Time",
     description: "Use messaging, video calls, and file sharing to study effectively.",
-    imageSrc: "public/RealTimeCollaboration.png", // Replace with actual image URL
+    imageSrc: "/RealTimeCollaboration.png", // Replace with actual image URL
   },
   {
     icon: <Calendar className="h-8 w-8 text-primary-500" />,
     title: "Organize & Manage",
     description: "Assign roles, schedule events, and streamline communication.",
-    imageSrc: "public/organize and manage.jpg", // Replace with actual image URL
+    imageSrc: "/organize and manage.jpg", // Replace with actual image URL
   },
 ];
 

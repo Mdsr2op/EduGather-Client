@@ -62,7 +62,7 @@ export function Hero() {
         <div className="flex-1 flex justify-end items-center">
           <div className="relative w-full max-w-md aspect-video lg:aspect-auto  bg-dark-4 rounded-xl overflow-hidden">
             <img
-              src="public\Hero.png"
+              src="/Hero.png"
               alt="Students collaborating online"
               className="w-full h-full object-cover rounded-lg"
             />
