@@ -31,7 +31,7 @@ export function GoogleAuthCallback() {
         navigate('/complete-profile');
       } else {
         toast.success('Successfully signed in with Google!');
-        navigate('/');
+        navigate('/home');
       }
     } else if (isError) {
       toast.error('Failed to verify authentication. Please try again.');

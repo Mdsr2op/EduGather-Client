@@ -38,7 +38,7 @@ export function SignInForm() {
     try {
       await signIn(data).unwrap();
       toast.success("Signed in successfully!");
-      navigate("/")
+      navigate("/home")
       
     } catch (err) {
       console.error("Signin failed:", err);
