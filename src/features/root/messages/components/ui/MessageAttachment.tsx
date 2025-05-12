@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { MessageAttachmentProps } from '../../types/messageTypes';
 import { saveAs } from 'file-saver';
 import MeetingAttachment from '../MeetingAttachment';
 import ImageViewer from '../ImageViewer';
+import { FiDownload, FiFile, FiImage, FiVideo } from 'react-icons/fi';
 
 const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUserMessage }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   // Determine the type of attachment
   const isImageAttachment = attachment.fileType?.startsWith('image/');
@@ -56,6 +59,33 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
     return `${truncatedName}.${extension}`;
   };
 
+  // Get file icon based on type
+  const getFileIcon = () => {
+    if (isImageAttachment) return <FiImage className="text-blue-400" />;
+    if (isVideoAttachment) return <FiVideo className="text-red-400" />;
+    
+    // File extension based icons
+    const extension = attachment.fileName?.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <FiFile className="text-red-500" />;
+      case 'doc':
+      case 'docx':
+        return <FiFile className="text-blue-500" />;
+      case 'xls':
+      case 'xlsx':
+        return <FiFile className="text-green-500" />;
+      case 'ppt':
+      case 'pptx':
+        return <FiFile className="text-orange-500" />;
+      case 'zip':
+      case 'rar':
+        return <FiFile className="text-purple-500" />;
+      default:
+        return <FiFile className="text-gray-400" />;
+    }
+  };
+
   // Render meeting attachment with a separate container to break out of message constraints
   if (isMeetingAttachment && attachment.meetingData) {
     return (
@@ -77,17 +107,52 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
   if (isImageAttachment) {
     return (
       <>
-        <div className="message-attachment w-full">
-          {!imageLoaded && <div className="animate-pulse text-xs sm:text-sm">Loading image...</div>}
-          <img 
-            src={attachment.url} 
-            alt={attachment.fileName}
-            className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain cursor-pointer"
-            onLoad={() => setImageLoaded(true)}
-            style={{ display: imageLoaded ? 'block' : 'none' }}
-            onClick={handleImageClick}
-          />
-        </div>
+        <motion.div 
+          className="message-attachment w-full"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+        >
+          {!imageLoaded && (
+            <div className="flex items-center justify-center h-32 bg-dark-4 rounded-lg animate-pulse">
+              <FiImage className="text-light-3" size={24} />
+            </div>
+          )}
+          <div className="relative group">
+            <img 
+              src={attachment.url} 
+              alt={attachment.fileName}
+              className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain cursor-pointer shadow-md hover:shadow-lg transition-all"
+              onLoad={() => setImageLoaded(true)}
+              style={{ display: imageLoaded ? 'block' : 'none' }}
+              onClick={handleImageClick}
+            />
+            {/* Overlay with file name on hover */}
+            {isHovered && imageLoaded && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-dark-1/80 to-transparent p-2 rounded-b-lg"
+              >
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-light-2 truncate">
+                    {truncateFilename(attachment.fileName)}
+                  </span>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleDownload}
+                    className="ml-2 p-1 rounded-full bg-dark-3/50 hover:bg-dark-3 text-light-1"
+                  >
+                    <FiDownload size={14} />
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
         <ImageViewer
           open={imageViewerOpen}
           onOpenChange={setImageViewerOpen}
@@ -102,42 +167,71 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
   // Render video attachment
   if (isVideoAttachment) {
     return (
-      <div className="message-attachment w-full">
-        <video 
-          src={attachment.url}
-          controls
-          className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain"
-        />
-      </div>
+      <motion.div 
+        className="message-attachment w-full"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="rounded-lg overflow-hidden shadow-md bg-dark-4">
+          <video 
+            src={attachment.url}
+            controls
+            className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain"
+          />
+          <div className="flex justify-between items-center px-3 py-2 bg-dark-4 text-light-2">
+            <span className="text-xs truncate">
+              {truncateFilename(attachment.fileName)}
+            </span>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleDownload}
+              className="p-1 rounded-full hover:bg-dark-3 text-primary-500"
+              aria-label="Download video"
+            >
+              <FiDownload size={14} />
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
     );
   }
 
   // Render file attachment (default)
   return (
-    <div className="message-attachment flex items-center p-2 sm:p-3 bg-dark-5 rounded-lg w-full">
-      <div className="mr-1 sm:mr-2 flex-shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        </svg>
-      </div>
-      <div className="attachment-content flex-1 min-w-0 mr-1">
-        <div className="text-xs sm:text-sm font-medium truncate" title={attachment.fileName}>
-          {truncateFilename(attachment.fileName)}
+    <motion.div 
+      className="message-attachment w-full"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2 }}
+      whileHover={{ scale: 1.02 }}
+    >
+      <div className="flex items-center p-3 bg-dark-5 rounded-xl shadow-sm hover:shadow-md transition-all border border-dark-4/50">
+        <div className="mr-3 p-2 bg-dark-4 rounded-lg flex-shrink-0">
+          {getFileIcon()}
         </div>
-        <div className="text-xs text-gray-400">
-          {(attachment.size / 1024).toFixed(1)} KB
+        <div className="attachment-content flex-1 min-w-0 mr-3">
+          <div className="text-sm font-medium text-light-1 truncate" title={attachment.fileName}>
+            {truncateFilename(attachment.fileName)}
+          </div>
+          <div className="flex items-center gap-2 text-xs text-light-3 mt-1">
+            <span>{(attachment.size / 1024).toFixed(1)} KB</span>
+            <div className="w-1 h-1 rounded-full bg-light-4"></div>
+            <span>{attachment.fileName.split('.').pop()?.toUpperCase() || 'FILE'}</span>
+          </div>
         </div>
+        <motion.button 
+          whileHover={{ scale: 1.1, backgroundColor: 'rgba(var(--primary-500-rgb), 0.2)' }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleDownload}
+          className="p-2 rounded-lg bg-dark-4 hover:bg-dark-3 text-primary-500 transition-colors"
+          aria-label="Download file"
+        >
+          <FiDownload size={18} />
+        </motion.button>
       </div>
-      <button 
-        onClick={handleDownload}
-        className="flex-shrink-0 p-1 rounded-full hover:bg-dark-3 active:bg-dark-4 touch-manipulation"
-        aria-label="Download file"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-      </button>
-    </div>
+    </motion.div>
   );
 };
 

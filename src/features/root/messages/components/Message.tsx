@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useSocket } from "@/lib/socket";
 import MessageAvatar from "./MessageAvatar";
@@ -31,6 +32,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   const [contextMenu, setContextMenu] = useState({
     visible: false,
@@ -182,8 +184,10 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   
   // Get classes for message bubble based on message properties
   const getMessageBubbleClasses = () => {
-    const baseClasses = `py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
-      isUserMessage ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1" : "bg-dark-4 text-light-1"
+    const baseClasses = `py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl cursor-pointer transition-all ${
+      isUserMessage 
+        ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1 shadow-md" 
+        : "bg-dark-4 text-light-1 hover:bg-dark-5"
     } ${message.pinned ? "border-2 border-yellow-500" : ""}`;
     
     // Add appropriate border radius for reply
@@ -206,20 +210,43 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     );
   }
   
-
   return (
     <>
-      <div
+      <motion.div
         id={`message-${message.id}`}
-        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-0.5 transition-colors duration-500`}
+        initial={{ opacity: 0, x: isUserMessage ? 20 : -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-1 transition-all duration-300`}
         onContextMenu={handleContextMenu}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <div 
+        <motion.div 
           ref={messageRef}
-          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
+          whileHover={{ scale: 1.01 }}
+          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""} relative`}
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
-          <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
+          <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''} relative`}>
+            {/* Username overlay on hover */}
+            <AnimatePresence>
+              {isHovered && !editMode && !isMeetingAttachment && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={`absolute ${isUserMessage ? 'right-1' : 'left-1'} -top-6 bg-dark-2/80 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-md z-10`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-medium text-primary-400">{message.senderName}</span>
+                    <span className="text-[10px] text-light-3">
+                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             {message.replyTo && (
               <div className={`${isUserMessage ? "items-end" : "items-start"} message-reply-info`}>
                 <MessageReplyInfo replyTo={message.replyTo} />
@@ -280,8 +307,8 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
               </div>
             )}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       
       {contextMenu.visible && (
         <MessageContextMenu

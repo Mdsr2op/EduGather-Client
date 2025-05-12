@@ -1,5 +1,6 @@
 // ChatWindow.js
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import MessageBody from './MessageBody';
 import ChatInput from './ChatInput';
 import { useSelector } from 'react-redux';
@@ -9,6 +10,7 @@ import { useSocket } from '@/lib/socket';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { formatMessageForUI } from '@/utils/messageFormatters';
 import { useMessageSocketEvents } from '@/hooks/useMessageSocketEvents';
+import { FiChevronDown, FiRefreshCw } from 'react-icons/fi';
 
 interface ChatWindowProps {
   userId: string;
@@ -178,11 +180,40 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
   }, [isLoadingMore, lastVisibleMessageId, page]);
 
   if (isLoading && page === 1) {
-    return <div className="flex flex-col h-full justify-center items-center">Loading messages...</div>;
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col h-full justify-center items-center text-light-3"
+      >
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
+        <p className="animate-pulse">Loading messages...</p>
+      </motion.div>
+    );
   }
 
   if (isError) {
-    return <div className="flex flex-col h-full justify-center items-center text-red-500">Failed to load messages</div>;
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col h-full justify-center items-center text-red-500 p-6"
+      >
+        <div className="mb-4 w-16 h-16 rounded-full bg-dark-4 flex items-center justify-center text-red-500">
+          <FiRefreshCw size={24} />
+        </div>
+        <p className="mb-4 text-lg">Failed to load messages</p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => refetch()}
+          className="px-4 py-2 bg-dark-4 hover:bg-dark-5 text-light-1 rounded-xl flex items-center gap-2"
+        >
+          <FiRefreshCw size={16} />
+          <span>Retry</span>
+        </motion.button>
+      </motion.div>
+    );
   }
 
   return (
@@ -190,7 +221,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <div 
         id="scrollableDiv"
         ref={scrollableDivRef}
-        className="flex-1 overflow-y-auto custom-scrollbar px-2 sm:px-4 pt-2 sm:pt-4 flex flex-col-reverse"
+        className="flex-1 overflow-y-auto custom-scrollbar px-2 sm:px-4 pt-2 sm:pt-4 flex flex-col-reverse bg-dark-3 rounded-xl"
         onScroll={handleScroll}
       >
         <InfiniteScroll
@@ -199,22 +230,33 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           hasMore={hasMore}
           scrollThreshold={-1}
           loader={
-            <div className="flex justify-center items-center p-2 sm:p-4">
-              <button 
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-center items-center p-2 sm:p-4"
+            >
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={loadMoreMessages}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-primary-500 hover:text-primary-600 transition-colors flex items-center gap-1.5 sm:gap-2 bg-transparent"
+                className="px-3 sm:px-4 py-2 bg-dark-4 hover:bg-dark-5 text-primary-500 hover:text-primary-400 transition-colors rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-sm"
                 disabled={isLoadingMore}
               >
                 {isLoadingMore ? (
                   <>
-                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-t-2 border-b-2 border-primary-500"></div>
-                    Loading...
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary-500"></div>
+                    <span>Loading history...</span>
                   </>
                 ) : (
-                  'Load More Messages'
+                  <>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 4h18M3 12h18M3 20h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>Load More Messages</span>
+                  </>
                 )}
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           }
           inverse={true}
           scrollableTarget="scrollableDiv"
@@ -229,17 +271,22 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         </InfiniteScroll>
       </div>
       <ChatInput userId={userId} />
-      {!isAtBottom && (
-        <button 
-          className="fixed bottom-16 sm:bottom-20 right-4 sm:right-8 bg-primary-500 text-white rounded-full p-1.5 sm:p-2 shadow-lg z-10"
-          onClick={scrollToBottom}
-          aria-label="Scroll to bottom"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L10 15.586l5.293-5.293a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      )}
+      <AnimatePresence>
+        {!isAtBottom && (
+          <motion.button 
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="fixed bottom-20 right-6 sm:right-8 bg-primary-500 text-white rounded-full w-10 h-10 shadow-lg z-10 flex items-center justify-center"
+            onClick={scrollToBottom}
+            aria-label="Scroll to bottom"
+          >
+            <FiChevronDown size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
