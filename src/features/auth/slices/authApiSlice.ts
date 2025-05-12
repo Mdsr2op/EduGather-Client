@@ -26,11 +26,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: "/users/logout",
         method: "POST",
+        credentials: "include",
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
           dispatch(logOut());
+          window.location.href = "/landing";
         } catch (err) {
           console.error("Logout error:", err);
         }
