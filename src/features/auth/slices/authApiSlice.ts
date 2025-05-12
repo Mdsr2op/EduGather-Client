@@ -1,6 +1,7 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 import { setUser, setAccessToken, logOut } from "./authSlice";
 import { AuthResponse, SignInFormValues, ForgotPasswordFormValues } from "../types";
+import { toast } from "react-hot-toast";
 
 // The backend's response has { data: { user, accessToken, refreshToken } } in some form
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -50,6 +51,23 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    updateProfile: builder.mutation<AuthResponse, FormData>({
+      query: (formData) => ({
+        url: "/users/update-profile",
+        method: "PATCH",
+        body: formData,
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data: result } = await queryFulfilled;
+          dispatch(setUser(result.data.user));
+          toast.success("Profile updated successfully!");
+        } catch (err) {
+          console.error("Profile update error:", err);
+          toast.error("Failed to update profile. Please try again.");
+        }
+      },
+    }),
     forgotPassword: builder.mutation<{ message: string }, ForgotPasswordFormValues>({
       query: (data) => ({
         url: "/users/forgot-password",
@@ -93,6 +111,7 @@ export const {
   useGetCurrentUserQuery,
   useCheckGoogleAuthStatusQuery,
   useLogoutMutation,
-  useForgotPasswordMutation
+  useForgotPasswordMutation,
+  useUpdateProfileMutation
 } = authApiSlice;
   

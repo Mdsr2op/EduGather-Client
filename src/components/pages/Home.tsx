@@ -10,7 +10,7 @@ import { Meeting } from "@/components/pages/ScheduledMeetings";
 import { NotificationUI } from "@/features/root/notifications/components/NotificationItem";
 import { 
   FiUsers, FiBell, FiCalendar, FiClock, FiChevronRight, FiPlus, 
-  FiSettings, FiBook, FiMessageSquare, FiCheckCircle, FiGlobe, FiAward 
+  FiSettings, FiBook, FiMessageSquare, FiCheckCircle, FiGlobe, FiAward
 } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 
@@ -20,6 +20,7 @@ import HomeSearchBar from "@/features/root/Home/components/HomeSearchBar";
 import HomeNavTabs from "@/features/root/Home/components/HomeNavTabs";
 import HomeOverviewTab from "@/features/root/Home/components/tabs/HomeOverviewTab";
 import HomeActivityFeed from "@/features/root/Home/components/HomeActivityFeed";
+import HomeResourcesTab from "@/features/root/Home/components/tabs/HomeResourcesTab";
 
 // Import utils
 import { formatDateString, formatTimeString, formatMeetingTime } from "@/features/root/Home/utils/dateUtils";
@@ -390,64 +391,7 @@ const Home = () => {
           )}
           
           {/* Resources Tab Content */}
-          {activeTab === "resources" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-              className="bg-dark-3 rounded-xl p-5 shadow-lg border border-dark-5"
-            >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-light-1 flex items-center gap-2">
-                    <FiBook className="text-primary-500" />
-                    Learning Resources
-                  </h2>
-                  <p className="text-light-3 text-sm sm:text-base mt-1">
-                    Access educational materials, documents, and shared content
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="w-20 h-20 bg-primary-500/20 rounded-full flex items-center justify-center mb-4">
-                  <FiBook className="text-primary-500" size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-light-1 mb-3">Resources Coming Soon</h3>
-                <p className="text-light-3 max-w-lg mb-8">
-                  Educational resources, documents, and shared materials will be available in a future update. 
-                  Stay tuned for a comprehensive library of learning materials!
-                </p>
-                
-                {/* Feature preview cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mt-4">
-                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
-                    <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <FiBook className="text-primary-500" size={18} />
-                    </div>
-                    <h4 className="font-medium text-light-1 mb-1">Study Materials</h4>
-                    <p className="text-xs text-light-3">Access shared notes, documents, and resources</p>
-                  </div>
-                  
-                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
-                    <div className="w-12 h-12 bg-secondary-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <FiAward className="text-secondary-500" size={18} />
-                    </div>
-                    <h4 className="font-medium text-light-1 mb-1">Quizzes & Tests</h4>
-                    <p className="text-xs text-light-3">Practice with interactive assessments</p>
-                  </div>
-                  
-                  <div className="bg-dark-4 rounded-xl p-4 border border-dark-5">
-                    <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <FiGlobe className="text-green-500" size={18} />
-                    </div>
-                    <h4 className="font-medium text-light-1 mb-1">External Resources</h4>
-                    <p className="text-xs text-light-3">Links to helpful websites and tools</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+          {activeTab === "resources" && <HomeResourcesTab />}
           
           {/* Notifications Tab Content */}
           {activeTab === "notifications" && (

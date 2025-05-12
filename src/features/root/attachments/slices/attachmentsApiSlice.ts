@@ -44,6 +44,20 @@ export interface GetChannelAttachmentsResponse {
   };
 }
 
+export interface GetUserAttachmentsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    attachments: Attachment[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
+
 export const attachmentsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     uploadAttachment: builder.mutation<AttachmentResponse, { channelId: string; formData: FormData }>({
@@ -73,11 +87,19 @@ export const attachmentsApiSlice = apiSlice.injectEndpoints({
         { type: 'Messages', id: channelId }
       ]
     }),
+    getUserAttachments: builder.query<GetUserAttachmentsResponse, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 20 }) => ({
+        url: `/attachments/user/all?page=${page}&limit=${limit}`,
+        method: 'GET',
+      }),
+      providesTags: ['Messages']
+    }),
   }),
 });
 
 export const {
   useGetChannelAttachmentsQuery,
   useUploadAttachmentMutation,
-  useDeleteAttachmentMutation
+  useDeleteAttachmentMutation,
+  useGetUserAttachmentsQuery
 } = attachmentsApiSlice; 
