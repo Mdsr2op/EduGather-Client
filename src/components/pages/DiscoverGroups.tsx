@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetAllGroupsQuery, useGetGroupsByCategoryQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { Input } from "@/components/ui/input";
@@ -6,8 +7,8 @@ import { FiSearch, FiUsers, FiBook, FiCode, FiGlobe, FiPlus, FiFilter, FiChevron
 import { RiTeamLine } from "react-icons/ri";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import GroupCard from "@/features/root/groups/components/GroupCard";
-import CreateGroupDialog from "@/features/root/groups/dialogs/CreateGroupDialog";
 
 // Define categories with icons
 const categories = [
@@ -18,10 +19,10 @@ const categories = [
 ];
 
 const DiscoverGroups: React.FC = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [page] = useState(1);
   const limit = 12;
@@ -84,7 +85,7 @@ const DiscoverGroups: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setIsCreateGroupDialogOpen(true)}
+              onClick={() => navigate("/create-group")}
               className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
             >
               <FiPlus size={18} />
@@ -288,7 +289,7 @@ const DiscoverGroups: React.FC = () => {
                   : "No groups are available in this category yet. Check back later or create your own!"}
               </p>
               <Button 
-                onClick={() => setIsCreateGroupDialogOpen(true)}
+                onClick={() => navigate("/create-group")}
                 className="bg-primary-500 hover:bg-primary-600 text-light-1 flex items-center gap-2"
               >
                 <FiPlus size={16} />
@@ -328,13 +329,6 @@ const DiscoverGroups: React.FC = () => {
           )}
         </div>
       </div>
-      
-      {/* Create Group Dialog */}
-      <CreateGroupDialog 
-        isOpen={isCreateGroupDialogOpen}
-        setIsOpen={setIsCreateGroupDialogOpen}
-        onClose={() => setIsCreateGroupDialogOpen(false)}
-      />
     </div>
   );
 };

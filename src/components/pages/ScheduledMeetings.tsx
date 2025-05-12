@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useGetCalls, ExtendedCall } from "@/hooks/useGetCalls";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
-import { FiCalendar } from "react-icons/fi";
+import { FiCalendar, FiPlus } from "react-icons/fi";
 
 // Define the Meeting interface here to ensure both components use the exact same type
 export interface Meeting {
@@ -139,6 +139,15 @@ const ScheduledMeetings: React.FC = () => {
                 View and manage your upcoming meetings and collaborate with your teams
               </p>
             </div>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
+            >
+              <FiPlus size={18} />
+              <span className="font-medium">Schedule Meeting</span>
+            </motion.button>
           </div>
           
           {/* Calendar strip */}
@@ -219,9 +228,17 @@ const ScheduledMeetings: React.FC = () => {
                 <FiCalendar className="text-light-3" size={24} />
               </div>
               <h3 className="text-lg font-semibold text-light-1 mb-2">No Scheduled Meetings</h3>
-              <p className="text-light-3 max-w-md">
+              <p className="text-light-3 mb-6 max-w-md">
                 You don't have any upcoming meetings. Create one to collaborate with your teams.
               </p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-5 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center gap-2 shadow-md"
+              >
+                <FiPlus size={16} />
+                <span>Schedule a Meeting</span>
+              </motion.button>
             </motion.div>
           )}
         </div>

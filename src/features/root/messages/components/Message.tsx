@@ -15,6 +15,7 @@ import ForwardMessageDialog from "../dialogs/ForwardMessageDialog";
 import MessageContent from "./ui/MessageContent";
 import DeletedMessage from "./ui/DeletedMessage";
 import toast from "react-hot-toast";
+import { FiEdit2, FiCornerUpLeft } from "react-icons/fi";
 
 export interface MessageProps {
   message: MessageType;
@@ -225,28 +226,10 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
         <motion.div 
           ref={messageRef}
           whileHover={{ scale: 1.01 }}
-          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""} relative`}
+          className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
         >
           {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
-          <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''} relative`}>
-            {/* Username overlay on hover */}
-            <AnimatePresence>
-              {isHovered && !editMode && !isMeetingAttachment && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={`absolute ${isUserMessage ? 'right-1' : 'left-1'} -top-6 bg-dark-2/80 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-md z-10`}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-primary-400">{message.senderName}</span>
-                    <span className="text-[10px] text-light-3">
-                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
             {message.replyTo && (
               <div className={`${isUserMessage ? "items-end" : "items-start"} message-reply-info`}>
                 <MessageReplyInfo replyTo={message.replyTo} />
@@ -308,6 +291,35 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
             )}
           </div>
         </motion.div>
+
+        {/* Restored hover action buttons */}
+        {isHovered && !editMode && !isMeetingAttachment && (
+          <div className={`absolute ${isUserMessage ? 'left-0 -ml-12' : 'right-0 -mr-12'} top-1/2 -translate-y-1/2 flex gap-1.5`}>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              className="bg-dark-3 p-1.5 rounded-full text-gray-400 hover:text-primary-500 hover:bg-dark-4 transition-all"
+              onClick={() => handleMessageAction("reply")}
+              title="Reply"
+            >
+              <FiCornerUpLeft size={14} />
+            </motion.button>
+            {isUserMessage && !message.attachment && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.1 }}
+                className="bg-dark-3 p-1.5 rounded-full text-gray-400 hover:text-primary-500 hover:bg-dark-4 transition-all"
+                onClick={() => handleMessageAction("edit")}
+                title="Edit"
+                disabled={!canEditMessage(message)}
+              >
+                <FiEdit2 size={14} />
+              </motion.button>
+            )}
+          </div>
+        )}
       </motion.div>
       
       {contextMenu.visible && (

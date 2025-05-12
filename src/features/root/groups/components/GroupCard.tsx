@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { FiUsers, FiPlus, FiCalendar, FiLock } from "react-icons/fi";
+import { FiUsers, FiPlus, FiChevronRight, FiCalendar, FiLock } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useJoinGroupMutation } from "../slices/groupApiSlice";
 import { formatDistanceToNow } from "date-fns";

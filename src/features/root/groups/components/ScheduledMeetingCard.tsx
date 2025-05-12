@@ -1,7 +1,7 @@
 // src/features/meetings/components/ScheduledMeetingCard.tsx
 import React from "react";
 import { motion } from "framer-motion";
-import { FiCalendar, FiClock, FiUser, FiList, FiUsers, FiVideo } from "react-icons/fi";
+import { FiCalendar, FiClock, FiUser, FiHash, FiList, FiUsers, FiVideo } from "react-icons/fi";
 import { Meeting } from "@/components/pages/ScheduledMeetings";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useNavigate } from "react-router-dom";

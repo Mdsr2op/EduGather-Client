@@ -6,7 +6,7 @@ import { useGetCalls } from "@/hooks/useGetCalls";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { CallRecording } from "@stream-io/video-react-sdk";
-import { FiVideo, FiFilter, FiSearch, FiGrid, FiList } from "react-icons/fi";
+import { FiVideo, FiFilter, FiSearch, FiDownload, FiGrid, FiList } from "react-icons/fi";
 
 // Extend the CallRecording type with the properties we need
 interface ExtendedCallRecording extends CallRecording {
@@ -58,7 +58,7 @@ const MeetingRecordings: React.FC = () => {
   const userId = user?._id;
 
   // Fetch recordings using useGetCalls hook (with ended status to get calls that might have recordings)
-  const { calls, isLoading } = useGetCalls({
+  const { calls, isLoading, error } = useGetCalls({
     status: 'ended',
     limit: 20,
     sortDirection: -1, // descending by end time (most recent first)
