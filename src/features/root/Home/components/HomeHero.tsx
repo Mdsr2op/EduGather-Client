@@ -1,8 +1,7 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiUsers, FiBell, FiCalendar, FiUser } from "react-icons/fi";
+import { FiBell, FiCalendar, FiUser } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { Meeting } from "@/components/pages/ScheduledMeetings";
@@ -39,11 +38,11 @@ interface HomeHeroProps {
 const HomeHero = ({ 
   joinedGroups,
   upcomingMeetings,
-  notifications,
   unreadCount
 }: HomeHeroProps) => {
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
+  
   
   const navigateToGroups = () => {
     navigate("/discover-groups");

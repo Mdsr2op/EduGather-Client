@@ -18,7 +18,6 @@ import { useAppSelector } from "@/redux/hook";
 import { useSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
-import { useParams } from "react-router-dom";
 
 
 type MenuItemProps = {

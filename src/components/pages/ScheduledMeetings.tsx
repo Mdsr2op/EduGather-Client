@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useGetCalls, ExtendedCall } from "@/hooks/useGetCalls";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
-import { FiCalendar, FiPlus } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 
 // Define the Meeting interface here to ensure both components use the exact same type
 export interface Meeting {

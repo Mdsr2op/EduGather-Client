@@ -182,17 +182,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     setUserProfileOpen(true);
   };
 
-  const handleHomeClick = () => {
-    // First set navigation source
-    dispatch(setNavigationSource('user_action'));
-    // Then navigate
-    navigate('/home');
-    // Finally set selected group ID to null
-    setTimeout(() => {
-      dispatch(setSelectedGroupId(null));
-    }, 50);
-  };
-
   const handleGroupClick = (groupId: string) => {
     // First navigate to the group
     navigate(`/${groupId}/channels`);

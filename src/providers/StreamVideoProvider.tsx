@@ -89,7 +89,7 @@ const StreamVideoProvider = ({ children }: StreamVideoProviderProps) => {
           user: {
             id: user._id,
             name: user.username || user._id,
-            image: user.avatarUrl,
+            image: user.avatar,
           },
           tokenProvider,
         });

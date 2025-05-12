@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -10,7 +10,7 @@ import { Meeting } from "@/components/pages/ScheduledMeetings";
 import { NotificationUI } from "@/features/root/notifications/components/NotificationItem";
 import { 
   FiUsers, FiBell, FiCalendar, FiClock, FiChevronRight, FiPlus, 
-  FiSettings, FiBook, FiMessageSquare, FiCheckCircle, FiGlobe, FiAward
+  FiSettings, FiMessageSquare, FiCheckCircle
 } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 

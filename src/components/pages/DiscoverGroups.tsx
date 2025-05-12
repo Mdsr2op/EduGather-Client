@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetAllGroupsQuery, useGetGroupsByCategoryQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,6 @@ const categories = [
 ];
 
 const DiscoverGroups: React.FC = () => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);

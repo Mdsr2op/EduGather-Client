@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { FiHome, FiUsers, FiCalendar, FiBook, FiBell } from "react-icons/fi";
 import { cn } from "@/lib/utils";
