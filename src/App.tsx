@@ -45,7 +45,6 @@ function App() {
             <StreamVideoProvider>
               <Routes>
                 {/* Landing Page - Public Access - Place first to ensure priority */}
-                <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
 
                 {/* Public Routes */}
@@ -71,6 +70,7 @@ function App() {
                     <Route path="/groups/join/:groupId" element={<JoinGroupRedirect />} />
                     
                     <Route element={<RootLayout />}>
+                      <Route path="/" element={<Navigate to="/home" replace />} />
                       <Route index path="/home" element={<Home />} /> {/* Home dashboard */}
                       
                       {/* Group and Chat Routes */}
