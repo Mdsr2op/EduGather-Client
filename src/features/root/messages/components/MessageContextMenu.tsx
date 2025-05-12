@@ -62,6 +62,9 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
   // Check if user can delete message (author, admin or moderator)
   const canDeleteMessage = isUserMessage || isUserAdmin || isUserModerator;
 
+  // Check if message has attachment
+  const hasAttachment = Boolean(message.attachment);
+
   // Check if message is within one hour edit window
   const isWithinEditWindow = () => {
     const currentTime = new Date().getTime();
@@ -139,23 +142,27 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
           label="Reply"
           onClick={() => onAction("reply")}
         />
-        <MenuItem
-          icon={FaCopy}
-          label="Copy Text"
-          onClick={() => onAction("copy")}
-        />
+        {!hasAttachment && (
+          <MenuItem
+            icon={FaCopy}
+            label="Copy Text"
+            onClick={() => onAction("copy")}
+          />
+        )}
         <MenuItem
           icon={FaForward}
           label="Forward"
           onClick={() => onAction("forward")}
         />
-        <MenuItem
-          icon={FaThumbtack}
-          label={message.pinned ? "Unpin Message" : "Pin Message"}
-          onClick={() => onAction("pin")}
-          className={message.pinned ? "text-yellow-500" : ""}
-        />
-        {isUserMessage && (
+        {!hasAttachment && (
+          <MenuItem
+            icon={FaThumbtack}
+            label={message.pinned ? "Unpin Message" : "Pin Message"}
+            onClick={() => onAction("pin")}
+            className={message.pinned ? "text-yellow-500" : ""}
+          />
+        )}
+        {isUserMessage && !hasAttachment && (
           <MenuItem
             icon={FaEdit}
             label={isWithinEditWindow() ? "Edit Message" : "Edit Message (expired)"}

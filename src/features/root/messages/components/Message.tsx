@@ -37,6 +37,9 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     position: { x: 0, y: 0 }
   });
 
+  // Check if this is a meeting attachment
+  const isMeetingAttachment = message.attachment?.fileType === 'application/meeting';
+  
   // Use our enhanced message actions hook for all operations
   const { 
     handleDeleteMessage, 
@@ -48,8 +51,25 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   } = useMessageActions(socket);
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.message-reply-info')) {
+    // Prevent context menu for message reply info and meeting attachments
+    if ((e.target as HTMLElement).closest('.message-reply-info') || 
+        isMeetingAttachment) {
       return;
+    }
+    
+    // For attachments, only show context menu when clicking on the actual content,
+    // not on the outer container
+    if (message.attachment) {
+      const target = e.target as HTMLElement;
+      const isAttachmentContainer = target.matches('.message-attachment') || 
+                                    (target.parentElement && target.parentElement.matches('.message-attachment'));
+      const isAttachmentContent = target.matches('.attachment-content') || 
+                                  target.closest('.attachment-content');
+      
+      // If clicking on attachment container but not on content, prevent context menu
+      if (isAttachmentContainer && !isAttachmentContent) {
+        return;
+      }
     }
     
     e.preventDefault();
@@ -109,6 +129,12 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   };
 
   const handleMessageAction = async (action: string) => {
+    // Don't allow certain actions for attachment messages
+    if (message.attachment && (action === 'edit' || action === 'pin' || action === 'copy')) {
+      closeContextMenu();
+      return;
+    }
+
     switch (action) {
       case "edit":
         if (canEditMessage(message)) {
@@ -154,9 +180,6 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
   // Check if message has been edited
   const isEdited = message.updatedAt && message.createdAt && new Date(message.updatedAt).getTime() > new Date(message.createdAt).getTime();
   
-  // Check if this is a meeting attachment
-  const isMeetingAttachment = message.attachment?.fileType === 'application/meeting';
-
   // Get classes for message bubble based on message properties
   const getMessageBubbleClasses = () => {
     const baseClasses = `py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl cursor-pointer transition-transform transform hover:scale-105 ${
