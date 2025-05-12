@@ -44,9 +44,11 @@ function App() {
           ) : (
             <StreamVideoProvider>
               <Routes>
+                {/* Landing Page - Public Access - Place first to ensure priority */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/landing" element={<LandingPage />} />
+
                 {/* Public Routes */}
-                <Route path="/" element={<LandingPage />} /> {/* Landing page as default route */}
-                
                 <Route element={<AuthLayout />}>
                   <Route path="/sign-up" element={<SignUpForm />} />
                   <Route path="/sign-in" element={<SignInForm />} />
@@ -54,12 +56,12 @@ function App() {
                   <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                 </Route>
 
-                {/* Google Profile Completion - Special Auth Route with custom centered layout */}
-                <Route path="/complete-profile" element={<CenteredProfileCompletion />} />
-
                 {/* Legal Pages - Public Access */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+
+                {/* Google Profile Completion - Special Auth Route with custom centered layout */}
+                <Route path="/complete-profile" element={<CenteredProfileCompletion />} />
 
                 {/* Protected Routes - First check if authenticated */}
                 <Route element={<RequireAuth />}>
@@ -91,12 +93,6 @@ function App() {
                       <Route
                         path="/meeting-recordings"
                         element={<MeetingRecordings />}
-                      />
-
-                      {/* Default Route for Authenticated Users */}
-                      <Route
-                        index
-                        element={<Navigate to="/home" replace />}
                       />
                     </Route>
                   </Route>

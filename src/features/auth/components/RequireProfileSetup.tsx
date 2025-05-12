@@ -7,9 +7,9 @@ const RequireProfileSetup: React.FC = () => {
   const user = useAppSelector(selectCurrentUser);
   const location = useLocation();
 
-  // If no user, redirect to landing page
+  // If no user, redirect to sign in
   if (!user) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
   // If user has username equal to email or it's empty/missing, redirect to complete profile
