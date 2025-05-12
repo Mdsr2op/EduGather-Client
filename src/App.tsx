@@ -71,7 +71,7 @@ function App() {
                     <Route path="/groups/join/:groupId" element={<JoinGroupRedirect />} />
                     
                     <Route element={<RootLayout />}>
-                      <Route path="/home" element={<Home />} /> {/* Home dashboard */}
+                      <Route index path="/home" element={<Home />} /> {/* Home dashboard */}
                       
                       {/* Group and Chat Routes */}
                       <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}

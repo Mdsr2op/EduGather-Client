@@ -36,7 +36,7 @@ export function GoogleProfileSetup() {
 
   // Redirect if the user already has a username
   if (user && user.username && user.username.length > 0 && user.username !== user.email) {
-    navigate("/");
+    navigate("/home");
     return null;
   }
 
