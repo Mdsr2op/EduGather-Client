@@ -67,7 +67,7 @@ export function SignUpForm() {
 
   const handleGoogleAuth = () => {
     window.location.href = `${
-      import.meta.env.VITE_API_URL || "http://localhost:8000"
+      import.meta.env.VITE_API_URL || "https://api-edugather.com"
     }/api/v1/users/auth/google`;
   };
 
