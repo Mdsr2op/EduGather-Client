@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiUsers, FiBell, FiCalendar, FiActivity, FiUser, FiTrendingUp } from "react-icons/fi";
+import { FiUsers, FiBell, FiCalendar, FiUser } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { Meeting } from "@/components/pages/ScheduledMeetings";
@@ -195,7 +195,7 @@ const HomeHero = ({
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6"
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-6"
           >
             <motion.div 
               variants={itemVariants}
@@ -248,25 +248,6 @@ const HomeHero = ({
               <div>
                 <div className="text-light-3 text-xs sm:text-sm">Upcoming Meetings</div>
                 <div className="font-semibold text-light-1 text-base sm:text-lg">{upcomingMeetings.length || 0}</div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              variants={itemVariants}
-              className="bg-dark-4/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 flex items-center gap-3 border border-dark-5 hover:border-secondary-500/50 transition-colors group"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="p-2 bg-secondary-500/20 rounded-xl group-hover:bg-secondary-500/30 transition-colors">
-                <FiActivity className="text-secondary-500" size={24} />
-              </div>
-              <div>
-                <div className="text-light-3 text-xs sm:text-sm">Activity Score</div>
-                <div className="font-semibold text-light-1 text-base sm:text-lg">
-                  <div className="flex items-center">
-                    <span>{Math.floor(Math.random() * 500) + 500}</span>
-                    <FiTrendingUp className="ml-1 text-green-500" size={16} />
-                  </div>
-                </div>
               </div>
             </motion.div>
           </motion.div>
