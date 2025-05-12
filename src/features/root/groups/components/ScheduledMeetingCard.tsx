@@ -1,6 +1,7 @@
 // src/features/meetings/components/ScheduledMeetingCard.tsx
 import React from "react";
-import { FiCalendar, FiClock, FiUser, FiHash, FiList, FiUsers } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { FiCalendar, FiClock, FiUser, FiHash, FiList, FiUsers, FiVideo } from "react-icons/fi";
 import { Meeting } from "@/components/pages/ScheduledMeetings";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,7 @@ const ScheduledMeetingCard: React.FC<ScheduledMeetingCardProps> = ({ meeting }) 
   
   const groupId = meeting.groupId;
   const channelId = meeting.channelId;
-  console.log(groupId, channelId);
+  
   const handleJoinMeeting = async () => {
     if (!client) {
       console.error("Stream Video client not initialized");
@@ -44,57 +45,88 @@ const ScheduledMeetingCard: React.FC<ScheduledMeetingCardProps> = ({ meeting }) 
   };
 
   return (
-    <div className="bg-dark-4 rounded-xl shadow-lg p-4 flex flex-col justify-between hover:bg-dark-3 transition-colors text-light-1">
-      <div>
-        <div className="flex items-center text-lg font-semibold mb-3">
-          <FiCalendar className="mr-2" />
-          <h3 className="text-xl font-bold">{meeting.title}</h3>
+    <motion.div 
+      whileHover={{ y: -5 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="h-full"
+    >
+      <div className="bg-dark-3 rounded-xl border border-dark-5 shadow-md hover:shadow-lg overflow-visible p-5 flex flex-col justify-between h-full relative">
+        {/* Header with time status */}
+        <div className="absolute top-0 right-0 bg-primary-500 text-dark-1 text-xs font-medium px-3 py-1 rounded-bl-xl rounded-tr-xl">
+          In {meeting.startingIn}
         </div>
-        <div className="space-y-2 text-sm text-light-3">
-          <div className="flex items-center">
-            <FiCalendar className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Date:</span>
-            <span className="text-light-3 ml-2">{meeting.date}</span>
+        
+        {/* Meeting icon floating */}
+        <div className="absolute -top-4 left-5 w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg z-10">
+          <FiVideo className="text-light-1" size={20} />
+        </div>
+        
+        <div className="mt-8">
+          <h3 className="text-xl font-bold text-light-1 mb-4 line-clamp-2">{meeting.title}</h3>
+          
+          <div className="space-y-2.5 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-dark-4 flex items-center justify-center flex-shrink-0">
+                <FiCalendar className="text-primary-400" size={16} />
+              </div>
+              <div>
+                <span className="text-light-3 block text-xs">Date</span>
+                <span className="text-light-1">{meeting.date}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-dark-4 flex items-center justify-center flex-shrink-0">
+                <FiClock className="text-primary-400" size={16} />
+              </div>
+              <div>
+                <span className="text-light-3 block text-xs">Time</span>
+                <span className="text-light-1">{meeting.time}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-dark-4 flex items-center justify-center flex-shrink-0">
+                <FiUser className="text-primary-400" size={16} />
+              </div>
+              <div className="overflow-hidden">
+                <span className="text-light-3 block text-xs">Organizer</span>
+                <span className="text-light-1 truncate block">{meeting.organizer}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-dark-4 flex items-center justify-center flex-shrink-0">
+                <FiUsers className="text-primary-400" size={16} />
+              </div>
+              <div className="overflow-hidden">
+                <span className="text-light-3 block text-xs">Group</span>
+                <span className="text-light-1 truncate block">{meeting.group}</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center">
-            <FiClock className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Time:</span>
-            <span className="text-light-3 ml-2">{meeting.time}</span>
-          </div>
-          <div className="flex items-center">
-            <FiUser className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Organized by:</span>
-            <span className="text-light-3 ml-2">{meeting.organizer}</span>
-          </div>
-          <div className="flex items-center">
-            <FiUsers className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Group:</span>
-            <span className="text-light-3 ml-2">{meeting.group}</span>
-          </div>
-          <div className="flex items-center">
-            <FiHash className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Channel:</span>
-            <span className="text-light-3 ml-2">{meeting.channel}</span>
-          </div>
-          <div className="flex items-start">
-            <FiList className="mr-2 w-4 h-4 mt-1" />
-            <span className="text-light-1">Agenda:</span>
-            <span className="text-light-3 ml-2">{meeting.agenda}</span>
-          </div>
-          <div className="flex items-center">
-            <FiClock className="mr-2 w-4 h-4" />
-            <span className="text-light-1">Starting in:</span>
-            <span className="text-light-3 ml-2">{meeting.startingIn}</span>
+
+          {/* Agenda section with collapsible content */}
+          <div className="mt-4 bg-dark-4 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <FiList className="text-primary-400" size={14} />
+              <span className="text-light-1 text-sm font-medium">Agenda</span>
+            </div>
+            <p className="text-light-3 text-xs line-clamp-2">{meeting.agenda || "No agenda provided"}</p>
           </div>
         </div>
+        
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={handleJoinMeeting}
+          className="mt-5 w-full px-4 py-3 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl transition-colors flex items-center justify-center"
+        >
+          <FiVideo className="mr-2" />
+          Join Meeting
+        </motion.button>
       </div>
-      <button
-        onClick={handleJoinMeeting}
-        className="mt-4 w-full px-4 py-2 bg-primary-500 text-light-1 rounded hover:bg-primary-600 transition-colors"
-      >
-        Join Meeting
-      </button>
-    </div>
+    </motion.div>
   );
 };
 

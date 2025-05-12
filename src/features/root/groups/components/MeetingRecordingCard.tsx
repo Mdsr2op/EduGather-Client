@@ -1,6 +1,7 @@
 // src/features/recordings/components/MeetingRecordingCard.tsx
-import React from "react";
-import { FiDownload, FiVideo, FiPlay } from "react-icons/fi";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FiDownload, FiVideo, FiPlay, FiClock, FiCalendar, FiHardDrive } from "react-icons/fi";
 import { saveAs } from 'file-saver';
 
 interface Recording {
@@ -18,6 +19,8 @@ interface MeetingRecordingCardProps {
 }
 
 const MeetingRecordingCard: React.FC<MeetingRecordingCardProps> = ({ recording }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -48,52 +51,106 @@ const MeetingRecordingCard: React.FC<MeetingRecordingCardProps> = ({ recording }
   };
 
   return (
-    <div className="flex flex-col bg-dark-3 rounded-xl shadow-md p-4 hover:bg-dark-4 transition-colors border border-dark-4">
-      <div className="flex items-center mb-3">
-        <div className="text-primary-500 mr-3">
-          <FiVideo className="w-5 h-5 md:w-6 md:h-6" />
-        </div>
-        <h3 className="text-md md:text-lg font-semibold text-light-1 truncate" title={recording.title}>
-          {truncateFilename(recording.title, window.innerWidth < 640 ? 20 : 30)}
-        </h3>
-      </div>
-      
-      <div className="flex flex-col text-xs md:text-sm text-light-3 mb-4 gap-1">
-        <div className="flex justify-between">
-          <span>Recorded:</span>
-          <span>{recording.date}</span>
-        </div>
-        {recording.duration && (
-          <div className="flex justify-between">
-            <span>Duration:</span>
-            <span>{recording.duration}</span>
+    <motion.div
+      whileHover={{ y: -5 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="h-full"
+    >
+      <div className="bg-dark-3 rounded-xl border border-dark-5 shadow-md hover:shadow-lg overflow-visible h-full flex flex-col relative group">
+        {/* Top Thumbnail Section with Video Icon */}
+        <div className="relative h-28 bg-dark-4 rounded-t-xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-dark-4/90">
+            {/* Abstract visual pattern */}
+            <div className="absolute inset-0 opacity-20 mix-blend-soft-light">
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,50 Q25,0 50,50 T100,50" stroke="currentColor" fill="none" strokeWidth="0.5" />
+                <path d="M0,25 Q25,75 50,25 T100,25" stroke="currentColor" fill="none" strokeWidth="0.5" />
+                <path d="M0,75 Q25,25 50,75 T100,75" stroke="currentColor" fill="none" strokeWidth="0.5" />
+              </svg>
+            </div>
           </div>
-        )}
-        {recording.size && (
-          <div className="flex justify-between">
-            <span>Size:</span>
-            <span>{recording.size}</span>
+          
+          {/* Play button overlay */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="w-12 h-12 rounded-full bg-primary-500/80 flex items-center justify-center cursor-pointer"
+              onClick={handlePlay}
+            >
+              <FiPlay className="text-light-1" size={20} />
+            </motion.div>
           </div>
-        )}
+          
+          {/* Recording badge */}
+          <div className="absolute top-2 right-2 px-2 py-1 bg-dark-1/80 text-light-2 text-xs rounded-lg flex items-center gap-1">
+            <FiVideo size={10} className="text-red-500" />
+            <span>Recording</span>
+          </div>
+        </div>
+        
+        {/* Content Section */}
+        <div className="p-4 flex-grow flex flex-col">
+          <h3 className="text-md font-semibold text-light-1 group-hover:text-primary-400 transition-colors mb-2" title={recording.title}>
+            {truncateFilename(recording.title, 24)}
+          </h3>
+          
+          {/* Recording metadata */}
+          <div className="space-y-3 flex-grow">
+            <div className="flex items-center gap-2">
+              <FiCalendar className="text-primary-400" size={14} />
+              <span className="text-xs text-light-3">{recording.date}</span>
+            </div>
+            
+            {recording.duration && (
+              <div className="flex items-center gap-2">
+                <FiClock className="text-primary-400" size={14} />
+                <span className="text-xs text-light-3">{recording.duration}</span>
+              </div>
+            )}
+            
+            {recording.size && (
+              <div className="flex items-center gap-2">
+                <FiHardDrive className="text-primary-400" size={14} />
+                <span className="text-xs text-light-3">{recording.size}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Action buttons */}
+          <div className="flex mt-4 gap-2">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handlePlay}
+              className="flex items-center justify-center flex-1 gap-1 px-3 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 text-light-1 transition-colors"
+            >
+              <FiPlay size={14} />
+              <span className="text-xs">Play</span>
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleDownload}
+              className="flex items-center justify-center flex-1 gap-1 px-3 py-2 rounded-xl bg-dark-4 hover:bg-dark-5 text-primary-400 transition-colors"
+            >
+              <FiDownload size={14} />
+              <span className="text-xs">Download</span>
+            </motion.button>
+          </div>
+        </div>
+        
+        {/* Hover overlay */}
+        <motion.div 
+          className="absolute inset-0 bg-primary-500/5 pointer-events-none rounded-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
+        />
       </div>
-      
-      <div className="flex mt-auto gap-2">
-        <button
-          onClick={handlePlay}
-          className="flex items-center justify-center flex-1 space-x-1 px-3 py-1.5 rounded-md bg-primary-500 hover:bg-primary-600 text-light-1 transition-colors duration-200"
-        >
-          <FiPlay className="w-3.5 h-3.5" />
-          <span className="text-xs">Play</span>
-        </button>
-        <button
-          onClick={handleDownload}
-          className="flex items-center justify-center flex-1 space-x-1 px-3 py-1.5 rounded-md bg-dark-4 hover:bg-dark-5 text-primary-500 transition-colors duration-200"
-        >
-          <FiDownload className="w-3.5 h-3.5" />
-          <span className="text-xs">Download</span>
-        </button>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 

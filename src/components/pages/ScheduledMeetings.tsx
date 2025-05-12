@@ -1,9 +1,11 @@
 // src/components/pages/ScheduledMeetings.tsx
 import ScheduledMeetingCard from "@/features/root/groups/components/ScheduledMeetingCard";
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useGetCalls, ExtendedCall } from "@/hooks/useGetCalls";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
+import { FiCalendar, FiPlus } from "react-icons/fi";
 
 // Define the Meeting interface here to ensure both components use the exact same type
 export interface Meeting {
@@ -118,26 +120,129 @@ const ScheduledMeetings: React.FC = () => {
   }, [calls, isLoading, error]);
 
   return (
-    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2 pt-16">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-2 sm:mb-3 md:mb-4">Scheduled Meetings</h2>
-      
-      {isLoadingData ? (
-        <div className="text-light-3 text-center py-4 sm:py-6 md:py-8">
-          <div className="animate-spin rounded-xl h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-primary-500 mx-auto mb-2"></div>
-          <p className="text-sm sm:text-base">Loading scheduled meetings...</p>
+    <div className="p-3 sm:p-6 bg-dark-2 text-light-1 h-full overflow-auto custom-scrollbar">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
+                <FiCalendar className="text-primary-500" size={28} />
+                Scheduled Meetings
+              </h1>
+              <p className="text-light-3 text-sm sm:text-base max-w-xl">
+                View and manage your upcoming meetings and collaborate with your teams
+              </p>
+            </div>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
+            >
+              <FiPlus size={18} />
+              <span className="font-medium">Schedule Meeting</span>
+            </motion.button>
+          </div>
+          
+          {/* Calendar strip */}
+          <div className="mt-6 overflow-x-auto custom-scrollbar-horizontal">
+            <div className="flex gap-2 min-w-max py-2">
+              {Array.from({ length: 7 }).map((_, index) => {
+                const date = new Date();
+                date.setDate(date.getDate() + index);
+                const isToday = index === 0;
+                const day = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const dayNum = date.getDate();
+                
+                return (
+                  <div 
+                    key={index}
+                    className={`flex flex-col items-center p-3 rounded-xl min-w-[70px] cursor-pointer 
+                      ${isToday 
+                        ? 'bg-primary-500 text-light-1' 
+                        : 'bg-dark-4/70 text-light-2 hover:bg-dark-5'}`}
+                  >
+                    <span className="text-xs opacity-80">{day}</span>
+                    <span className="text-lg font-bold">{dayNum}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Main Content */}
+        <div className="relative min-h-[200px]">
+          {isLoadingData ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col justify-center items-center py-16"
+            >
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
+              <p className="text-light-3 animate-pulse">Loading scheduled meetings...</p>
+            </motion.div>
+          ) : meetings.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="flex justify-between items-center mb-4 px-1">
+                <h2 className="text-xl font-semibold text-light-1">Upcoming Meetings</h2>
+                <div className="flex items-center gap-2 text-sm text-light-3">
+                  <span>Sort by:</span>
+                  <select className="bg-dark-3 text-light-2 rounded-xl border border-dark-4 py-1 px-2 text-sm">
+                    <option value="soon">Starting Soon</option>
+                    <option value="latest">Latest Added</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {meetings.map((meeting, index) => (
+                  <motion.div
+                    key={meeting.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <ScheduledMeetingCard meeting={meeting} />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center p-10 bg-dark-3 rounded-xl border border-dark-5 shadow-sm flex flex-col items-center"
+            >
+              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiCalendar className="text-light-3" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-light-1 mb-2">No Scheduled Meetings</h3>
+              <p className="text-light-3 mb-6 max-w-md">
+                You don't have any upcoming meetings. Create one to collaborate with your teams.
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-5 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center gap-2 shadow-md"
+              >
+                <FiPlus size={16} />
+                <span>Schedule a Meeting</span>
+              </motion.button>
+            </motion.div>
+          )}
         </div>
-      ) : meetings.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {meetings.map((meeting) => (
-            <ScheduledMeetingCard key={meeting.id} meeting={meeting} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-light-3 text-center p-4 sm:p-6 md:p-8 bg-dark-3 rounded-xl border border-dark-5">
-          <p className="text-sm sm:text-base md:text-lg mb-2">No scheduled meetings found.</p>
-          <p className="text-xs sm:text-sm">Create a new meeting to get started.</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -1,10 +1,12 @@
 // src/components/pages/MeetingRecordings.tsx
 import MeetingRecordingCard from "@/features/root/groups/components/MeetingRecordingCard";
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { CallRecording } from "@stream-io/video-react-sdk";
+import { FiVideo, FiFilter, FiSearch, FiDownload, FiGrid, FiList } from "react-icons/fi";
 
 // Extend the CallRecording type with the properties we need
 interface ExtendedCallRecording extends CallRecording {
@@ -49,6 +51,8 @@ const convertStreamRecordingToRecording = (recording: CallRecording): Recording 
 const MeetingRecordings: React.FC = () => {
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   // Get the current user from the Redux store
   const user = useSelector(selectCurrentUser);
   const userId = user?._id;
@@ -95,27 +99,180 @@ const MeetingRecordings: React.FC = () => {
     }
   }, [calls, isLoading]);
 
+  // Filter recordings based on search
+  const filteredRecordings = recordings.filter(recording => 
+    recording.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto bg-dark-2 pt-16">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-2 sm:mb-3 md:mb-4">Meeting Recordings</h2>
-      
-      {isLoadingData ? (
-        <div className="text-light-3 text-center py-4 sm:py-6 md:py-8">
-          <div className="animate-spin rounded-xl h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-primary-500 mx-auto mb-2"></div>
-          <p className="text-sm sm:text-base">Loading meeting recordings...</p>
+    <div className="p-3 sm:p-6 bg-dark-2 text-light-1 h-full overflow-auto custom-scrollbar">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
+                <FiVideo className="text-primary-500" size={28} />
+                Meeting Recordings
+              </h1>
+              <p className="text-light-3 text-sm sm:text-base max-w-xl">
+                Access and manage your recorded meetings for future reference
+              </p>
+            </div>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
+            >
+              <FiDownload size={18} />
+              <span className="font-medium">Download All</span>
+            </motion.button>
+          </div>
+          
+          {/* Stats Row */}
+          <div className="flex flex-wrap mt-6 gap-4">
+            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
+                <FiVideo className="text-primary-500" size={16} />
+              </div>
+              <div>
+                <p className="text-xs text-light-3">Total Recordings</p>
+                <p className="text-lg font-semibold text-light-1">{recordings.length}</p>
+              </div>
+            </div>
+            
+            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
+                <FiDownload className="text-primary-500" size={16} />
+              </div>
+              <div>
+                <p className="text-xs text-light-3">Downloads</p>
+                <p className="text-lg font-semibold text-light-1">0</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Search & Filter Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="bg-dark-3 rounded-xl p-4 mb-6 border border-dark-5 shadow-md"
+        >
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3" size={18} />
+              <input
+                type="text"
+                placeholder="Search recordings..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-11 w-full bg-dark-4 border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner"
+              />
+            </div>
+            
+            {/* Filter & View Toggles */}
+            <div className="flex gap-2">
+              <button className="px-3 py-2 bg-dark-4 hover:bg-dark-5 text-light-2 rounded-xl flex items-center gap-2">
+                <FiFilter size={16} />
+                <span className="text-sm">Filter</span>
+              </button>
+              
+              <div className="flex rounded-xl overflow-hidden border border-dark-4">
+                <button 
+                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'grid' ? 'bg-primary-500 text-light-1' : 'bg-dark-4 text-light-3'}`}
+                  onClick={() => setViewMode('grid')}
+                >
+                  <FiGrid size={16} />
+                </button>
+                <button 
+                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'list' ? 'bg-primary-500 text-light-1' : 'bg-dark-4 text-light-3'}`}
+                  onClick={() => setViewMode('list')}
+                >
+                  <FiList size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Main Content */}
+        <div className="relative min-h-[200px]">
+          {isLoadingData ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col justify-center items-center py-16"
+            >
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
+              <p className="text-light-3 animate-pulse">Loading meeting recordings...</p>
+            </motion.div>
+          ) : filteredRecordings.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="flex justify-between items-center mb-4 px-1">
+                <div className="text-sm text-light-3">
+                  <span>Showing <span className="text-light-1 font-medium">{filteredRecordings.length}</span> recordings</span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-light-3">
+                  <span>Sort by:</span>
+                  <select className="bg-dark-3 text-light-2 rounded-xl border border-dark-4 py-1 px-2 text-sm">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="size">Size</option>
+                    <option value="duration">Duration</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className={viewMode === 'grid' ? 
+                "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : 
+                "flex flex-col gap-4"
+              }>
+                {filteredRecordings.map((recording, index) => (
+                  <motion.div
+                    key={recording.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className={viewMode === 'list' ? "w-full" : ""}
+                  >
+                    <MeetingRecordingCard recording={recording} />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center p-10 bg-dark-3 rounded-xl border border-dark-5 shadow-sm flex flex-col items-center"
+            >
+              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiVideo className="text-light-3" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-light-1 mb-2">No Recordings Found</h3>
+              <p className="text-light-3 mb-6 max-w-md">
+                {searchQuery ? 
+                  "No recordings match your search. Try adjusting your search terms." : 
+                  "You don't have any meeting recordings yet. Recordings will appear here after meetings are completed."}
+              </p>
+            </motion.div>
+          )}
         </div>
-      ) : recordings.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {recordings.map((recording) => (
-            <MeetingRecordingCard key={recording.id} recording={recording} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-light-3 text-center p-4 sm:p-6 md:p-8 bg-dark-3 rounded-xl border border-dark-5">
-          <p className="text-sm sm:text-base md:text-lg mb-2">No recordings found.</p>
-          <p className="text-xs sm:text-sm">Recordings will appear here after meetings are completed.</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
