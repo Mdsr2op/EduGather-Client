@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useSocket } from "@/lib/socket";
 import MessageAvatar from "./MessageAvatar";

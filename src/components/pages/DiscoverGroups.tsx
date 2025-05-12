@@ -7,7 +7,6 @@ import { FiSearch, FiUsers, FiBook, FiCode, FiGlobe, FiPlus, FiFilter, FiChevron
 import { RiTeamLine } from "react-icons/ri";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import GroupCard from "@/features/root/groups/components/GroupCard";
 
 // Define categories with icons
