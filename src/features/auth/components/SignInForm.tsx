@@ -47,7 +47,7 @@ export function SignInForm() {
   };
 
   const handleGoogleAuth = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/users/auth/google`;
+    window.location.href = `${import.meta.env.VITE_API_URL || 'https://api-edugather.com'}/api/v1/users/auth/google`;
   };
 
   return (

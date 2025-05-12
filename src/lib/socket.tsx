@@ -33,7 +33,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   // Initialize socket only once without connecting
   useEffect(() => {
-    const socketInstance = io('http://localhost:8000', {
+    const socketInstance = io('https://api-edugather.com', {
       autoConnect: false, // Important: don't auto connect
       transports: ['websocket']
     });
