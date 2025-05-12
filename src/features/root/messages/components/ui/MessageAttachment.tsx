@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { MessageAttachmentProps } from '../../types/messageTypes';
 import { saveAs } from 'file-saver';
 import MeetingAttachment from '../MeetingAttachment';
+import ImageViewer from '../ImageViewer';
 
 const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUserMessage }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
   
   // Determine the type of attachment
   const isImageAttachment = attachment.fileType?.startsWith('image/');
@@ -21,6 +23,15 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
       saveAs(blob, attachment.fileName);
     } catch (error) {
       console.error('Failed to download file:', error);
+    }
+  };
+
+  const handleImageClick = (e: React.MouseEvent) => {
+    // Only open viewer on normal left click (not right click for context menu)
+    if (e.button === 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      setImageViewerOpen(true);
     }
   };
 
@@ -65,16 +76,26 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
   // Render image attachment
   if (isImageAttachment) {
     return (
-      <div className="message-attachment w-full">
-        {!imageLoaded && <div className="animate-pulse text-xs sm:text-sm">Loading image...</div>}
-        <img 
-          src={attachment.url} 
-          alt={attachment.fileName}
-          className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain"
-          onLoad={() => setImageLoaded(true)}
-          style={{ display: imageLoaded ? 'block' : 'none' }}
+      <>
+        <div className="message-attachment w-full">
+          {!imageLoaded && <div className="animate-pulse text-xs sm:text-sm">Loading image...</div>}
+          <img 
+            src={attachment.url} 
+            alt={attachment.fileName}
+            className="attachment-content rounded-lg w-full max-w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] object-contain cursor-pointer"
+            onLoad={() => setImageLoaded(true)}
+            style={{ display: imageLoaded ? 'block' : 'none' }}
+            onClick={handleImageClick}
+          />
+        </div>
+        <ImageViewer
+          open={imageViewerOpen}
+          onOpenChange={setImageViewerOpen}
+          imageUrl={attachment.url}
+          imageAlt={attachment.fileName}
+          fileName={attachment.fileName}
         />
-      </div>
+      </>
     );
   }
 
