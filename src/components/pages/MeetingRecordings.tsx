@@ -125,14 +125,6 @@ const MeetingRecordings: React.FC = () => {
               </p>
             </div>
             
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
-            >
-              <FiDownload size={18} />
-              <span className="font-medium">Download All</span>
-            </motion.button>
           </div>
           
           {/* Stats Row */}
@@ -144,16 +136,6 @@ const MeetingRecordings: React.FC = () => {
               <div>
                 <p className="text-xs text-light-3">Total Recordings</p>
                 <p className="text-lg font-semibold text-light-1">{recordings.length}</p>
-              </div>
-            </div>
-            
-            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
-                <FiDownload className="text-primary-500" size={16} />
-              </div>
-              <div>
-                <p className="text-xs text-light-3">Downloads</p>
-                <p className="text-lg font-semibold text-light-1">0</p>
               </div>
             </div>
           </div>

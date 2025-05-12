@@ -1,5 +1,6 @@
-import React from "react";
-import { FiMessageSquare, FiVideo, FiClock, FiUserPlus } from "react-icons/fi";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FiMessageSquare, FiVideo, FiClock, FiUserPlus, FiCheck, FiChevronRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
@@ -33,6 +34,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onMarkAsRead 
 }) => {
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
 
   // Only fetch group and channel details for relevant types
   const { data: groupDetails } = useGetGroupDetailsQuery(notification.groupId, {
@@ -47,8 +49,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     skip: !notification.groupId || !notification.channelId || !['channel_message', 'meeting_created'].includes(notification.type),
   });
 
-  const groupName = groupDetails?.name || 'Loading...';
-  const channelName = channelDetails?.data?.channelName || 'Loading...';
+  const groupName = groupDetails?.name || notification.groupName || 'Unknown Group';
+  const channelName = channelDetails?.data?.channelName || notification.channelName || 'General';
 
   const handleClick = () => {
     // Mark as read if not already read
@@ -73,6 +75,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
+  const markReadWithoutNavigation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!notification.isRead) {
+      onMarkAsRead(notification._id);
+    }
+  };
+
   const formattedTime = notification.createdAt 
     ? formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })
     : '';
@@ -80,11 +89,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const renderIcon = () => {
     switch (notification.type) {
       case 'channel_message':
-        return <FiMessageSquare className="w-5 h-5" />;
+        return <FiMessageSquare size={20} />;
       case 'meeting_created':
-        return <FiVideo className="w-5 h-5" />;
+        return <FiVideo size={20} />;
       case 'role_upgrade_requested':
-        return <FiUserPlus className="w-5 h-5" />;
+        return <FiUserPlus size={20} />;
       default:
         return null;
     }
@@ -117,21 +126,36 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   };
 
   return (
-    <div 
-      className={`relative p-3 sm:p-5 ${notification.isRead ? 'bg-dark-2' : 'bg-dark-3'} hover:bg-dark-4 transition-all duration-200 cursor-pointer border-b border-dark-4`}
+    <motion.div
+      initial={false}
+      animate={{ 
+        backgroundColor: isHovered 
+          ? 'var(--color-dark-4)' 
+          : notification.isRead 
+            ? 'var(--color-dark-3)' 
+            : 'var(--color-dark-3)' 
+      }}
+      whileHover={{ backgroundColor: 'var(--color-dark-4)' }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       onClick={handleClick}
+      className={`relative p-4 sm:p-5 cursor-pointer overflow-hidden group ${notification.isRead ? '' : 'border-l-2 border-l-secondary-500'}`}
     >
-      <div className="flex items-start">
-        {/* Left side with icon */}
-        <div className={`shrink-0 p-2 sm:p-3 rounded-full ${notification.isRead ? 'bg-dark-4' : getTypeColor()} text-white shadow-md mr-3 sm:mr-4`}>
+      {notification.isRead ? null : (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary-500"></div>
+      )}
+      
+      <div className="flex items-start gap-3">
+        {/* Left side icon */}
+        <div className={`flex-shrink-0 w-12 h-12 rounded-xl ${getTypeColor()} shadow-lg flex items-center justify-center text-light-1`}>
           {renderIcon()}
         </div>
         
         {/* Content area */}
         <div className="flex-1 min-w-0">
           {/* Header with title and timestamp */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-2">
-            <h3 className={`font-bold text-sm sm:text-base truncate ${notification.isRead ? 'text-light-2' : 'text-light-1'}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
+            <h3 className={`font-semibold ${notification.isRead ? 'text-light-2' : 'text-light-1'} truncate`}>
               {notification.title}
             </h3>
             <div className="flex items-center text-xs text-light-4 whitespace-nowrap">
@@ -141,50 +165,71 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           </div>
           
           {/* Message content */}
-          <p className="text-light-3 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">
+          <p className="text-light-3 text-sm mb-3 line-clamp-2">
             {notification.type === 'meeting_created' ? notification.content : notification.message}
           </p>
           
-          {/* Footer with tags */}
-          {['channel_message', 'meeting_created'].includes(notification.type) && (
-            <div className="flex items-center flex-wrap gap-1 sm:gap-2 mt-1">
-              {/* Type tag */}
-              <span className={`px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full text-white ${getTypeColor()}`}>
-                {getTypeLabel()}
+          {/* Tags */}
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            {/* Type tag */}
+            <span className={`px-2 py-0.5 text-xs font-medium rounded-full text-light-1 ${getTypeColor()}`}>
+              {getTypeLabel()}
+            </span>
+            
+            {/* Group and channel tags for relevant notifications */}
+            {['channel_message', 'meeting_created'].includes(notification.type) && (
+              <>
+                {groupName && (
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
+                    {groupName}
+                  </span>
+                )}
+                
+                {channelName && (
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
+                    # {channelName}
+                  </span>
+                )}
+              </>
+            )}
+            
+            {/* Sender tag for role requests */}
+            {notification.type === 'role_upgrade_requested' && notification.senderName && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2">
+                {notification.senderName}
               </span>
-              
-              {/* Group tag */}
-              <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
-                {groupName}
-              </span>
-              
-              {/* Channel tag */}
-              <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
-                # {channelName}
-              </span>
-            </div>
-          )}
-
-          {notification.type === 'role_upgrade_requested' && (
-            <div className="flex items-center flex-wrap gap-1 sm:gap-2 mt-1">
-              {/* Type tag */}
-              <span className={`px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full text-white ${getTypeColor()}`}>
-                {getTypeLabel()}
-              </span>
-              
-              {/* User name tag if available */}
-              {notification.senderName && (
-                <span className="px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full bg-dark-5 text-light-2">
-                  {notification.senderName}
-                </span>
-              )}
+            )}
+          </div>
+        </div>
+        
+        {/* Right side actions */}
+        <div className="flex flex-col items-end justify-between h-full mt-1">
+          {!notification.isRead ? (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={markReadWithoutNavigation}
+              className="p-1.5 bg-dark-5 hover:bg-dark-4 rounded-full text-light-3 hover:text-light-1 transition-colors"
+              aria-label="Mark as read"
+            >
+              <FiCheck size={14} />
+            </motion.button>
+          ) : (
+            <div className="p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <FiChevronRight size={16} className="text-light-3" />
             </div>
           )}
         </div>
-        
-        
       </div>
-    </div>
+      
+      {/* Hover state indicator */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.div>
   );
 };
 
