@@ -45,6 +45,8 @@ function App() {
             <StreamVideoProvider>
               <Routes>
                 {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} /> {/* Landing page as default route */}
+                
                 <Route element={<AuthLayout />}>
                   <Route path="/sign-up" element={<SignUpForm />} />
                   <Route path="/sign-in" element={<SignInForm />} />
@@ -68,7 +70,6 @@ function App() {
                     
                     <Route element={<RootLayout />}>
                       <Route path="/home" element={<Home />} /> {/* Home dashboard */}
-                      <Route path="/landing" element={<LandingPage />} />
                       
                       {/* Group and Chat Routes */}
                       <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
@@ -92,7 +93,7 @@ function App() {
                         element={<MeetingRecordings />}
                       />
 
-                      {/* Default Protected Route */}
+                      {/* Default Route for Authenticated Users */}
                       <Route
                         index
                         element={<Navigate to="/home" replace />}

@@ -8,7 +8,7 @@ const RequireAuth: React.FC = () => {
   const location = useLocation();
 
   if (!user) {
-    return <Navigate to="/sign-in" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

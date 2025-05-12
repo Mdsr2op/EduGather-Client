@@ -8,7 +8,7 @@ const AuthLayout = () => {
 
   console.log(isAuthenticated);
   return isAuthenticated ? (
-    <Navigate to="/discover-groups" />
+    <Navigate to="/home" />
   ) : (
     <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden">
       <Outlet />
