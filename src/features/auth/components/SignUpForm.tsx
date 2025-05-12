@@ -92,7 +92,7 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <div className="w-full max-w-3xl mx-auto bg-dark-3 rounded-2xl shadow-lg overflow-hidden">
+      <div className="w-full max-w-3xl mx-auto bg-dark-3 rounded-2xl shadow-lg overflow-auto max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-dark-4 [&::-webkit-scrollbar-thumb]:bg-primary-500 [&::-webkit-scrollbar-thumb]:rounded-full">
         <div className="relative h-24 bg-gradient-to-r from-primary-500 to-primary-600 flex items-end">
           <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-dark-4 rounded-full p-3 shadow-md">
             <div className="h-14 w-14 rounded-full bg-primary-500 flex items-center justify-center">

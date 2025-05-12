@@ -64,18 +64,17 @@ function App() {
 
                 {/* Protected Routes - First check if authenticated */}
                 <Route element={<RequireAuth />}>
-                  {/* Then check if profile setup is completed */}
                   <Route element={<RequireProfileSetup />}>
-                    {/* Group Join Route */}
+                  
                     <Route path="/groups/join/:groupId" element={<JoinGroupRedirect />} />
                     
                     <Route element={<RootLayout />}>
                       <Route path="/" element={<Navigate to="/home" replace />} />
-                      <Route index path="/home" element={<Home />} /> {/* Home dashboard */}
+                      <Route index path="/home" element={<Home />} />
                       
                       {/* Group and Chat Routes */}
-                      <Route path="/:groupId/channels" element={<ChatPage />} /> {/* Group without channel */}
-                      <Route path="/:groupId/:channelId" element={<ChatPage />} /> {/* Group with channel */}
+                      <Route path="/:groupId/channels" element={<ChatPage />} /> 
+                      <Route path="/:groupId/:channelId" element={<ChatPage />} /> 
                       
                       {/* Meeting Route */}
                       <Route path="/:groupId/:channelId/meeting/:id" element={<MeetingPage />} />
