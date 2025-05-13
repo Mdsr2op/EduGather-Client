@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDeleteChannelMutation } from "../slices/channelApiSlice";
 import { Channel } from "../slices/channelSlice";
+import { toast } from "react-hot-toast";
 
 type DeleteChannelDialogProps = {
   isOpen: boolean;
@@ -25,20 +26,32 @@ const DeleteChannelDialog: React.FC<DeleteChannelDialogProps> = ({
   channel,
 }) => {
   const [confirmationText, setConfirmationText] = useState("");
-  const [deleteChannel] = useDeleteChannelMutation();
+  const [deleteChannel, { isLoading }] = useDeleteChannelMutation();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleClose = () => {
     setIsOpen(false);
     setConfirmationText("");
+    setErrorMessage(null);
   };
 
   const handleDelete = async () => {
-    if (!channel.groupId) return;
+    if (!channel.groupId) {
+      setErrorMessage("Missing group ID. Cannot delete channel.");
+      return;
+    }
+    
+    setErrorMessage(null);
     try {
-      await deleteChannel({ groupId: channel.groupId, channelId: channel._id }).unwrap();
+      await deleteChannel({ 
+        groupId: channel.groupId, 
+        channelId: channel._id 
+      }).unwrap();
+      toast.success(`Channel "${channel.channelName}" deleted successfully`);
       handleClose();
-    } catch (error) {
-      console.error("Failed to delete channel:", error);
+    } catch (err: any) {
+      console.error("Failed to delete channel:", err);
+      setErrorMessage(err?.data?.message || "Failed to delete channel. Please try again.");
     }
   };
 
@@ -56,17 +69,25 @@ const DeleteChannelDialog: React.FC<DeleteChannelDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
+        {errorMessage && (
+          <div className="bg-red-900/30 border border-red-800 text-red-200 px-3 py-2 rounded-lg text-sm mt-2">
+            {errorMessage}
+          </div>
+        )}
+
         <Input
           type="text"
           className="mt-4 w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 rounded-xl"
           placeholder="Type the channel name to confirm"
           value={confirmationText}
           onChange={(e) => setConfirmationText(e.target.value)}
+          disabled={isLoading}
+          autoFocus
         />
 
         <DialogFooter className="flex justify-end space-x-2 pt-4">
           <DialogClose asChild>
-            <Button variant="outline" className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full">
+            <Button variant="outline" className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full" disabled={isLoading}>
               Cancel
             </Button>
           </DialogClose>
@@ -75,9 +96,9 @@ const DeleteChannelDialog: React.FC<DeleteChannelDialogProps> = ({
               isConfirmEnabled ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
             }`}
             onClick={handleDelete}
-            disabled={!isConfirmEnabled}
+            disabled={!isConfirmEnabled || isLoading}
           >
-            Delete "{channel.channelName}"
+            {isLoading ? "Deleting..." : `Delete "${channel.channelName}"`}
           </Button>
         </DialogFooter>
       </DialogContent>

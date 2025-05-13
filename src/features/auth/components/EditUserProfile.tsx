@@ -13,6 +13,7 @@ import { User } from "@/features/auth/types";
 import { useUpdateProfileMutation } from '../slices/authApiSlice';
 import { MdCloudUpload } from 'react-icons/md';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 type EditUserProfileProps = {
   isOpen: boolean;
@@ -29,6 +30,7 @@ const EditUserProfile: React.FC<EditUserProfileProps> = ({ isOpen, onClose, user
     fullName: user?.fullName || '',
     email: user?.email || '',
   });
+  const navigate = useNavigate();
   
   if (!user) return null;
   
@@ -68,6 +70,7 @@ const EditUserProfile: React.FC<EditUserProfileProps> = ({ isOpen, onClose, user
       }
       
       await updateProfile(submitFormData).unwrap();
+      navigate("/home")
       onClose();
     } catch (error) {
       console.error('Update profile error:', error);
