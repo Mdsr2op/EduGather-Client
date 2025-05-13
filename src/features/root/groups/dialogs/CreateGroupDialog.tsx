@@ -26,8 +26,7 @@ import {
 import { useCreateGroupMutation, useGetAllGroupsQuery } from "../slices/groupApiSlice";
 import FileUpload from "@/features/auth/components/FileUpload";
 import { toast } from "react-hot-toast";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/store/store";
+import { useDispatch } from "react-redux";
 import { apiSlice } from "@/redux/api/apiSlice";
 // Zod schema consistent with your group.model.js and createGroup controller
 const groupSchema = z.object({
