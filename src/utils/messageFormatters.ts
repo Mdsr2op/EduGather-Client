@@ -34,6 +34,7 @@ export const formatMessageForUI = (message: any) => {
     text: message.content,
     senderId: typeof message.senderId === 'object' ? message.senderId._id : message.senderId,
     senderName: typeof message.senderId === 'object' ? message.senderId.username : 'User',
+    senderAvatar: typeof message.senderId === 'object' ? message.senderId.avatar : undefined,
     timestamp: new Date(message.createdAt).getTime(),
     pinned: message.pinned || false,
     updatedAt: message.updatedAt,

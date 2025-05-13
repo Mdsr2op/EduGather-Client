@@ -15,7 +15,7 @@ const DeletedMessage = ({ message, isUserMessage, showTimestamp = false }: Delet
       className={`flex ${isUserMessage ? "justify-end" : "justify-start"} relative my-0.5`}
     >
       <div className={`flex max-w-xs md:max-w-md lg:max-w-lg ${isUserMessage ? "flex-row-reverse" : ""}`}>
-        {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
+        {!isUserMessage && <MessageAvatar senderName={message.senderName} avatar={message.senderAvatar} />}
         <div className="mx-1">
           <div className={`py-2 px-3 rounded-xl ${
             isUserMessage ? "bg-dark-3 text-gray-400" : "bg-dark-5 text-gray-400"

@@ -228,7 +228,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
           whileHover={{ scale: 1.01 }}
           className={`flex ${isMeetingAttachment ? 'w-full' : 'max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg'} ${isUserMessage ? "flex-row-reverse" : ""}`}
         >
-          {!isUserMessage && <MessageAvatar senderName={message.senderName} />}
+          {!isUserMessage && <MessageAvatar senderName={message.senderName} avatar={message.senderAvatar} />}
           <div className={`mx-1 ${isMeetingAttachment ? 'w-full' : ''}`}>
             {message.replyTo && (
               <div className={`${isUserMessage ? "items-end" : "items-start"} message-reply-info`}>

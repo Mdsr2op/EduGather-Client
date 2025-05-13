@@ -3,6 +3,7 @@ export interface MessageType {
     text: string;
     senderId: string;
     senderName: string;
+    senderAvatar?: string;
     timestamp: number;
     pinned?: boolean;
     channelId?: string;
