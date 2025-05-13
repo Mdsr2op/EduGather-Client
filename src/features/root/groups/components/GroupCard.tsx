@@ -1,6 +1,5 @@
 // src/features/groups/components/GroupCard.tsx
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FiUsers, FiPlus, FiCalendar, FiLock } from "react-icons/fi";
 import { toast } from "react-hot-toast";
@@ -26,7 +25,9 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
   const navigate = useNavigate();
 
   const handleJoinGroup = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent navigation when clicking the join button
+    e.preventDefault(); // Prevent default behavior
+    e.stopPropagation(); // Prevent any parent click events
+    console.log("Join button clicked"); // Debug logging
     
     try {
       await joinGroup({ groupId: group._id }).unwrap();
@@ -45,10 +46,6 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
     }
   };
 
-  const handleCardClick = () => {
-    navigate(`/preview-group/${group._id}`);
-  };
-
   // Create a color based on group name for groups without avatars
   const stringToColor = (str: string) => {
     let hash = 0;
@@ -63,37 +60,38 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
   const createdAt = new Date(group.createdAt);
   const timeAgo = formatDistanceToNow(createdAt, { addSuffix: true });
 
+  // Handle hover states manually
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      onClick={handleCardClick}
-      className="h-full cursor-pointer"
+    <div 
+      className="h-full transform transition-transform duration-300 hover:-translate-y-1"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="bg-dark-3 rounded-xl border border-dark-5 shadow-md hover:shadow-lg overflow-visible transition-all duration-300 flex flex-col h-full group">
+      <div className="bg-dark-3 rounded-xl border border-dark-5 shadow-md hover:shadow-lg overflow-visible transition-all duration-300 flex flex-col h-full group relative">
         {/* Card Top Section with Gradient Overlay */}
         <div className="relative h-28 overflow-visible">
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-dark-4"
+            className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-dark-4 rounded-t-xl"
             style={{ backgroundColor: avatarBgColor }}
           >
             {/* Abstract pattern overlay */}
             <div className="absolute inset-0 opacity-20 mix-blend-soft-light">
               <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <pattern id={`grid-${group._id}`} width="40" height="40" patternUnits="userSpaceOnUse">
                     <path d="M 0 20 L 40 20 M 20 0 L 20 40" fill="none" stroke="currentColor" strokeWidth="0.5"/>
                   </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
+                <rect width="100%" height="100%" fill={`url(#grid-${group._id})`} />
               </svg>
             </div>
           </div>
 
           {/* Group Avatar Positioned at Bottom */}
-          <div className="absolute -bottom-8 left-4 w-16 h-16 rounded-xl shadow-lg overflow-hidden border-2 border-dark-3 z-20">
+          <div className="absolute -bottom-8 left-4 w-16 h-16 rounded-xl shadow-lg overflow-hidden border-2 border-dark-3 z-10">
             {group.avatar ? (
               <img
                 src={group.avatar}
@@ -108,7 +106,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
           </div>
 
           {/* Join Status Badge */}
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 z-10">
             {group.isJoinableExternally ? (
               <span className="px-2 py-1 bg-primary-500/80 text-light-1 text-xs rounded-full flex items-center">
                 Open to Join
@@ -140,20 +138,19 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
             {group.description || "No description available for this group."}
           </p>
 
-          {/* Action Area */}
-          <div className="mt-4 pt-3 border-t border-dark-4">
+          {/* Action Area - Important: very high z-index to ensure clickability */}
+          <div className="mt-4 pt-3 border-t border-dark-4 relative z-50">
             {group.isJoinableExternally ? (
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={handleJoinGroup}
                 disabled={isLoading}
-                className="w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ cursor: 'pointer' }}
+                className="w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 aria-label={`Join group ${group.name}`}
               >
                 <FiPlus className="mr-2" size={16} />
                 {isLoading ? "Joining..." : "Join Group"}
-              </motion.button>
+              </button>
             ) : (
               <div className="flex justify-between items-center">
                 <span className="text-xs text-light-3 flex items-center">
@@ -164,16 +161,13 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
             )}
           </div>
         </div>
-
-        {/* Card Hover Overlay */}
-        <motion.div 
-          className="absolute inset-0 bg-primary-500/5 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
-        />
+        
+        {/* Card border highlight instead of overlay */}
+        <div className={`absolute inset-0 rounded-xl transition-all duration-200 pointer-events-none ${
+          isHovered ? 'ring-2 ring-primary-400/30' : ''
+        }`} />
       </div>
-    </motion.div>
+    </div>
   );
 };
 
