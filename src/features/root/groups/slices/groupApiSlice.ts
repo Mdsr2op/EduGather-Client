@@ -253,3 +253,6 @@ export const {
   useGetGroupMembersQuery,
   useAssignRoleMutation,
 } = groupApiSlice;
+
+// Export the entire API slice for use with invalidateTags
+export { groupApiSlice as groupsApi };

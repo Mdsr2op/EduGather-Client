@@ -23,11 +23,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useCreateGroupMutation, useGetAllGroupsQuery } from "../slices/groupApiSlice";
+import { useCreateGroupMutation, groupsApi } from "../slices/groupApiSlice";
+import { useDispatch } from "react-redux";
 import FileUpload from "@/features/auth/components/FileUpload";
 import { toast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { apiSlice } from "@/redux/api/apiSlice";
 // Zod schema consistent with your group.model.js and createGroup controller
 const groupSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
@@ -52,12 +51,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createGroup] = useCreateGroupMutation();
-  
-  // Get current user ID from auth state
   const dispatch = useDispatch();
-  
-  // Add this query hook with refetch function
-  const { refetch: refetchAllGroups } = useGetAllGroupsQuery();
 
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupSchema),
@@ -123,16 +117,13 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
         });
       }
       
-      // Manually refetch groups to ensure UI is updated immediately
-      refetchAllGroups();
-      
-      // Force refetch of all group-related queries at the store level
-      dispatch(
-        apiSlice.util.invalidateTags([
-          { type: "Groups", id: "LIST" },
-          { type: "Groups", id: "CATEGORIES" }
-        ])
-      );
+      // Manually refetch groups data
+      dispatch(groupsApi.util.invalidateTags([
+        { type: "Groups", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" },
+        // If the group has categories, invalidate those specific category caches as well
+        ...(data.category?.map(cat => ({ type: "Groups" as const, id: `category-${cat}` })) || [])
+      ]));
       
       // If successful, close the dialog and reset form
       form.reset();
