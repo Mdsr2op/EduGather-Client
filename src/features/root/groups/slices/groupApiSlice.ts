@@ -68,7 +68,14 @@ export const groupApiSlice = apiSlice.injectEndpoints({
           members: members,
         };
       },
-      invalidatesTags: [{ type: "Groups", id: "LIST" }],
+      invalidatesTags: (result) => [
+        { type: "Groups", id: result?._id },
+        { type: "Groups", id: "LIST" },
+        { type: "Channels", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" },
+        // Add category-specific tags if the group has categories
+        ...(result?.category?.map(cat => ({ type: "Groups" as const, id: `category-${cat}` })) || [])
+      ],
     }),
 
     getAllGroups: builder.query<UserJoinedGroups[], void>({
