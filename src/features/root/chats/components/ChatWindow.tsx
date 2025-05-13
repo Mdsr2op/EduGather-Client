@@ -46,9 +46,6 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
   // State to track loading state for the "Load More Messages" button
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
-  // Use our centralized socket event handler hook
-  useMessageSocketEvents(socket, selectedChannelId, setAllMessages);
-  
   const {
     data: messagesData,
     isLoading,
@@ -61,6 +58,9 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
   }, {
     skip: !selectedChannelId
   });
+  
+  // Use our centralized socket event handler hook
+  useMessageSocketEvents(socket, selectedChannelId, setAllMessages, refetch);
   
   // Connect to channel via socket when channel is selected
   useEffect(() => {

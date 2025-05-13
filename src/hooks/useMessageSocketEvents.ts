@@ -10,7 +10,8 @@ import { formatMessageForStore, formatMessageForUI } from "@/utils/messageFormat
 export function useMessageSocketEvents(
   socket: Socket | null, 
   selectedChannelId: string | null,
-  setAllMessages: React.Dispatch<React.SetStateAction<any[]>>
+  setAllMessages: React.Dispatch<React.SetStateAction<any[]>>,
+  refetch?: () => void
 ) {
   const dispatch = useDispatch();
 
@@ -30,6 +31,13 @@ export function useMessageSocketEvents(
         // Update state
         dispatch(addMessage(formattedMessageForStore));
         setAllMessages(prev => [...prev, formattedMessage]);
+        
+        // Refetch messages after 2 seconds
+        if (refetch) {
+          setTimeout(() => {
+            refetch();
+          }, 2000);
+        }
       }
     };
 
@@ -46,6 +54,13 @@ export function useMessageSocketEvents(
         // Update state
         dispatch(addMessage(formattedMessageForStore));
         setAllMessages(prev => [...prev, formattedMessage]);
+        
+        // Refetch messages after 2 seconds
+        if (refetch) {
+          setTimeout(() => {
+            refetch();
+          }, 2000);
+        }
       }
     };
 
@@ -157,5 +172,5 @@ export function useMessageSocketEvents(
       socket.off('message_forwarded', handleMessageForwarded);
       socket.off('message_with_attachment', handleAttachmentMessageCreated);
     };
-  }, [socket, dispatch, selectedChannelId, setAllMessages]);
+  }, [socket, dispatch, selectedChannelId, setAllMessages, refetch]);
 } 
