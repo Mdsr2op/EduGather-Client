@@ -129,27 +129,7 @@ const ScheduledMeetings: React.FC = () => {
           transition={{ duration: 0.4 }}
           className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
-                <FiCalendar className="text-primary-500" size={28} />
-                Scheduled Meetings
-              </h1>
-              <p className="text-light-3 text-sm sm:text-base max-w-xl">
-                View and manage your upcoming meetings and collaborate with your teams
-              </p>
-            </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
-            >
-              <FiPlus size={18} />
-              <span className="font-medium">Schedule Meeting</span>
-            </motion.button>
-          </div>
-          
+         
           {/* Calendar strip */}
           <div className="mt-6 overflow-x-auto custom-scrollbar-horizontal">
             <div className="flex gap-2 min-w-max py-2">
