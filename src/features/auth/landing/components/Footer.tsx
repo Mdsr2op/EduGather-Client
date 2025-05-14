@@ -61,10 +61,8 @@ export function Footer() {
           <address className="not-italic">
             <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
             <p className="text-light-3 text-sm">
-              123 EduGather Lane<br />
-              Knowledge City, EDU 45678<br />
-              Email: <a href="mailto:support@edugather.com" className="text-primary-500 hover:underline">support@edugather.com</a><br />
-              Phone: <a href="tel:+1234567890" className="text-primary-500 hover:underline">+1 (234) 567-890</a>
+              Email: <a href="mailto:mdsrmfkhan@gmail.com" className="text-primary-500 hover:underline">mdsrmfkhan@gmail.com</a><br />
+              Phone: <a href="tel:+966539465643" className="text-primary-500 hover:underline">+96653946564</a>
             </p>
           </address>
           
@@ -72,17 +70,14 @@ export function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
             <div className="flex space-x-4">
-              <a href="https://facebook.com/edugather" aria-label="Facebook" className="text-light-3 hover:text-primary-500 transition-colors">
-                <Facebook className="h-6 w-6" />
+              <a href="https://instagram.com/mdsr2op" aria-label="Instagram" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Instagram className="h-6 w-6" />
+              </a>
+              <a href="https://www.linkedin.com/in/muddassir-m-fahad-18a2a1229/" aria-label="LinkedIn" className="text-light-3 hover:text-primary-500 transition-colors">
+                <Linkedin className="h-6 w-6" />
               </a>
               <a href="https://twitter.com/edugather" aria-label="Twitter" className="text-light-3 hover:text-primary-500 transition-colors">
                 <Twitter className="h-6 w-6" />
-              </a>
-              <a href="https://instagram.com/edugather" aria-label="Instagram" className="text-light-3 hover:text-primary-500 transition-colors">
-                <Instagram className="h-6 w-6" />
-              </a>
-              <a href="https://linkedin.com/company/edugather" aria-label="LinkedIn" className="text-light-3 hover:text-primary-500 transition-colors">
-                <Linkedin className="h-6 w-6" />
               </a>
             </div>
           </div>
