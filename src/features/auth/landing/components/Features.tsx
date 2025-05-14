@@ -33,6 +33,7 @@ const features: Feature[] = [
 export function Features() {
   return (
     <section
+      id="features"
       className="w-full bg-dark-3 text-light-1 py-16 border-t border-dark-1"
       aria-labelledby="features-heading"
     >

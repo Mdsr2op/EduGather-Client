@@ -16,8 +16,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  { label: "Home", href: "#home" },
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
+  { label: "Security", href: "#security" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Join", href: "#join" },
 ];
 
 export function Header() {
@@ -29,24 +33,24 @@ export function Header() {
       <div className="mx-5 flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo/Brand */}
         <div className="flex items-center">
-          <Link
-            to="/"
+          <a
+            href="#home"
             className="text-xl font-semibold text-light-1 hover:text-primary-500"
           >
             EduGather
-          </Link>
+          </a>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map((item) => (
-            <Link
+            <a
               key={item.label}
-              to={item.href}
+              href={item.href}
               className="text-light-1 hover:text-primary-500 transition-colors"
             >
               {item.label}
-            </Link>
+            </a>
           ))}
 
           <Link
@@ -85,12 +89,12 @@ export function Header() {
               <div className="mt-4 flex flex-col space-y-6">
                 {navItems.map((item) => (
                   <SheetClose asChild key={item.label}>
-                    <Link
-                      to={item.href}
+                    <a
+                      href={item.href}
                       className="block text-light-1 hover:text-primary-500 transition-colors"
                     >
                       {item.label}
-                    </Link>
+                    </a>
                   </SheetClose>
                 ))}
 

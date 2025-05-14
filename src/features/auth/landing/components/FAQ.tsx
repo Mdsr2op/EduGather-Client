@@ -8,7 +8,7 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: "How does the platform ensure the security and privacy of our students’ data?",
+    question: "How does the platform ensure the security and privacy of our students' data?",
     answer:
       "We take security seriously. In line with NFR-01, user passwords are stored using industry-standard encryption, and all data travels over encrypted connections (HTTPS/TLS). We also comply with data protection regulations, ensuring that student information remains confidential and protected.",
   },
@@ -20,9 +20,9 @@ const faqs: FAQItem[] = [
   },
   {
     question:
-      "Does EduGather integrate with our university’s existing systems (e.g., SSO, LMS) and can it scale across multiple classes?",
+      "Does EduGather integrate with our university's existing systems (e.g., SSO, LMS) and can it scale across multiple classes?",
     answer:
-      "Our platform is designed with scalability in mind (NFR-02). While direct SSO or LMS integration depends on your institution’s setup, EduGather’s architecture supports cross-communication between servers, allowing you to scale across multiple classes or departments seamlessly.",
+      "Our platform is designed with scalability in mind (NFR-02). While direct SSO or LMS integration depends on your institution's setup, EduGather's architecture supports cross-communication between servers, allowing you to scale across multiple classes or departments seamlessly.",
   },
   {
     question:
@@ -34,7 +34,7 @@ const faqs: FAQItem[] = [
     question:
       "Are there accessibility features to support students with disabilities or varying technical needs?",
     answer:
-      "We’re committed to accessibility and continuously work to ensure EduGather is inclusive. Features such as keyboard navigation, screen reader compatibility, and clear interface design help all students participate fully.",
+      "We're committed to accessibility and continuously work to ensure EduGather is inclusive. Features such as keyboard navigation, screen reader compatibility, and clear interface design help all students participate fully.",
   },
   {
     question:
@@ -46,7 +46,7 @@ const faqs: FAQItem[] = [
     question:
       "What measures are in place to ensure the platform remains reliable and data is backed up regularly?",
     answer:
-      "EduGather’s infrastructure is built for reliability. We maintain regular data backups and have redundancy measures in place to minimize downtime. In case of unexpected issues, our support team is ready to assist, ensuring continuous access to study materials and communication tools.",
+      "EduGather's infrastructure is built for reliability. We maintain regular data backups and have redundancy measures in place to minimize downtime. In case of unexpected issues, our support team is ready to assist, ensuring continuous access to study materials and communication tools.",
   },
 ];
 
@@ -59,6 +59,7 @@ export function FAQ() {
 
   return (
     <section
+      id="faq"
       className="w-full bg-dark-3 text-light-1 py-16"
       aria-labelledby="faq-heading"
     >

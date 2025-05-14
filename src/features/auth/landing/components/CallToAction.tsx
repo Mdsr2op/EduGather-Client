@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 export function CallToAction() {
   return (
     <section
+      id="join"
       className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="cta-heading"
     >

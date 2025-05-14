@@ -38,6 +38,7 @@ const steps: Step[] = [
 export function HowItWorks() {
   return (
     <section
+      id="how-it-works"
       className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="how-it-works-heading"
     >

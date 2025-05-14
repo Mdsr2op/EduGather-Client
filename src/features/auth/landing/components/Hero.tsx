@@ -5,6 +5,7 @@ import { CheckCircle } from "lucide-react";
 export function Hero() {
   return (
     <section
+      id="home"
       className="w-full bg-dark-1 text-light-1 py-16"
       aria-labelledby="hero-heading"
     >

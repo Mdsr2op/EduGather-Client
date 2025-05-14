@@ -3,6 +3,7 @@ import { Lock, Server } from 'lucide-react';
 export function SecurityAndReliability() {
   return (
     <section
+      id="security"
       className="w-full bg-dark-3 text-light-1 py-16"
       aria-labelledby="security-reliability-heading"
     >
