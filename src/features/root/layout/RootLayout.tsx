@@ -13,7 +13,6 @@ import {
 import { useGetJoinedGroupsQuery } from "../groups/slices/groupApiSlice";
 import { AuthState } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
-import SidebarLogo from "../groups/components/Logo";
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -110,11 +109,6 @@ const Layout = () => {
           <FiMenu size={24} className="text-light-1" />
         )}
       </button>
-
-      {/* EduGather Logo - positioned in top-left */}
-      <div className={`md:hidden fixed top-4 left-4 z-[100] transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : 'opacity-100'}`}>
-        <SidebarLogo onClick={() => {}} />
-      </div>
 
       {/* Overlay for mobile - closes sidebar when clicking outside */}
       {isMobile && isSidebarOpen && (

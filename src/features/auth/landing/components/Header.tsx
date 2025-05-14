@@ -35,9 +35,14 @@ export function Header() {
         <div className="flex items-center">
           <a
             href="#home"
-            className="text-xl font-semibold text-light-1 hover:text-primary-500"
+            className="flex items-center hover:text-primary-500"
           >
-            EduGather
+            <img 
+              src="/EduGather-logo.png" 
+              alt="EduGather Logo" 
+              className="h-8 w-auto mr-2"
+            />
+            <span className="text-xl font-semibold">EduGather</span>
           </a>
         </div>
 
