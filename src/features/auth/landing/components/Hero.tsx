@@ -30,7 +30,7 @@ export function Hero() {
               asChild
               className="bg-primary-500 hover:bg-primary-600 text-light-1 font-medium px-8 py-3 rounded-xl"
             >
-              <Link to="/signup">Sign Up Now</Link>
+              <Link to="/sign-up">Sign Up Now</Link>
             </Button>
           </div>
 
