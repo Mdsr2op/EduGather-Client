@@ -21,11 +21,36 @@ const MessageAttachment: React.FC<MessageAttachmentProps> = ({ attachment, isUse
     e.stopPropagation();
     
     try {
-      const response = await fetch(attachment.url);
+      // Add proper headers for the request
+      const response = await fetch(attachment.url, {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+        },
+      });
+      
+      // Check if response is valid
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Get the blob with explicit type
       const blob = await response.blob();
-      saveAs(blob, attachment.fileName);
+      
+      // Make sure blob has content
+      if (blob.size === 0) {
+        throw new Error('Downloaded file is empty');
+      }
+      
+      // For PDF files, ensure correct MIME type
+      if (attachment.fileType === 'application/pdf' || attachment.fileName?.endsWith('.pdf')) {
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+        saveAs(pdfBlob, attachment.fileName);
+      } else {
+        saveAs(blob, attachment.fileName);
+      }
     } catch (error) {
       console.error('Failed to download file:', error);
+      // Optionally add user notification for error
     }
   };
 

@@ -50,8 +50,6 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
 
   // Function to truncate title based on screen size
   const truncateTitle = (text: string) => {
-    // Title will be shown with padding-right, and we want to ensure it fits well
-    // The actual truncation is handled by CSS, this is just to ensure proper layout
     return text;
   };
   
