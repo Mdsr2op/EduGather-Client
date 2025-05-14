@@ -52,11 +52,6 @@ function ChatPage() {
   const selectedChannel = channels.find((ch) => ch._id === selectedChannelId);
   const membersCount = groupDetails?.members?.length || 0;
 
-  // Reset selectedChannelId when groupId changes
-  useEffect(() => {
-    dispatch(setSelectedChannelId(null));
-  }, [groupId, dispatch]);
-
   // Handle no selected channel
   useEffect(() => {
     if (groupId && !selectedChannelId) {

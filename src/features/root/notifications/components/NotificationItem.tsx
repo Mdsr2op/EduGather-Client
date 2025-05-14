@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
 import { formatDistanceToNow } from "date-fns";
+import { useDispatch } from "react-redux";
+import { setSelectedChannelId } from "@/features/root/channels/slices/channelSlice";
 
 export interface NotificationUI {
   _id: string;
@@ -34,6 +36,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onMarkAsRead 
 }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
 
   // Only fetch group and channel details for relevant types
@@ -61,9 +64,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     // Handle navigation based on notification type
     switch (notification.type) {
       case 'channel_message':
+        // Set the selected channel ID in Redux before navigation
+        dispatch(setSelectedChannelId(notification.channelId));
         navigate(`/${notification.groupId}/${notification.channelId}`);
         break;
       case 'meeting_created':
+        // Set the selected channel ID in Redux before navigation
+        dispatch(setSelectedChannelId(notification.channelId));
         navigate(`/${notification.groupId}/${notification.channelId}`);
         break;
       case 'role_upgrade_requested':
