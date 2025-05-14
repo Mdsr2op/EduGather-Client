@@ -2,7 +2,6 @@ import ChannelSidebar from "@/features/root/channels/components/ChannelSidebar";
 import { useGetChannelsQuery } from "@/features/root/channels/slices/channelApiSlice";
 import {
   selectSelectedChannelId,
-  setSelectedChannelId,
 } from "@/features/root/channels/slices/channelSlice";
 import ChatHeader from "@/features/root/chats/components/ChatHeader";
 import ChatWindow from "@/features/root/chats/components/ChatWindow";
