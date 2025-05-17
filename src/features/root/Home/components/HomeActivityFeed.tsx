@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FiActivity, FiArrowRight, FiMessageSquare, FiUsers } from "react-icons/fi";
+import { FiActivity, FiArrowRight, FiMessageSquare } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -160,7 +160,7 @@ const HomeActivityFeed = () => {
             </motion.p>
             
             {/* Achievement cards */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-1 gap-3 mb-6">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -174,23 +174,6 @@ const HomeActivityFeed = () => {
                   <div className="text-left">
                     <div className="text-sm text-light-3">Study Groups</div>
                     <div className="text-xl font-bold text-light-1">{groupCount}</div>
-                  </div>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.5 }}
-                className="bg-dark-4 rounded-xl p-3 border border-dark-5"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-secondary-500/20 rounded-full flex items-center justify-center">
-                    <FiUsers className="text-secondary-500" size={16} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-sm text-light-3">Connected With</div>
-                    <div className="text-xl font-bold text-light-1">{totalMembers} peers</div>
                   </div>
                 </div>
               </motion.div>
