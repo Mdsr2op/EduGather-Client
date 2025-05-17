@@ -1,5 +1,5 @@
 // ChannelList.tsx
-import React from "react";
+import React, { memo } from "react";
 import Channel from "./Channel";
 
 type Channels = {
@@ -24,9 +24,9 @@ const ChannelList: React.FC<ChannelListProps> = ({
     animation: 'bounceDown 1s infinite',
   };
 
-  return (
-    <div className={`flex-1 overflow-y-auto ${channels.length === 0 ? 'flex items-center' : ''}`}>
-      {channels.length === 0 ? (
+  if (channels.length === 0) {
+    return (
+      <div className="flex-1 flex items-center">
         <div className="text-center py-8 px-4 text-light-3 bg-dark-4 rounded-md w-full my-auto">
           <p className="text-lg mb-4">No channels available.</p>
           <div className="my-6 text-primary-500">
@@ -50,22 +50,27 @@ const ChannelList: React.FC<ChannelListProps> = ({
             `}
           </style>
         </div>
-      ) : (
-        <ul className="flex flex-col space-y-3 w-full px-2 py-3">
-          {channels.map((channel) => (
-            <Channel
-              key={channel.id}
-              id={channel.id}
-              name={channel.name}
-              isSelected={channel.id === selectedChannelId}
-              onClick={() => onChannelClick(channel.id)}
-              onContextMenu={(e) => onChannelContextMenu(channel.id, e)}
-            />
-          ))}
-        </ul>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <ul className="flex flex-col space-y-3 w-full px-2 py-3">
+        {channels.map((channel) => (
+          <Channel
+            key={channel.id}
+            id={channel.id}
+            name={channel.name}
+            isSelected={channel.id === selectedChannelId}
+            onClick={() => onChannelClick(channel.id)}
+            onContextMenu={(e) => onChannelContextMenu(channel.id, e)}
+          />
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default ChannelList;
+// Use memo to prevent unnecessary re-renders when parent components change but props remain the same
+export default memo(ChannelList);

@@ -17,9 +17,9 @@ interface GetChannelDetailsResponse {
 
 export const channelApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getChannels: builder.query<GetAllChannelsResponse, string>({
-      query: (groupId: string) => ({
-        url: `/study-groups/${groupId}/channels`,
+    getChannels: builder.query<GetAllChannelsResponse, { groupId: string; page?: number; limit?: number }>({
+      query: ({ groupId, page = 1, limit = 20 }) => ({
+        url: `/study-groups/${groupId}/channels?page=${page}&limit=${limit}`,
         method: "GET",
       }),
       providesTags: (result) =>

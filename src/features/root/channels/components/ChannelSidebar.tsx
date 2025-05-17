@@ -1,6 +1,6 @@
 // ChannelSidebar.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/hook";
@@ -37,7 +37,9 @@ import ChannelContextMenu from "../menus/ChannelContextMenu";
 import EditChannelDialog from "../dialogs/EditChannelDialog";
 import ViewChannelDetails from "../dialogs/ViewChannelDetails";
 import DeleteChannelDialog from "../dialogs/DeleteChannelDialog";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiSearch } from "react-icons/fi";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Input } from "@/components/ui/input";
 
 interface ChannelSidebarProps {
   groupId: string;
@@ -46,6 +48,7 @@ interface ChannelSidebarProps {
 const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // ===================
   // Redux State
@@ -67,6 +70,14 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const currentUserId = useAppSelector(state => state.auth.user?._id);
   
   // ===================
+  // Pagination and Search State
+  // ===================
+  const [page, setPage] = useState<number>(1);
+  const [allChannels, setAllChannels] = useState<{ id: string; name: string }[]>([]);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  
+  // ===================
   // Data Fetching
   // ===================
   const {
@@ -74,7 +85,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     isLoading,
     isError,
     error,
-  } = useGetChannelsQuery(groupId, {
+  } = useGetChannelsQuery({ groupId, page, limit: 20 }, {
     skip: !groupId,
   });
 
@@ -82,8 +93,43 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   const { data: groupDetails } = useGetGroupDetailsQuery(groupId, {
     skip: !groupId,
   });
+  
+  // Update allChannels when new data is fetched
+  useEffect(() => {
+    if (channelData?.data.channels) {
+      const newChannels = channelData.data.channels.map(ch => ({
+        id: ch._id,
+        name: ch.channelName,
+      }));
+      
+      if (page === 1) {
+        setAllChannels(newChannels);
+      } else {
+        setAllChannels(prev => [...prev, ...newChannels]);
+      }
+      
+      // Update hasMore based on pagination info
+      setHasMore(channelData.data.hasNextPage);
+    }
+  }, [channelData, page]);
+  
+  const loadMoreChannels = () => {
+    if (hasMore) {
+      setPage(prevPage => prevPage + 1);
+    }
+  };
 
-  const channels = channelData?.data.channels ?? [];
+  // Focus search input on mount
+  useEffect(() => {
+    searchInputRef.current?.focus();
+  }, []);
+  
+  // Filter channels based on search query
+  const filteredChannels = searchQuery
+    ? allChannels.filter(channel => 
+        channel.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allChannels;
   
   // Check if current user is an admin or moderator in this group
   const userRole = currentUserId && groupDetails?.members?.find(
@@ -130,7 +176,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
 
   // The context menu action now simply dispatches open-Dialog actions
   const handleContextMenuAction = (action: string, channelId: string) => {
-    const channelInContext = channels.find((c) => c._id === channelId);
+    const channelInContext = channelData?.data.channels.find((c) => c._id === channelId);
     if (!channelInContext) return;
 
     switch (action) {
@@ -158,7 +204,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   // ===================
   // Conditional Renders
   // ===================
-  if (isLoading) {
+  if (isLoading && page === 1) {
     return (
       <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
         <div className="flex justify-center items-center flex-1">
@@ -180,7 +226,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
     );
   }
 
-  const channelInContext = channels.find(
+  const channelInContext = channelData?.data.channels.find(
     (c) => c._id === channelContextMenu.channelId
   );
 
@@ -201,24 +247,59 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
         )}
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-4">
+        <div className="relative">
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3" size={16} />
+          <Input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search channels..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-10 bg-dark-4 border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner w-full"
+          />
+        </div>
+        {searchQuery && (
+          <div className="text-xs text-light-3 mt-2 px-1">
+            Found {filteredChannels.length} {filteredChannels.length === 1 ? 'channel' : 'channels'}
+          </div>
+        )}
+      </div>
+
       {/* Channel List Container */}
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        {channels.length === 0 ? (
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0" id="channelScrollContainer">
+        {filteredChannels.length === 0 && !isLoading ? (
           <div className="text-center p-4 md:p-6 bg-dark-3 rounded-lg md:rounded-xl border border-dark-5 shadow-sm my-2">
-            <p className="text-light-1 text-sm md:text-base font-medium">No channels yet</p>
-            <p className="text-light-3 text-xs md:text-sm mt-2">Create your first channel</p>
+            <p className="text-light-1 text-sm md:text-base font-medium">
+              {searchQuery ? "No channels match your search" : "No channels yet"}
+            </p>
+            <p className="text-light-3 text-xs md:text-sm mt-2">
+              {searchQuery ? "Try a different search term" : "Create your first channel"}
+            </p>
           </div>
         ) : (
           <div className="overflow-y-auto custom-scrollbar">
-            <ChannelList
-              channels={channels.map((ch) => ({
-                id: ch._id,
-                name: ch.channelName,
-              }))}
-              selectedChannelId={selectedChannelId}
-              onChannelClick={handleSelectChannel}
-              onChannelContextMenu={handleChannelContextMenu}
-            />
+            <InfiniteScroll
+              dataLength={filteredChannels.length}
+              next={loadMoreChannels}
+              hasMore={!searchQuery && hasMore}
+              loader={
+                <div className="flex justify-center items-center p-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+              }
+              scrollableTarget="channelScrollContainer"
+              className="overflow-hidden"
+              endMessage={<></>}
+            >
+              <ChannelList
+                channels={filteredChannels}
+                selectedChannelId={selectedChannelId}
+                onChannelClick={handleSelectChannel}
+                onChannelContextMenu={handleChannelContextMenu}
+              />
+            </InfiniteScroll>
           </div>
         )}
       </div>

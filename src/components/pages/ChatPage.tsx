@@ -42,7 +42,7 @@ function ChatPage() {
     data: channelsData,
     isLoading: isLoadingChannels,
     isError: isChannelsError,
-  } = useGetChannelsQuery(groupId || "", {
+  } = useGetChannelsQuery({ groupId: groupId || "", page: 1, limit: 20 }, {
     skip: !groupId,
   });
 
