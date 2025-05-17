@@ -33,7 +33,7 @@ const ForwardMessageDialog = ({
   
   const { socket } = useSocket();
   const { handleForwardMessage } = useMessageActions(socket);
-  const { data: channelsData } = useGetChannelsQuery(groupId, { skip: !groupId });
+  const { data: channelsData } = useGetChannelsQuery({ groupId, page: 1, limit: 50 }, { skip: !groupId });
   
   const channels = channelsData?.data?.channels || [];
   
