@@ -60,6 +60,8 @@ export function GoogleProfileSetup() {
     try {
       await updateProfile(formData).unwrap();
       setSetupComplete(true);
+      navigate("/home")
+
     } catch (err) {
       console.error("Profile setup failed:", err);
       toast.error("Profile setup failed. Please try again.");
