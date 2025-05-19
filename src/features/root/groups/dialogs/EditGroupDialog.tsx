@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { useUpdateGroupMutation } from "../slices/groupApiSlice";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import FileUpload from "@/features/auth/components/FileUpload";
+import { toast } from "react-hot-toast";
 
 // Reuse the same schema as CreateGroup, but for editing:
 const editGroupSchema = z.object({
@@ -41,16 +42,22 @@ interface EditGroupDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   group: UserJoinedGroups; // The group we want to edit
+  focusField?: 'name' | 'description' | 'avatar' | 'categories'; // Optional field to focus on
 }
 
 const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
   isOpen,
   setIsOpen,
   group,
+  focusField,
 }) => {
   console.log(group);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateGroup] = useUpdateGroupMutation();
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
+  const avatarInputRef = useRef<HTMLDivElement>(null);
+  const categoryInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<EditGroupFormValues>({
     resolver: zodResolver(editGroupSchema),
@@ -73,6 +80,28 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       category: group?.category || [],
     });
   }, [group._id]);
+
+  // Set focus on the specified field when dialog opens
+  useEffect(() => {
+    if (isOpen && focusField) {
+      setTimeout(() => {
+        switch (focusField) {
+          case 'name':
+            nameInputRef.current?.focus();
+            break;
+          case 'description':
+            descriptionInputRef.current?.focus();
+            break;
+          case 'avatar':
+            avatarInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'categories':
+            categoryInputRef.current?.focus();
+            break;
+        }
+      }, 100);
+    }
+  }, [isOpen, focusField]);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -112,9 +141,15 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
       console.log(formData.get("avatar"));
       await updateGroup({ groupId: group._id, formData }).unwrap();
 
+      toast.success("Group updated successfully!", {
+        position: "top-right"
+      });
       setIsOpen(false);
     } catch (err) {
       console.error("Error updating group: ", err);
+      toast.error("Failed to update group. Please try again.", {
+        position: "top-right"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -141,11 +176,12 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={focusField === 'name' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
                   <FormLabel className="text-light-1">Group Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
+                      ref={nameInputRef}
                       placeholder="Enter group name"
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
@@ -162,11 +198,12 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={focusField === 'description' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
                   <FormLabel className="text-light-1">Description</FormLabel>
                   <FormControl>
                     <textarea
                       {...field}
+                      ref={descriptionInputRef}
                       placeholder="Group description"
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
@@ -178,14 +215,14 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               )}
             />
 
-            {/* Allow External Joins */}
+            {/* Private */}
             <FormField
               control={form.control}
               name="isJoinableExternally"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center space-x-3">
                   <FormLabel className="text-light-1 pt-2 cursor-pointer">
-                    Allow External Joins
+                    Private
                   </FormLabel>
                   <FormControl>
                     <Switch
@@ -203,15 +240,17 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               control={form.control}
               name="avatar"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={focusField === 'avatar' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
                   <FormLabel className="text-light-1">Change Avatar</FormLabel>
                   <FormControl>
-                    <FileUpload
-                      label="Avatar"
-                      onFileUpload={(file: File) => field.onChange([file])}
-                      preview={group?.avatar || null}
-                      accept={{ "image/*": [] }}
-                    />
+                    <div ref={avatarInputRef}>
+                      <FileUpload
+                        label="Avatar"
+                        onFileUpload={(file: File) => field.onChange([file])}
+                        preview={group?.avatar || null}
+                        accept={{ "image/*": [] }}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -223,11 +262,12 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className={focusField === 'categories' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
                   <FormLabel className="text-light-1">Categories (comma separated)</FormLabel>
                   <FormControl>
                     <Input
                      {...field}
+                      ref={categoryInputRef}
                       placeholder="Enter tags (e.g., programming, science, math)"
                       className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
                                  placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 

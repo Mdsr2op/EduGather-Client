@@ -1,8 +1,12 @@
 import { useParams } from "react-router-dom";
-import { useGetGroupDetailsQuery } from "../slices/groupApiSlice";
+import { useGetGroupDetailsQuery, useUpdateGroupMutation } from "../slices/groupApiSlice";
 import { MdEdit, MdInfo } from 'react-icons/md';
 import GroupMemberCard from './GroupMemberCard';
 import { useAppSelector } from "../../../../redux/hook";
+import { useState, useMemo, useRef } from 'react';
+import EditGroupDialog from '../dialogs/EditGroupDialog';
+import { toast } from 'react-hot-toast';
+import { UserJoinedGroups } from "../slices/groupSlice";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -16,6 +20,19 @@ const formatDate = (dateString: string) => {
 const GroupInfo = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const { data: groupDetails, isLoading, isError } = useGetGroupDetailsQuery(groupId!);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editField, setEditField] = useState<'name' | 'description' | 'avatar' | 'categories' | null>(null);
+  const [updateGroup, { isLoading: isUpdating }] = useUpdateGroupMutation();
+  
+  // Refs for inline editing
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Inline edit states
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [editedDescription, setEditedDescription] = useState('');
   
   // Get current user ID from auth state
   const currentUserId = useAppSelector(state => state.auth.user?._id);
@@ -32,6 +49,112 @@ const GroupInfo = () => {
 
   // Determine the current user's role
   const currentUserRole = isAdmin ? "admin" : isModerator ? "moderator" : "member";
+
+  // Transform groupDetails to match UserJoinedGroups type for EditGroupDialog
+  const formattedGroup = useMemo(() => {
+    if (!groupDetails) return null;
+    
+    const transformedGroup: UserJoinedGroups = {
+      _id: groupDetails._id,
+      name: groupDetails.name,
+      description: groupDetails.description,
+      avatar: groupDetails.avatar || undefined,
+      members: groupDetails.members,
+      createdAt: groupDetails.createdAt,
+      isJoinableExternally: groupDetails.isJoinableExternally,
+      category: groupDetails.category,
+      // Transform the User type to CreatedBy type
+      createdBy: {
+        _id: groupDetails.createdBy._id,
+        username: groupDetails.createdBy.username,
+        fullName: groupDetails.createdBy.fullName || '',
+        avatar: groupDetails.createdBy.avatar || '',
+      }
+    };
+    
+    return transformedGroup;
+  }, [groupDetails]);
+
+  // Function to handle opening the edit dialog for more complex edits
+  const handleEditClick = (field: 'name' | 'description' | 'avatar' | 'categories') => {
+    // For avatar and categories, always use the dialog
+    if (field === 'avatar' || field === 'categories') {
+      setEditField(field);
+      setIsEditDialogOpen(true);
+      
+      const fieldNames = {
+        'avatar': 'group avatar',
+        'categories': 'group categories'
+      };
+      
+      toast.success(`Editing ${fieldNames[field]}...`, {
+        position: "top-right"
+      });
+      return;
+    }
+    
+    // For name and description, allow inline editing
+    if (field === 'name') {
+      setIsEditingName(true);
+      setEditedName(groupDetails?.name || '');
+      setTimeout(() => nameInputRef.current?.focus(), 0);
+    } else if (field === 'description') {
+      setIsEditingDescription(true);
+      setEditedDescription(groupDetails?.description || '');
+      setTimeout(() => descriptionInputRef.current?.focus(), 0);
+    }
+  };
+  
+  // Function to handle inline updates for name and description
+  const handleInlineUpdate = async (field: 'name' | 'description') => {
+    if (!groupId) return;
+    
+    try {
+      const formData = new FormData();
+      
+      if (field === 'name') {
+        if (!editedName.trim() || editedName === groupDetails?.name) {
+          setIsEditingName(false);
+          return;
+        }
+        formData.append('name', editedName);
+      } else if (field === 'description') {
+        if (!editedDescription.trim() || editedDescription === groupDetails?.description) {
+          setIsEditingDescription(false);
+          return;
+        }
+        formData.append('description', editedDescription);
+      }
+      
+      // Keep other fields unchanged
+      if (field === 'name') {
+        formData.append('description', groupDetails?.description || '');
+      } else if (field === 'description') {
+        formData.append('name', groupDetails?.name || '');
+      }
+      
+      // Add required fields
+      formData.append('isJoinableExternally', String(groupDetails?.isJoinableExternally ?? true));
+      
+      // Make the API call
+      await updateGroup({ groupId, formData }).unwrap();
+      
+      // Show success message
+      toast.success(`Group ${field} updated successfully!`, {
+        position: "top-right"
+      });
+      
+      // Reset editing states
+      if (field === 'name') setIsEditingName(false);
+      if (field === 'description') setIsEditingDescription(false);
+      
+    } catch (error) {
+      console.error(`Error updating group ${field}:`, error);
+      toast.error(`Failed to update ${field}. Please try again.`, {
+        position: "top-right"
+      });
+    }
+  };
 
   if (isLoading) return (
     <div className="flex justify-center items-center h-full">
@@ -60,6 +183,7 @@ const GroupInfo = () => {
             <button 
               className="absolute bottom-0 right-0 bg-primary-500 text-dark-1 p-2 rounded-full shadow-lg hover:bg-primary-600 transition-all duration-200 opacity-90 hover:opacity-100"
               aria-label="Edit group avatar"
+              onClick={() => handleEditClick('avatar')}
             >
               <MdEdit className="text-lg" />
             </button>
@@ -68,11 +192,35 @@ const GroupInfo = () => {
         
         <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
           <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-2xl md:text-3xl font-bold text-light-1">{groupDetails.name}</h2>
-            {isAdmin && (
+            {isEditingName ? (
+              <div className="flex items-center gap-2">
+                <input 
+                  ref={nameInputRef}
+                  type="text" 
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="bg-dark-1 text-2xl md:text-3xl font-bold text-light-1 border-b-2 border-primary-500 focus:outline-none p-1 rounded"
+                  onBlur={() => handleInlineUpdate('name')}
+                  onKeyDown={(e) => e.key === 'Enter' && handleInlineUpdate('name')}
+                  aria-label="Edit group name"
+                />
+                <button 
+                  onClick={() => handleInlineUpdate('name')}
+                  className="bg-primary-500 text-light-1 p-1 rounded hover:bg-primary-600"
+                  disabled={isUpdating}
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <h2 className="text-2xl md:text-3xl font-bold text-light-1">{groupDetails.name}</h2>
+            )}
+            
+            {isAdmin && !isEditingName && (
               <button 
                 className="bg-dark-2 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
                 aria-label="Edit group name"
+                onClick={() => handleEditClick('name')}
               >
                 <MdEdit className="text-light-1 text-lg" />
               </button>
@@ -89,18 +237,48 @@ const GroupInfo = () => {
       <div className="mb-8 bg-dark-2 p-4 rounded-lg">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-light-1">Description</h3>
-          {isAdmin && (
+          {isAdmin && !isEditingDescription && (
             <button 
               className="bg-dark-3 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
               aria-label="Edit description"
+              onClick={() => handleEditClick('description')}
             >
               <MdEdit className="text-light-1 text-lg" />
             </button>
           )}
         </div>
-        <p className="text-light-3 leading-relaxed">
-          {groupDetails.description || "No description provided."}
-        </p>
+        
+        {isEditingDescription ? (
+          <div className="flex flex-col gap-2">
+            <textarea
+              ref={descriptionInputRef}
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+              className="bg-dark-1 text-light-3 leading-relaxed border-2 border-primary-500/30 focus:border-primary-500 focus:outline-none p-2 rounded resize-none min-h-[100px]"
+              placeholder="Enter group description"
+            />
+            <div className="flex justify-end gap-2">
+              <button 
+                onClick={() => setIsEditingDescription(false)}
+                className="bg-dark-3 text-light-1 px-3 py-1 rounded hover:bg-dark-1"
+                disabled={isUpdating}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleInlineUpdate('description')}
+                className="bg-primary-500 text-light-1 px-3 py-1 rounded hover:bg-primary-600"
+                disabled={isUpdating}
+              >
+                {isUpdating ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-light-3 leading-relaxed">
+            {groupDetails.description || "No description provided."}
+          </p>
+        )}
       </div>
 
       {/* Categories/Tags Section */}
@@ -112,6 +290,7 @@ const GroupInfo = () => {
               <button 
                 className="bg-dark-3 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
                 aria-label="Edit categories"
+                onClick={() => handleEditClick('categories')}
               >
                 <MdEdit className="text-light-1 text-lg" />
               </button>
@@ -164,6 +343,16 @@ const GroupInfo = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Group Dialog */}
+      {isEditDialogOpen && formattedGroup && (
+        <EditGroupDialog 
+          isOpen={isEditDialogOpen} 
+          setIsOpen={setIsEditDialogOpen} 
+          group={formattedGroup}
+          focusField={editField || undefined}
+        />
+      )}
     </div>
   );
 };

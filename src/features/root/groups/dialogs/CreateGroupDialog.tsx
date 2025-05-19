@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -232,15 +233,16 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               control={form.control}
               name="isJoinableExternally"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2">
+                <FormItem className="flex flex-row items-center space-x-3">
+                  <FormLabel className="text-light-1 pt-2 cursor-pointer">
+                    Private
+                  </FormLabel>
                   <FormControl>
-                    <input
-                      type="checkbox"
+                    <Switch
                       checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="text-light-1">Allow External Joins</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
