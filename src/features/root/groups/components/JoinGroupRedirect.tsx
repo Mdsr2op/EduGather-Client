@@ -1,12 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useJoinGroupMutation } from '../slices/groupApiSlice';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useJoinGroupMutation, useJoinGroupByInviteMutation } from '../slices/groupApiSlice';
 import { toast } from 'react-hot-toast';
 
 const JoinGroupRedirect: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isInvite = queryParams.get('invite') === 'true';
+  
   const [joinGroup] = useJoinGroupMutation();
+  const [joinGroupByInvite] = useJoinGroupByInviteMutation();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   // Use callback instead of effect to have more control
@@ -21,8 +26,13 @@ const JoinGroupRedirect: React.FC = () => {
     }
 
     try {
-      // Attempt to join the group
-      await joinGroup({ groupId }).unwrap();
+      // Attempt to join the group using the appropriate method
+      if (isInvite) {
+        await joinGroupByInvite({ groupId }).unwrap();
+      } else {
+        await joinGroup({ groupId }).unwrap();
+      }
+      
       setStatus('success');
       toast.success('Successfully joined the group!');
       
@@ -33,9 +43,12 @@ const JoinGroupRedirect: React.FC = () => {
     } catch (error) {
       console.error('Failed to join group:', error);
       setStatus('error');
-      toast.error('Failed to join the group. You may already be a member or the group does not exist.');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to join the group. You may already be a member or the group does not exist.';
+      toast.error(errorMessage);
     }
-  }, [groupId, joinGroup, navigate]);
+  }, [groupId, joinGroup, joinGroupByInvite, isInvite, navigate]);
 
   // Buttons for manual actions (more reliable than auto-join)
   const handleJoinClick = () => {
@@ -53,7 +66,9 @@ const JoinGroupRedirect: React.FC = () => {
         {status === 'loading' && (
           <>
             <div className="animate-pulse mb-4 mx-auto w-12 h-12 rounded-full bg-primary-500/30"></div>
-            <h1 className="text-xl font-semibold text-light-1 mb-2">Ready to join this group?</h1>
+            <h1 className="text-xl font-semibold text-light-1 mb-2">
+              {isInvite ? 'You\'ve been invited to join this group!' : 'Ready to join this group?'}
+            </h1>
             <p className="text-light-3 mb-6">Click the button below to join this group.</p>
             
             <div className="flex flex-col gap-3">
@@ -61,7 +76,7 @@ const JoinGroupRedirect: React.FC = () => {
                 onClick={handleJoinClick}
                 className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors w-full"
               >
-                Join Group
+                {isInvite ? 'Accept Invitation' : 'Join Group'}
               </button>
               <button 
                 onClick={handleCancelClick}

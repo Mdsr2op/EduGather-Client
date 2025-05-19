@@ -16,6 +16,7 @@ import { useSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { toast } from "react-hot-toast";
+// Note: MeetingService is imported dynamically in the useEffect to avoid circular dependencies
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -61,57 +62,30 @@ const MeetingRoom = () => {
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }, [participants]);
   
-  // Handle call max duration limit
+  // Handle call max duration limit using the MeetingService
   useEffect(() => {
     if (!call || !socket) return;
     
-    // Get the start time and max duration from call state
-    const maxDurationSeconds = call.state.settings?.limits?.max_duration_seconds || 1000; // Default to 1000 seconds
-    const startTime = call.state.startsAt ? new Date(call.state.startsAt) : new Date();
+    // Get the call ID for event listening
+    const callId = call.id;
     
-    // Calculate when the call should end
-    const endTime = new Date(startTime.getTime() + (maxDurationSeconds * 1000));
+    // Set up a listener for meeting ended events
+    const handleMeetingEnded = (data: any) => {
+      if (data.meetingId === callId) {
+        // Show notification
+        toast.success('Meeting ended due to maximum duration reached', { position: 'bottom-center' });
+        // Navigate back to main page
+        navigate('/');
+      }
+    };
     
-    // Calculate remaining time
-    const remainingTime = endTime.getTime() - Date.now();
+    socket.on('meetingEnded', handleMeetingEnded);
     
-    // Only set timeout if there's remaining time
-    if (remainingTime > 0) {
-      // Set a timeout to end the call when max duration is reached
-      const timeoutId = setTimeout(async () => {
-        // End the call
-        try {
-          await call.endCall();
-          
-          // Emit meeting end event to all participants
-          if (socket) {
-            socket.emit("meetingEnded");
-            
-            // Also emit a message to update the meeting status in the channel
-            const callId = call.id;
-            
-            socket.emit("updateMeetingStatus", {
-              meetingId: callId,
-              status: "ended",
-              endTime: new Date().toISOString(),
-              participantsCount: validParticipants.length
-            });
-          }
-          
-          // Show notification
-          toast.success('Meeting ended due to maximum duration reached', { position: 'bottom-center' });
-          
-          // Navigate back
-          navigate('/');
-        } catch (error) {
-          console.error("Error ending call after max duration:", error);
-        }
-      }, remainingTime);
-      
-      // Clean up the timeout if the component unmounts
-      return () => clearTimeout(timeoutId);
-    }
-  }, [call, socket, navigate, validParticipants.length]);
+    // Clean up listeners when component unmounts
+    return () => {
+      socket.off('meetingEnded', handleMeetingEnded);
+    };
+  }, [call, socket, navigate]);
   
   // Handle call end event and navigation
   useEffect(() => {

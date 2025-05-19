@@ -74,7 +74,10 @@ const EditUserProfile: React.FC<EditUserProfileProps> = ({ isOpen, onClose, user
       onClose();
     } catch (error) {
       console.error('Update profile error:', error);
-      toast.error('Profile update failed');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Profile update failed';
+      toast.error(errorMessage);
     }
   };
 

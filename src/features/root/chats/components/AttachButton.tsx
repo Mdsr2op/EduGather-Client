@@ -3,13 +3,13 @@ import { FiPaperclip, FiLoader } from 'react-icons/fi';
 import FilePreview from '../../messages/components/FilePreview';
 
 interface AttachButtonProps {
-  onFileSelect: (file: File, caption?: string) => void;
+  onFileSelect: (files: File[], caption?: string) => Promise<void> | void;
   isUploading?: boolean;
 }
 
 const AttachButton = ({ onFileSelect, isUploading = false }: AttachButtonProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showPreview, setShowPreview] = useState(false);
 
   const handleAttachmentClick = () => {
@@ -18,31 +18,50 @@ const AttachButton = ({ onFileSelect, isUploading = false }: AttachButtonProps) 
   };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setShowPreview(true);
+    const newFiles = Array.from(e.target.files || []);
+    
+    if (newFiles.length > 0) {
+      // Only add files up to a maximum of 5 total
+      const filesToAdd = newFiles.slice(0, 5 - selectedFiles.length);
+      
+      if (filesToAdd.length > 0) {
+        setSelectedFiles(prev => [...prev, ...filesToAdd]);
+        setShowPreview(true);
+      }
     }
     
-    // Reset the input value so the same file can be selected again
+    // Reset the input value so the same files can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
   
-  const handleSendFile = (file: File, caption: string) => {
-    onFileSelect(file, caption);
+  const handleSendFiles = (files: File[], caption: string) => {
+    onFileSelect(files, caption);
     setShowPreview(false);
-    setSelectedFile(null);
+    setSelectedFiles([]);
   };
   
   const handleCancelPreview = () => {
     setShowPreview(false);
-    setSelectedFile(null);
+    setSelectedFiles([]);
   };
   
-  const handleFileReplace = (newFile: File) => {
-    setSelectedFile(newFile);
+  const handleFilesChange = (newFiles: File[]) => {
+    setSelectedFiles(newFiles);
+  };
+  
+  const handleRemoveFile = (indexToRemove: number) => {
+    setSelectedFiles(prev => {
+      const newFiles = [...prev];
+      newFiles.splice(indexToRemove, 1);
+      return newFiles;
+    });
+    
+    // If no files left, close the preview
+    if (selectedFiles.length === 1) {
+      setShowPreview(false);
+    }
   };
 
   return (
@@ -67,15 +86,17 @@ const AttachButton = ({ onFileSelect, isUploading = false }: AttachButtonProps) 
         className="hidden"
         onChange={handleFileChange}
         disabled={isUploading}
+        multiple
       />
       
-      {/* Display file preview when a file is selected */}
-      {showPreview && selectedFile && (
+      {/* Display file preview when files are selected */}
+      {showPreview && selectedFiles.length > 0 && (
         <FilePreview 
-          file={selectedFile}
-          onSend={handleSendFile}
+          files={selectedFiles}
+          onSend={handleSendFiles}
           onCancel={handleCancelPreview}
-          onFileChange={handleFileReplace}
+          onFileChange={handleFilesChange}
+          onRemoveFile={handleRemoveFile}
         />
       )}
     </>

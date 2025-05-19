@@ -37,6 +37,7 @@ import { selectCurrentUser } from "@/features/auth/slices/authSlice";
 import { useSocket } from "@/lib/socket";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
+import { MAX_MEETING_DURATION_SECONDS } from "@/config/meetingConfig";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
@@ -169,7 +170,7 @@ const StartVideoCallDialog: React.FC = () => {
         groupDetails.members.map(member => member._id) : [];
       
       // Create the call on Stream's servers
-      await newCall.getOrCreate({
+       await newCall.getOrCreate({
         data: {
           starts_at: startsAt,
           custom: {
@@ -184,10 +185,45 @@ const StartVideoCallDialog: React.FC = () => {
           },
           settings_override: {
             limits: {
-              max_duration_seconds: 3600,
+              max_duration_seconds: MAX_MEETING_DURATION_SECONDS, // Use global config
             },
           },
         },
+      });
+      
+      // Register the meeting with our MeetingService for duration tracking
+      // This ensures meetings will end after their max duration even if all users leave
+      const startTime = new Date(startsAt);
+      
+      // Import MeetingService dynamically to avoid circular dependencies
+      import('@/lib/MeetingService').then((module) => {
+        const MeetingService = module.default;
+        
+        // Register this meeting with the service
+        MeetingService.trackMeeting(
+          id,
+          startTime,
+          MAX_MEETING_DURATION_SECONDS, // Use global config
+          socket,
+          () => {
+            // When meeting is ended due to timeout, update status
+            if (socket && channelId) {
+              socket.emit("updateMeetingStatus", {
+                meetingId: id,
+                status: "ended",
+                endTime: new Date().toISOString(),
+                reason: "max_duration_reached"
+              });
+              
+              // Clear active meeting status in the channel
+              socket.emit("setActiveMeetingInChannel", {
+                channelId,
+                meetingId: id,
+                active: false
+              });
+            }
+          }
+        );
       });
       
       // Generate meeting link

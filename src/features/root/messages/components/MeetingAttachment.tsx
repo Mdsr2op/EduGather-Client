@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Video, Calendar, Clock, Users, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useSocket } from '@/lib/socket';
+import { MAX_MEETING_DURATION_MS } from '@/config/meetingConfig';
 
 interface MeetingAttachmentProps {
   meetingId: string;
@@ -20,10 +22,39 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
   startTime,
   endTime,
   isUserMessage,
-  status,
+  status: initialStatus,
   participantsCount = 0
 }) => {
   const { groupId, channelId } = useParams();
+  const { socket } = useSocket();
+  const [status, setStatus] = useState(initialStatus);
+  
+  // Calculate if the meeting has expired based on time limits
+  useEffect(() => {
+    // Check for meeting expiration using global config
+    const meetingStartTime = new Date(startTime);
+    const expirationTime = new Date(meetingStartTime.getTime() + MAX_MEETING_DURATION_MS);
+    
+    // If the meeting is ongoing but current time is past expiration, mark as ended
+    if (status === 'ongoing' && new Date() > expirationTime) {
+      setStatus('ended');
+    }
+    
+    // Set up a listener for meeting status changes
+    if (socket) {
+      const handleMeetingStatusChanged = (data: any) => {
+        if (data.meetingId === meetingId) {
+          setStatus(data.status);
+        }
+      };
+      
+      socket.on('meetingStatusChanged', handleMeetingStatusChanged);
+      
+      return () => {
+        socket.off('meetingStatusChanged', handleMeetingStatusChanged);
+      };
+    }
+  }, [meetingId, socket, startTime, status]);
 
   const getStatusConfig = () => {
     switch (status) {

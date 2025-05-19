@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 export function GoogleAuthCallback() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { data, isLoading, isError } = useCheckGoogleAuthStatusQuery();
+  const { data, isLoading, isError, error } = useCheckGoogleAuthStatusQuery();
 
   useEffect(() => {
     // Check for error message in URL (in case backend redirected with error)
@@ -34,10 +34,13 @@ export function GoogleAuthCallback() {
         navigate('/home');
       }
     } else if (isError) {
-      toast.error('Failed to verify authentication. Please try again.');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to verify authentication. Please try again.';
+      toast.error(errorMessage);
       navigate('/sign-in');
     }
-  }, [data, isLoading, isError, navigate, location.search]);
+  }, [data, isLoading, isError, error, navigate, location.search]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-dark-1">

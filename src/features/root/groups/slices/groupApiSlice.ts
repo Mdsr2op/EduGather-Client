@@ -168,6 +168,18 @@ export const groupApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
+    joinGroupByInvite: builder.mutation<any, { groupId: string }>({
+      query: ({ groupId }) => ({
+        url: `/study-groups/${groupId}/join-by-invite`,
+        method: "POST",
+      }),
+      invalidatesTags: (_, __, { groupId }) => [
+        { type: "Groups", id: groupId },
+        { type: "Groups", id: "LIST" },
+        { type: "Groups", id: "CATEGORIES" }
+      ],
+    }),
+
     leaveGroup: builder.mutation<any, { groupId: string }>({
       query: ({ groupId }) => ({
         url: `/study-groups/${groupId}/leave`,
@@ -245,6 +257,7 @@ export const {
   useUpdateGroupMutation,
   useDeleteGroupMutation,
   useJoinGroupMutation,
+  useJoinGroupByInviteMutation,
   useLeaveGroupMutation,
   useGetGroupDetailsQuery,
   // New hooks for group membership management

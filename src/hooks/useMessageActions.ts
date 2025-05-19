@@ -42,7 +42,10 @@ export function useMessageActions(socket: Socket | null) {
       return true;
     } catch (error) {
       console.error("Failed to delete message:", error);
-      toast.error('Failed to delete message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to delete message';
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -71,7 +74,10 @@ export function useMessageActions(socket: Socket | null) {
       return true;
     } catch (error) {
       console.error("Failed to pin/unpin message:", error);
-      toast.error(isPinning ? 'Failed to pin message' : 'Failed to unpin message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || (isPinning ? 'Failed to pin message' : 'Failed to unpin message');
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -93,7 +99,10 @@ export function useMessageActions(socket: Socket | null) {
       }
     } catch (error) {
       console.error("Failed to edit message:", error);
-      toast.error('Failed to edit message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to edit message';
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -128,7 +137,10 @@ export function useMessageActions(socket: Socket | null) {
       }
     } catch (error) {
       console.error("Failed to forward message:", error);
-      toast.error('Failed to forward message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to forward message';
+      toast.error(errorMessage);
       return false;
     }
   };

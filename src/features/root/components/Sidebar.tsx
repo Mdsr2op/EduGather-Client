@@ -13,13 +13,13 @@ import {
 // UI components
 import SidebarDivider from "../groups/components/SidebarDivider";
 import AddGroupButton from "../groups/components/AddGroupButton";
-import ModalsManager from "./ModalsManager";
 import CreateChannelDialog from "../chats/components/dialogs/CreateChannelDialog";
 import DeleteGroupDialog from "../groups/dialogs/DeleteGroupDialog";
 import LeaveGroupDialog from "../groups/dialogs/LeaveGroupDialog";
 import EditGroupDialog from "../groups/dialogs/EditGroupDialog";
 import ViewGroupDetails from "../groups/dialogs/ViewGroupDetails";
 import ViewUserProfile from "@/features/auth/components/ViewUserProfile";
+import CreateGroupDialog from "../groups/dialogs/CreateGroupDialog";
 
 // Redux logic
 import { AuthState } from "@/features/auth/slices/authSlice";
@@ -119,13 +119,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   // ----------------------------------
   // Local state for modals
   // ----------------------------------
-  const [isCreateGroupModalOpen, setCreateGroupModalOpen] =
-    React.useState(false);
-  const [isJoinGroupModalOpen, setJoinGroupModalOpen] = React.useState(false);
+
   const [isChannelDialogOpen, setIsChannelDialogOpen] = React.useState(false);
   const [isUserProfileOpen, setUserProfileOpen] = React.useState(false);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = React.useState(false);
   const [inviteGroupData, setInviteGroupData] = React.useState<any>(null);
+  const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = React.useState(false);
   
   // ----------------------------------
   // Listen for context menu actions from RootLayout
@@ -213,8 +212,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleCreateGroup = () => {
     // First set navigation source
     dispatch(setNavigationSource('user_action'));
-    // Then open modal
-    setCreateGroupModalOpen(true);
+    // Open create group dialog
+    setIsCreateGroupDialogOpen(true);
+    
     // Finally set selected group ID to null with a small delay
     setTimeout(() => {
       dispatch(setSelectedGroupId(null));
@@ -358,15 +358,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <SidebarDivider />
 
-      {/* Central modals manager for Create/Join + optional View Details */}
-      <ModalsManager
-        // Join group
-        isJoinGroupModalOpen={isJoinGroupModalOpen}
-        closeJoinGroupModal={() => setJoinGroupModalOpen(false)}
-        // Create group
-        isCreateGroupModalOpen={isCreateGroupModalOpen}
-        closeCreateGroupModal={() => setCreateGroupModalOpen(false)}
-      />
+
 
       {/* View Group Details Dialog */}
       {isViewGroupDetailsModalOpen && (
@@ -426,6 +418,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           group={inviteGroupData}
         />
       )}
+
+      {/* Create Group Dialog */}
+      <CreateGroupDialog
+        isOpen={isCreateGroupDialogOpen}
+        onClose={() => setIsCreateGroupDialogOpen(false)}
+      />
     </div>
   );
 };

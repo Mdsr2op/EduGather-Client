@@ -2,8 +2,8 @@ import { logOut } from "@/features/auth/slices/authSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://api-edugather.com/api/v1",
-  // baseUrl: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
+  // baseUrl: "https://api-edugather.com/api/v1",
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
   credentials: "include",
 });
 

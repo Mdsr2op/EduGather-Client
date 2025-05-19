@@ -61,7 +61,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         setMessage('');
       } catch (error) {
         console.error('Failed to send message:', error);
-        toast.error('Failed to send message');
+        toast.error(error instanceof Error ? error.message : 'Failed to send message');
       } finally {
         setIsLoading(false);
       }
@@ -79,17 +79,23 @@ const ChatInput = ({ userId }: ChatInputProps) => {
     dispatch(setReplyTo(null));
   };
 
-  const handleFileSelect = async (file: File, caption?: string) => {
+  const handleFileSelect = async (files: File[], caption?: string) => {
     if (!selectedChannelId) {
-      console.error('Cannot send file: Channel not selected');
+      console.error('Cannot send files: Channel not selected');
       toast.error('Channel not selected');
       return;
     }
     
+    if (files.length === 0) return;
+    
     try {
-      // Create a FormData object to upload the file
+      // Create a FormData object to upload the files
       const formData = new FormData();
-      formData.append('files', file); // Note: Backend expects 'files' not 'file'
+      
+      // Append each file to FormData
+      files.forEach(file => {
+        formData.append('files', file);
+      });
       
       // Add caption as content if provided
       if (caption) {
@@ -102,7 +108,7 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       }
       
       // Show uploading toast at the bottom center
-      toast.loading('Uploading file...', { 
+      toast.loading(`Uploading ${files.length > 1 ? files.length + ' files' : 'file'}...`, { 
         id: 'uploading',
         position: 'bottom-center',
         style: {
@@ -118,19 +124,34 @@ const ChatInput = ({ userId }: ChatInputProps) => {
         formData
       }).unwrap();
       
+      console.log(response);
       // Show success toast at the bottom center
-      toast.success('File uploaded successfully', { 
+      toast.success(`${files.length > 1 ? files.length + ' files' : 'File'} uploaded successfully`, { 
         id: 'uploading',
         position: 'bottom-center'
       });
 
-      if (socket) {
-        socket.emit('attachment_message_created', {
-          messageId: response.data.message._id,
-        });
+      // The response structure has changed for multiple file uploads
+      if (socket && response.success) {
+        const responseData = response.data as any; // Use type assertion to handle dynamic structure
+        if (responseData.messages && Array.isArray(responseData.messages)) {
+          // For multiple files, notify about each message
+          responseData.messages.forEach((message: any) => {
+            if (message && message._id) {
+              socket.emit('attachment_message_created', {
+                messageId: message._id,
+              });
+            }
+          });
+        } else if (responseData.message && responseData.message._id) {
+          // For single file uploads (backward compatibility)
+          socket.emit('attachment_message_created', {
+            messageId: responseData.message._id,
+          });
+        }
       }
       
-      console.log('Attachment uploaded successfully:', response);
+      console.log('Attachments uploaded successfully:', response);
       
       // Clear the reply state if necessary
       if (replyTo) {
@@ -138,8 +159,12 @@ const ChatInput = ({ userId }: ChatInputProps) => {
       }
       
     } catch (error) {
-      console.error('Failed to upload file:', error);
-      toast.error('Failed to upload file', { 
+      console.error('Failed to upload files:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (error as any)?.data?.message || 'Failed to upload files';
+      
+      toast.error(errorMessage, { 
         id: 'uploading',
         position: 'bottom-center',
         style: {
