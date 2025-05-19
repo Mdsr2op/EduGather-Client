@@ -2,6 +2,7 @@ import ChannelSidebar from "@/features/root/channels/components/ChannelSidebar";
 import { useGetChannelsQuery } from "@/features/root/channels/slices/channelApiSlice";
 import {
   selectSelectedChannelId,
+  setSelectedChannelId,
 } from "@/features/root/channels/slices/channelSlice";
 import ChatHeader from "@/features/root/chats/components/ChatHeader";
 import ChatWindow from "@/features/root/chats/components/ChatWindow";
@@ -10,7 +11,7 @@ import {
   selectNavigationSource,
   setNavigationSource,
 } from "@/features/root/groups/slices/groupSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthState } from "@/features/auth/slices/authSlice";
@@ -23,6 +24,21 @@ function ChatPage() {
   const selectedChannelId = useSelector(selectSelectedChannelId);
   const userId = useSelector((state: { auth: AuthState }) => state.auth.user?._id) || "";
   const [showSidebar, setShowSidebar] = useState(true);
+  const previousGroupIdRef = useRef<string | undefined>(groupId);
+
+  // Track group ID changes and unselect channel when group changes
+  useEffect(() => {
+    const previousGroupId = previousGroupIdRef.current;
+    
+    // If group ID changed AND there was a previous group ID (not first time setting)
+    if (groupId !== previousGroupId && previousGroupId) {
+      // Clear the selected channel when changing groups
+      dispatch(setSelectedChannelId(null));
+    }
+    
+    // Update the ref with current groupId
+    previousGroupIdRef.current = groupId;
+  }, [groupId, dispatch]);
 
   // Note: We're removing the redirects based on selectedGroupId to stop unwanted navigation
   // Reset the navigation source if it's set
