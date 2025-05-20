@@ -1,7 +1,6 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 import { setUser, setAccessToken, logOut } from "./authSlice";
 import { AuthResponse, SignInFormValues, ForgotPasswordFormValues } from "../types";
-import { toast } from "react-hot-toast";
 
 // The backend's response has { data: { user, accessToken, refreshToken } } in some form
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -63,10 +62,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data: result } = await queryFulfilled;
           dispatch(setUser(result.data.user));
-          toast.success("Profile updated successfully!");
+          dispatch(setAccessToken(result.data.accessToken));
         } catch (err) {
           console.error("Profile update error:", err);
-          toast.error("Failed to update profile. Please try again.");
         }
       },
     }),

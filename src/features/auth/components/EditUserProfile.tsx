@@ -70,6 +70,7 @@ const EditUserProfile: React.FC<EditUserProfileProps> = ({ isOpen, onClose, user
       }
       
       await updateProfile(submitFormData).unwrap();
+      toast.success("Profile updated successfully!");
       navigate("/home")
       onClose();
     } catch (error) {
