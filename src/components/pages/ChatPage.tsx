@@ -227,7 +227,7 @@ function ChatPage() {
 
   // With selected channel - show chat layout
   return (
-    <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-white dark:text-white light:text-light-text-1">
+    <div className="flex h-[100dvh] max-h-[100dvh] overflow-hidden bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-white dark:text-white light:text-light-text-1">
       {groupId && (
         <div
           className={`w-full lg:w-auto ${!showSidebar && "hidden lg:block"}`}
@@ -236,7 +236,7 @@ function ChatPage() {
         </div>
       )}
       <div
-        className={`flex flex-col flex-grow p-4 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl ${
+        className={`flex flex-col flex-grow bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl ${
           showSidebar && "hidden md:flex"
         }`}
       >
@@ -245,7 +245,7 @@ function ChatPage() {
           membersCount={membersCount}
           onToggleSidebar={toggleSidebar}
         />
-        <div className="flex flex-col flex-grow justify-between overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden p-4">
           <ChatWindow userId={userId} />
         </div>
       </div>
