@@ -21,6 +21,9 @@ const Layout = () => {
   const dispatch = useDispatch();
   const { connectToChannel } = useSocket();
   
+  // Check if we're in a specific channel view (but not the channels list)
+  const isInChannelView = /^\/[^/]+\/[^/]+$/.test(location.pathname) && !location.pathname.endsWith('/channels');
+  
   // Group context menu from Redux
   const groupContextMenu = useSelector(selectGroupContextMenu);
   
@@ -98,17 +101,19 @@ const Layout = () => {
   return (
     <div className="flex w-full h-screen overflow-hidden bg-dark-1 dark:bg-dark-1 light:bg-light-bg-1 text-light-1 dark:text-light-1 light:text-light-text-1 transition-colors duration-200">
       {/* Mobile menu button - positioned in top-right for better placement */}
-      <button 
-        className="md:hidden fixed top-4 right-4 z-[100] bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-2.5 rounded-full shadow-lg hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
-      >
-        {isSidebarOpen ? (
-          <FiX size={24} className="text-light-1 dark:text-light-1 light:text-light-text-1" />
-        ) : (
-          <FiMenu size={24} className="text-light-1 dark:text-light-1 light:text-light-text-1" />
-        )}
-      </button>
+      {!isInChannelView && (
+        <button 
+          className="md:hidden fixed top-4 right-4 z-[100] bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-2.5 rounded-full shadow-lg hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
+        >
+          {isSidebarOpen ? (
+            <FiX size={24} className="text-light-1 dark:text-light-1 light:text-light-text-1" />
+          ) : (
+            <FiMenu size={24} className="text-light-1 dark:text-light-1 light:text-light-text-1" />
+          )}
+        </button>
+      )}
 
       {/* Overlay for mobile - closes sidebar when clicking outside */}
       {isMobile && isSidebarOpen && (
