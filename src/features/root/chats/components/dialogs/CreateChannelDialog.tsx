@@ -23,6 +23,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTheme } from "@/context/ThemeContext";
 
 const createChannelSchema = z.object({
   channelName: z.string().min(1, "Channel name is required").max(100),
@@ -42,6 +43,7 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
   setIsOpen,
   groupId,
 }) => {
+  const { theme } = useTheme();
   const [createChannel, { isLoading, isError, error }] = useCreateChannelMutation();
 
   const form = useForm<CreateChannelFormValues>({
@@ -68,10 +70,18 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar">
+      <DialogContent className={`sm:max-w-lg w-full p-6 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar ${
+        theme === 'dark'
+          ? 'bg-dark-4 text-light-1'
+          : 'bg-light-bg-2 text-light-text-1'
+      }`}>
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">Create a Channel</DialogTitle>
-          <DialogDescription className="text-sm text-light-4">Fill in the details to create a new channel.</DialogDescription>
+          <DialogDescription className={`text-sm ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
+            Fill in the details to create a new channel.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -81,12 +91,18 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               name="channelName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-light-1">Channel Name</FormLabel>
+                  <FormLabel className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Channel Name
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter channel name"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      className={`mt-1 block w-full rounded-xl ${
+                        theme === 'dark'
+                          ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                          : 'bg-light-bg-4 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                      } focus:ring-primary-500 focus:border-primary-500`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -99,12 +115,18 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-light-1">Description</FormLabel>
+                  <FormLabel className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Description
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       placeholder="Enter channel description"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl p-2"
+                      className={`mt-1 block w-full rounded-xl p-2 ${
+                        theme === 'dark'
+                          ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                          : 'bg-light-bg-4 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                      } focus:ring-primary-500 focus:border-primary-500`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,7 +144,11 @@ const CreateChannelDialog: React.FC<CreateChannelDialogProps> = ({
               <DialogClose asChild>
                 <Button
                   variant="outline"
-                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                  className={`rounded-full ${
+                    theme === 'dark'
+                      ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                      : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-3'
+                  }`}
                   disabled={isLoading}
                 >
                   Cancel

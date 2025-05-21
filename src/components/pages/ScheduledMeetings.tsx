@@ -120,22 +120,22 @@ const ScheduledMeetings: React.FC = () => {
   }, [calls, isLoading, error]);
 
   return (
-    <div className="p-3 sm:p-6 bg-dark-2 text-light-1 h-full overflow-auto custom-scrollbar">
+    <div className="p-3 sm:p-6 bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-1 dark:text-light-1 light:text-light-text-1 h-full overflow-auto custom-scrollbar transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
+          className="bg-gradient-to-r from-dark-4 to-dark-3 dark:from-dark-4 dark:to-dark-3 light:from-light-bg-4 light:to-light-bg-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5 dark:border-dark-5 light:border-light-bg-5"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2 flex items-center gap-2">
                 <FiCalendar className="text-primary-500" size={28} />
                 Scheduled Meetings
               </h1>
-              <p className="text-light-3 text-sm sm:text-base max-w-xl">
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm sm:text-base max-w-xl">
                 View and manage your upcoming meetings and collaborate with your teams
               </p>
             </div>
@@ -156,8 +156,8 @@ const ScheduledMeetings: React.FC = () => {
                     key={index}
                     className={`flex flex-col items-center p-3 rounded-xl min-w-[70px] cursor-pointer 
                       ${isToday 
-                        ? 'bg-primary-500 text-light-1' 
-                        : 'bg-dark-4/70 text-light-2 hover:bg-dark-5'}`}
+                        ? 'bg-primary-500 text-light-1 dark:text-light-1 light:text-white' 
+                        : 'bg-dark-4/70 dark:bg-dark-4/70 light:bg-light-bg-4/70 text-light-2 dark:text-light-2 light:text-light-text-2 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5'}`}
                   >
                     <span className="text-xs opacity-80">{day}</span>
                     <span className="text-lg font-bold">{dayNum}</span>
@@ -177,7 +177,7 @@ const ScheduledMeetings: React.FC = () => {
               className="flex flex-col justify-center items-center py-16"
             >
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
-              <p className="text-light-3 animate-pulse">Loading scheduled meetings...</p>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 animate-pulse">Loading scheduled meetings...</p>
             </motion.div>
           ) : meetings.length > 0 ? (
             <motion.div
@@ -186,10 +186,10 @@ const ScheduledMeetings: React.FC = () => {
               transition={{ duration: 0.4 }}
             >
               <div className="flex justify-between items-center mb-4 px-1">
-                <h2 className="text-xl font-semibold text-light-1">Upcoming Meetings</h2>
-                <div className="flex items-center gap-2 text-sm text-light-3">
+                <h2 className="text-xl font-semibold text-light-1 dark:text-light-1 light:text-light-text-1">Upcoming Meetings</h2>
+                <div className="flex items-center gap-2 text-sm text-light-3 dark:text-light-3 light:text-light-text-3">
                   <span>Sort by:</span>
-                  <select className="bg-dark-3 text-light-2 rounded-xl border border-dark-4 py-1 px-2 text-sm">
+                  <select className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 text-light-2 dark:text-light-2 light:text-light-text-2 rounded-xl border border-dark-4 dark:border-dark-4 light:border-light-bg-4 py-1 px-2 text-sm">
                     <option value="soon">Starting Soon</option>
                     <option value="latest">Latest Added</option>
                   </select>
@@ -213,19 +213,19 @@ const ScheduledMeetings: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center p-10 bg-dark-3 rounded-xl border border-dark-5 shadow-sm flex flex-col items-center"
+              className="text-center p-10 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-sm flex flex-col items-center"
             >
-              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiCalendar className="text-light-3" size={24} />
+              <div className="w-16 h-16 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiCalendar className="text-light-3 dark:text-light-3 light:text-light-text-3" size={24} />
               </div>
-              <h3 className="text-lg font-semibold text-light-1 mb-2">No Scheduled Meetings</h3>
-              <p className="text-light-3 mb-6 max-w-md">
+              <h3 className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2">No Scheduled Meetings</h3>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 mb-6 max-w-md">
                 You don't have any upcoming meetings. Create one to collaborate with your teams.
               </p>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-5 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center gap-2 shadow-md"
+                className="px-5 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-white rounded-xl flex items-center gap-2 shadow-md"
               >
                 <FiPlus size={16} />
                 <span>Schedule a Meeting</span>

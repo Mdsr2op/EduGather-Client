@@ -70,11 +70,11 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="bg-dark-3 rounded-xl border border-dark-5 shadow-md hover:shadow-lg overflow-visible transition-all duration-300 flex flex-col h-full group relative">
+      <div className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-md hover:shadow-lg overflow-visible transition-all duration-300 flex flex-col h-full group relative">
         {/* Card Top Section with Gradient Overlay */}
         <div className="relative h-28 overflow-visible">
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-dark-4 rounded-t-xl"
+            className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-dark-4 dark:to-dark-4 light:to-light-bg-4 rounded-t-xl"
             style={{ backgroundColor: avatarBgColor }}
           >
             {/* Abstract pattern overlay */}
@@ -91,7 +91,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
           </div>
 
           {/* Group Avatar Positioned at Bottom */}
-          <div className="absolute -bottom-8 left-4 w-16 h-16 rounded-xl shadow-lg overflow-hidden border-2 border-dark-3 z-10">
+          <div className="absolute -bottom-8 left-4 w-16 h-16 rounded-xl shadow-lg overflow-hidden border-2 border-dark-3 dark:border-dark-3 light:border-light-bg-3 z-10">
             {group.avatar ? (
               <img
                 src={group.avatar}
@@ -100,7 +100,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary-500/30 to-primary-600/10 flex items-center justify-center">
-                <FiUsers className="text-light-1" size={24} />
+                <FiUsers className="text-light-1 dark:text-light-1 light:text-light-text-1" size={24} />
               </div>
             )}
           </div>
@@ -108,11 +108,11 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
           {/* Join Status Badge */}
           <div className="absolute top-3 right-3 z-10">
             {group.isJoinableExternally ? (
-              <span className="px-2 py-1 bg-primary-500/80 text-light-1 text-xs rounded-full flex items-center">
+              <span className="px-2 py-1 bg-primary-500/80 text-light-1 dark:text-light-1 light:text-white text-xs rounded-full flex items-center">
                 Open to Join
               </span>
             ) : (
-              <span className="px-2 py-1 bg-dark-1/80 text-light-3 text-xs rounded-full flex items-center gap-1">
+              <span className="px-2 py-1 bg-dark-1/80 dark:bg-dark-1/80 light:bg-light-bg-1/80 text-light-3 dark:text-light-3 light:text-light-text-3 text-xs rounded-full flex items-center gap-1">
                 <FiLock size={10} />
                 Private
               </span>
@@ -123,29 +123,29 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
         {/* Card Content */}
         <div className="p-4 pt-10 flex flex-col flex-1">
           {/* Group Name */}
-          <h3 className="text-lg font-semibold text-light-1 group-hover:text-primary-400 transition-colors line-clamp-1">
+          <h3 className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1 group-hover:text-primary-400 transition-colors line-clamp-1">
             {group.name}
           </h3>
 
           {/* Created time */}
-          <div className="flex items-center text-xs text-light-3 mt-1 mb-3">
+          <div className="flex items-center text-xs text-light-3 dark:text-light-3 light:text-light-text-3 mt-1 mb-3">
             <FiCalendar size={12} className="mr-1" />
             Created {timeAgo}
           </div>
 
           {/* Description */}
-          <p className="text-sm text-light-3 line-clamp-3 flex-grow">
+          <p className="text-sm text-light-3 dark:text-light-3 light:text-light-text-3 line-clamp-3 flex-grow">
             {group.description || "No description available for this group."}
           </p>
 
           {/* Action Area - Important: very high z-index to ensure clickability */}
-          <div className="mt-4 pt-3 border-t border-dark-4 relative z-50">
+          <div className="mt-4 pt-3 border-t border-dark-4 dark:border-dark-4 light:border-light-bg-4 relative z-50">
             {group.isJoinableExternally ? (
               <button
                 onClick={handleJoinGroup}
                 disabled={isLoading}
                 style={{ cursor: 'pointer' }}
-                className="w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-white rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 aria-label={`Join group ${group.name}`}
               >
                 <FiPlus className="mr-2" size={16} />
@@ -153,7 +153,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group }) => {
               </button>
             ) : (
               <div className="flex justify-between items-center">
-                <span className="text-xs text-light-3 flex items-center">
+                <span className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 flex items-center">
                   <FiLock size={12} className="mr-1" />
                   This is a private group
                 </span>

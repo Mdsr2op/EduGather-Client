@@ -48,9 +48,9 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-1/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-1/80 dark:bg-dark-1/80 bg-light-bg-1/80 light:bg-light-bg-1/80 backdrop-blur-sm">
       {/* Dialog Container */}
-      <div className="bg-dark-3 text-light-1 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex overflow-hidden mx-4">
+      <div className="bg-dark-3 dark:bg-dark-3 bg-light-2 light:bg-light-2 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex overflow-hidden mx-4">
         
         {/* Sidebar - Hidden on mobile when content is shown */}
         <div className={`${isMobile && !showSidebar ? 'hidden' : ''} ${isMobile ? 'w-full' : ''} transition-all duration-300 ease-in-out`}>
@@ -60,25 +60,25 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ onClose }) => {
         {/* Main Content Panel */}
         <div className={`flex-1 flex flex-col relative ${isMobile && showSidebar ? 'hidden' : ''} transition-all duration-300 ease-in-out`}>
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-dark-3">
+          <div className="flex items-center justify-between p-4 border-b border-dark-3 dark:border-dark-3 border-light-bg-4 light:border-light-bg-4">
             <div className="flex items-center space-x-3">
               {isMobile && !showSidebar && (
                 <button
-                  className="p-2 hover:bg-dark-3 rounded-lg transition-colors duration-200"
+                  className="p-2 hover:bg-dark-3 dark:hover:bg-dark-3 hover:bg-light-bg-3 light:hover:bg-light-bg-3 rounded-lg transition-colors duration-200"
                   onClick={() => setShowSidebar(true)}
                 >
-                  <FiArrowLeft size={20} className="text-light-3" />
+                  <FiArrowLeft size={20} className=" dark:text-light-3 text-light-text-4 light:text-light-text-4" />
                 </button>
               )}
-              <h2 className="text-xl font-semibold text-light-1">
+              <h2 className="text-xl font-semibold  dark:text-light-1 text-light-text-1 light:text-light-text-1">
                 {activeTab === "files" ? "Files" : "Notification Settings"}
               </h2>
             </div>
             <button
-              className="p-2 hover:bg-dark-3 rounded-lg transition-colors duration-200"
+              className="p-2  dark:hover:bg-dark-3 hover:bg-light-bg-3 light:hover:bg-light-bg-3 rounded-lg transition-colors duration-200"
               onClick={onClose}
             >
-              <FiX size={20} className="text-light-3" />
+              <FiX size={20} className="text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4" />
             </button>
           </div>
 

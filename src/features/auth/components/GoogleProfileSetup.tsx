@@ -9,6 +9,7 @@ import { useAppSelector } from "@/redux/hook";
 import { selectCurrentUser } from "../slices/authSlice";
 import { useState } from "react";
 import { ProfileSetupSuccess } from "./ProfileSetupSuccess";
+import { useTheme } from '@/context/ThemeContext';
 
 import {
   Form,
@@ -21,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "./FileUpload";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiSun, FiMoon } from "react-icons/fi";
 
 interface GoogleProfileSetupValues {
   username: string;
@@ -33,6 +34,7 @@ export function GoogleProfileSetup() {
   const navigate = useNavigate();
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
   const [setupComplete, setSetupComplete] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   // Redirect if the user already has a username
   if (user && user.username && user.username.length > 0 && user.username !== user.email) {
@@ -74,9 +76,16 @@ export function GoogleProfileSetup() {
 
   return (
     <Form {...form}>
-      <div className="w-[440px] bg-dark-2 rounded-xl shadow-xl overflow-hidden">
+      <div className="w-[440px] bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-2xl shadow-lg overflow-hidden">
         <div className="relative h-24 bg-gradient-to-r from-primary-500 to-primary-600 flex items-end">
-          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-dark-3 rounded-full p-3 shadow-md">
+          <button 
+            onClick={toggleTheme}
+            className="absolute top-4 right-4 h-8 w-8 rounded-full bg-dark-2/40 dark:bg-dark-2/40 light:bg-light-bg-2/40 flex items-center justify-center text-light-1 dark:text-light-1 light:text-light-text-1 backdrop-blur-sm transition-all hover:scale-110"
+            type="button"
+          >
+            {theme === 'dark' ? <FiSun size={16} /> : <FiMoon size={16} />}
+          </button>
+          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full p-3 shadow-md">
             <div className="h-14 w-14 rounded-full bg-primary-500 flex items-center justify-center">
               <FiUser className="text-light-1 text-2xl" />
             </div>
@@ -90,10 +99,10 @@ export function GoogleProfileSetup() {
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-light-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1">
               Complete Your Profile
             </h2>
-            <p className="text-light-3 text-sm mt-2">
+            <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm mt-2">
               Set up your username and profile picture to continue
             </p>
           </motion.div>
@@ -104,7 +113,7 @@ export function GoogleProfileSetup() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-light-2 font-medium">
+                  <FormLabel className="text-light-2 dark:text-light-2 light:text-light-text-2 font-medium">
                     Username
                   </FormLabel>
                   <div className="relative">
@@ -114,7 +123,7 @@ export function GoogleProfileSetup() {
                         type="text"
                         placeholder="Choose a unique username"
                         autoComplete="off"
-                        className="pl-10 py-6 rounded-xl bg-dark-4 border-dark-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 placeholder:text-gray-500"
+                        className="pl-10 py-6 rounded-xl bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder:text-gray-500"
                       />
                     </FormControl>
                     <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -129,7 +138,7 @@ export function GoogleProfileSetup() {
               control={form.control}
               render={() => (
                 <FormItem>
-                  <FormLabel className="text-light-2 font-medium">
+                  <FormLabel className="text-light-2 dark:text-light-2 light:text-light-text-2 font-medium">
                     Profile Picture (Optional)
                   </FormLabel>
                   <FormControl>

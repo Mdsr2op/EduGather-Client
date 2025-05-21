@@ -22,6 +22,7 @@ import { selectSelectedChannelId } from "../../../channels/slices/channelSlice";
 import { selectSelectedGroupId } from "../../../groups/slices/groupSlice";
 import { toast } from "react-hot-toast";
 import SearchResultsDialog from "../../../messages/components/search/SearchResultsDialog";
+import { useTheme } from "@/context/ThemeContext";
 
 const searchSchema = z.object({
   search: z
@@ -31,6 +32,7 @@ const searchSchema = z.object({
 });
 
 const SearchDialog = () => {
+  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,22 +76,30 @@ const SearchDialog = () => {
         className={`p-2 rounded-full transition-all duration-200 ${
           isOpen || showResults
             ? 'bg-primary-500/20 text-primary-500' 
-            : 'hover:bg-dark-4 hover:text-light-1'
+            : theme === 'dark'
+              ? 'hover:bg-dark-4'
+              : 'hover:bg-light-bg-2'
         }`}
         onClick={() => setIsOpen(true)}
         title="Search Messages"
       >
-        <FiSearch size={18} className="text-current" />
+        <FiSearch size={18} className={theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} />
       </button>
 
       {/* Search Input Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
+        <DialogContent className={`sm:max-w-lg w-full p-6 rounded-lg shadow-lg border-none ${
+          theme === 'dark'
+            ? 'bg-dark-4 text-light-1'
+            : 'bg-light-bg-2 text-light-text-1'
+        }`}>
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">
               Search Messages
             </DialogTitle>
-            <DialogDescription className="text-sm text-light-4">
+            <DialogDescription className={`text-sm ${
+              theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+            }`}>
               {selectedChannelId 
                 ? "Enter a keyword to find specific messages in this channel."
                 : "Please select a channel first to search for messages."}
@@ -107,7 +117,11 @@ const SearchDialog = () => {
                 placeholder="Type a keyword to find messages..."
                 {...register("search")}
                 className={cn(
-                  "mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl",
+                  `mt-1 block w-full rounded-xl ${
+                    theme === 'dark'
+                      ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                      : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                  } focus:ring-primary-500 focus:border-primary-500`,
                   errors.search && "border-red-500 focus:ring-red-500"
                 )}
                 disabled={!selectedChannelId}
@@ -129,14 +143,18 @@ const SearchDialog = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                  className={`rounded-full ${
+                    theme === 'dark'
+                      ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                      : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-3'
+                  }`}
                 >
                   Cancel
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
-                className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
+                className="bg-primary-600 hover:bg-primary-700 text-light-1 rounded-full shadow-md"
                 disabled={!selectedChannelId}
               >
                 Search

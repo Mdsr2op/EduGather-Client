@@ -96,14 +96,14 @@ function ChatPage() {
   // Loading state
   if (isLoadingChannels) {
     return (
-      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 text-white">
+      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-white dark:text-white light:text-light-text-1">
         {groupId && (
           <div className="w-full lg:w-auto">
             <ChannelSidebar groupId={groupId} />
           </div>
         )}
-        <div className="flex-grow p-4 bg-dark-3 rounded-xl items-center justify-center hidden lg:flex">
-          <div className="text-light-2">Loading channel data...</div>
+        <div className="flex-grow p-4 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl items-center justify-center hidden lg:flex">
+          <div className="text-light-2 dark:text-light-2 light:text-light-text-2">Loading channel data...</div>
         </div>
       </div>
     );
@@ -112,13 +112,13 @@ function ChatPage() {
   // Error state
   if (isChannelsError && selectedChannelId) {
     return (
-      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 text-white">
+      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-white dark:text-white light:text-light-text-1">
         {groupId && (
           <div className="w-full lg:w-auto">
             <ChannelSidebar groupId={groupId} />
           </div>
         )}
-        <div className="flex-grow p-4 bg-dark-3 rounded-xl items-center justify-center hidden lg:flex">
+        <div className="flex-grow p-4 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl items-center justify-center hidden lg:flex">
           <div className="text-red-500">
             Error loading channel data. Please try again.
           </div>
@@ -134,7 +134,7 @@ function ChatPage() {
     };
 
     return (
-      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 text-white">
+      <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-white dark:text-white light:text-light-text-1">
         {groupId && (
           <div
             className={`w-full lg:w-auto ${!showSidebar && "hidden lg:block"}`}
@@ -143,11 +143,11 @@ function ChatPage() {
           </div>
         )}
         <div
-          className={`flex-grow p-4 bg-dark-3 rounded-xl items-center justify-center ${
+          className={`flex-grow p-4 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl items-center justify-center ${
             showSidebar && "hidden lg:flex"
           }`}
         >
-          <div className="text-light-3 text-center">
+          <div className="text-light-3 dark:text-light-3 light:text-light-text-3 text-center">
             <p className="text-xl mb-2">Welcome to EduGather</p>
             <p className="text-lg">Select a channel to start chatting</p>
             <div className="mt-6 text-primary-500">
@@ -187,7 +187,7 @@ function ChatPage() {
         {/* Mobile toggle button */}
         <button
           onClick={toggleSidebar}
-          className="fixed bottom-4 right-4 lg:hidden bg-primary-500 text-white p-3 rounded-full shadow-lg"
+          className="fixed bottom-4 right-4 lg:hidden bg-primary-500 text-white dark:text-white light:text-white p-3 rounded-full shadow-lg"
         >
           {showSidebar ? (
             <svg
@@ -227,7 +227,7 @@ function ChatPage() {
 
   // With selected channel - show chat layout
   return (
-    <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-2 text-white">
+    <div className="flex h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-white dark:text-white light:text-light-text-1">
       {groupId && (
         <div
           className={`w-full lg:w-auto ${!showSidebar && "hidden lg:block"}`}
@@ -236,7 +236,7 @@ function ChatPage() {
         </div>
       )}
       <div
-        className={`flex flex-col flex-grow p-4 bg-dark-3 rounded-xl ${
+        className={`flex flex-col flex-grow p-4 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl ${
           showSidebar && "hidden md:flex"
         }`}
       >

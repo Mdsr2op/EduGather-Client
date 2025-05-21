@@ -27,7 +27,7 @@ import LandingPage from "./components/pages/LandingPage";
 
 // Wrapper for the profile completion page to center it properly
 const CenteredProfileCompletion = () => (
-  <div className="flex items-center justify-center min-h-screen w-full">
+  <div className="flex items-center justify-center min-h-screen w-full bg-dark-1 dark:bg-dark-1 light:bg-light-bg-1 transition-colors duration-200">
     <GoogleProfileCompletionPage />
   </div>
 );
@@ -38,7 +38,7 @@ function App() {
   return (
     <ToastProvider>
       <SocketProvider>
-        <main className="h-screen flex">
+        <main className="h-screen flex bg-dark-1 dark:bg-dark-1 light:bg-light-bg-1 transition-colors duration-200">
           {isLoading ? (
             <p>Loading user session...</p>
           ) : (

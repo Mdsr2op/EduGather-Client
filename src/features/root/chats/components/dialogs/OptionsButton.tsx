@@ -19,12 +19,12 @@ const OptionsButton = () => {
         className={`p-2 rounded-full transition-all duration-200 ${
           openDialog 
             ? 'bg-primary-500/20 text-primary-500' 
-            : 'hover:bg-dark-4 hover:text-light-1'
+            : 'hover:bg-light-bg-2 dark:hover:bg-dark-4'
         }`}
         onClick={handleOpenDialog}
         title="Channel Options"
       >
-        <FiMoreVertical size={18} className="text-current" />
+        <FiMoreVertical size={18} className="text-light-3" />
       </button>
 
       {openDialog && <OptionsDialog onClose={handleCloseDialog} />}

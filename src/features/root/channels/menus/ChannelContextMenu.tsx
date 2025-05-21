@@ -6,6 +6,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import MenuItem from "../../components/MenuItem";
+import { useTheme } from "../../../../context/ThemeContext";
 
 type Channel = {
   _id: string;
@@ -28,6 +29,7 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
   onAction,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   // Close context menu on outside click
   useEffect(() => {
@@ -50,7 +52,11 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-dark-2 text-light-1 rounded-xl shadow-lg border border-dark-4 backdrop-blur-lg overflow-hidden"
+      className={`fixed z-50 rounded-xl shadow-lg border backdrop-blur-lg overflow-hidden ${
+        theme === 'dark' 
+          ? 'bg-dark-2 text-light-1 border-dark-4' 
+          : 'bg-light-bg-1 text-light-text-1 border-light-bg-4'
+      }`}
       style={{ 
         top: position.y, 
         left: position.x, 
@@ -58,7 +64,11 @@ const ChannelContextMenu: React.FC<ChannelContextMenuProps> = ({
         animation: "fadeIn 0.15s ease-in-out"
       }}
     >
-      <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+      <div className={`px-3 py-2 border-b ${
+        theme === 'dark' 
+          ? 'border-dark-4 bg-dark-3' 
+          : 'border-light-bg-4 bg-light-bg-2'
+      }`}>
         <h3 className="text-sm font-medium truncate">{channel.channelName}</h3>
       </div>
       <ul className="py-1">

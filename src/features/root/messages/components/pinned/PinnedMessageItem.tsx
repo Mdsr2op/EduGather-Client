@@ -45,7 +45,7 @@ const PinnedMessageItem: React.FC<PinnedMessageItemProps> = ({
   
   return (
     <div 
-      className="p-4 mb-2 border-b border-dark-4 hover:bg-dark-3 transition-colors cursor-pointer"
+      className="p-4 mb-2 border-b border-dark-4 dark:border-dark-4 hover:bg-dark-3 dark:hover:bg-dark-3 hover:bg-light-bg-3 light:hover:bg-light-bg-3 transition-colors cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex justify-between">
@@ -56,8 +56,8 @@ const PinnedMessageItem: React.FC<PinnedMessageItemProps> = ({
             className="w-8 h-8 rounded-full mr-2"
           />
           <div>
-            <p className="text-light-1 font-medium">{message.senderId.username}</p>
-            <span className="text-xs text-light-3">
+            <p className="text-light-1 dark:text-light-1 light:text-light-text-1 font-medium">{message.senderId.username}</p>
+            <span className="text-xs text-light-3 dark:text-light-3 light:text-light-text-4">
               {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
             </span>
           </div>
@@ -66,7 +66,7 @@ const PinnedMessageItem: React.FC<PinnedMessageItemProps> = ({
         {canUnpin && (
           <button 
             onClick={handleUnpin}
-            className="text-light-3 hover:text-red-500 flex items-center text-sm"
+            className="text-light-3 dark:text-light-3 light:text-light-text-4 hover:text-red-500 flex items-center text-sm"
             title="Unpin message"
           >
             <FaTimes size={12} className="mr-1" />
@@ -76,11 +76,11 @@ const PinnedMessageItem: React.FC<PinnedMessageItemProps> = ({
       </div>
       
       <div className="ml-10">
-        <p className="text-light-1 break-words whitespace-pre-wrap">{message.content}</p>
+        <p className="text-light-1 dark:text-light-1 light:text-light-text-1 break-words whitespace-pre-wrap">{message.content}</p>
         
         {/* Show if this is forwarded */}
         {message.forwardedFrom && (
-          <div className="mt-2 text-xs text-light-3 italic">
+          <div className="mt-2 text-xs text-light-3 dark:text-light-3 light:text-light-text-4 italic">
             Forwarded message
           </div>
         )}

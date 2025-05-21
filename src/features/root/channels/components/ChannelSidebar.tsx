@@ -206,7 +206,7 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   // ===================
   if (isLoading && page === 1) {
     return (
-      <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
+      <div className="bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-2 dark:text-light-2 light:text-light-text-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
         <div className="flex justify-center items-center flex-1">
           <div className="animate-spin rounded-xl h-10 w-10 md:h-12 md:w-12 border-t-2 border-b-2 border-primary-500"></div>
         </div>
@@ -217,10 +217,10 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   if (isError) {
     console.error("Error fetching channels: ", error);
     return (
-      <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
-        <div className="text-center p-4 md:p-6 bg-dark-3 rounded-xl border border-dark-5 shadow-sm">
+      <div className="bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-2 dark:text-light-2 light:text-light-text-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 p-3 sm:p-3 md:p-4 lg:p-5 flex flex-col">
+        <div className="text-center p-4 md:p-6 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-sm">
           <p className="text-red-500 text-sm md:text-base font-medium">Error loading channels</p>
-          <p className="text-light-3 text-xs md:text-sm mt-2">Please try again later</p>
+          <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-xs md:text-sm mt-2">Please try again later</p>
         </div>
       </div>
     );
@@ -231,14 +231,14 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
   );
 
   return (
-    <div className="bg-dark-2 text-light-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 max-h-[100dvh] p-3 pt-16 sm:p-3 md:p-4 lg:p-5 flex flex-col relative overflow-hidden ">
+    <div className="bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-2 dark:text-light-2 light:text-light-text-2 w-full sm:w-[240px] md:w-72 lg:w-80 h-full min-h-[100dvh] sm:min-h-0 max-h-[100dvh] p-3 pt-16 sm:p-3 md:p-4 lg:p-5 flex flex-col relative overflow-hidden ">
       {/* Header with Create Channel Button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-3 md:pb-4 border-b-[1px] border-dark-4 -mx-3 md:-mx-4 lg:-mx-5 px-3 md:px-4 lg:px-5">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 mb-1 sm:mb-0">Channels</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-3 md:pb-4 border-b-[1px] border-dark-4 dark:border-dark-4 light:border-light-bg-4 -mx-3 md:-mx-4 lg:-mx-5 px-3 md:px-4 lg:px-5">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1 mb-1 sm:mb-0">Channels</h1>
         {canCreateChannel && (
           <button
             onClick={handleCreateChannelButtonClick}
-            className="bg-primary-500 hover:bg-primary-600 text-light-1 px-3 py-2 sm:p-2 md:p-3 rounded-lg md:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 flex items-center justify-center w-full sm:w-auto"
+            className="bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-light-1 px-3 py-2 sm:p-2 md:p-3 rounded-lg md:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 flex items-center justify-center w-full sm:w-auto"
             title="Create Channel"
           >
             <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
@@ -250,18 +250,18 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
       {/* Search Bar */}
       <div className="mb-4">
         <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3" size={16} />
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3 dark:text-light-3 light:text-light-text-3" size={16} />
           <Input
             ref={searchInputRef}
             type="text"
             placeholder="Search channels..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 bg-dark-4 border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner w-full"
+            className="pl-9 h-10 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder-light-3 dark:placeholder-light-3 light:placeholder-light-text-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner w-full"
           />
         </div>
         {searchQuery && (
-          <div className="text-xs text-light-3 mt-2 px-1">
+          <div className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 mt-2 px-1">
             Found {filteredChannels.length} {filteredChannels.length === 1 ? 'channel' : 'channels'}
           </div>
         )}
@@ -270,11 +270,11 @@ const ChannelSidebar: React.FC<ChannelSidebarProps> = ({ groupId }) => {
       {/* Channel List Container */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0" id="channelScrollContainer">
         {filteredChannels.length === 0 && !isLoading ? (
-          <div className="text-center p-4 md:p-6 bg-dark-3 rounded-lg md:rounded-xl border border-dark-5 shadow-sm my-2">
-            <p className="text-light-1 text-sm md:text-base font-medium">
+          <div className="text-center p-4 md:p-6 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-lg md:rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-sm my-2">
+            <p className="text-light-1 dark:text-light-1 light:text-light-text-1 text-sm md:text-base font-medium">
               {searchQuery ? "No channels match your search" : "No channels yet"}
             </p>
-            <p className="text-light-3 text-xs md:text-sm mt-2">
+            <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-xs md:text-sm mt-2">
               {searchQuery ? "Try a different search term" : "Create your first channel"}
             </p>
           </div>

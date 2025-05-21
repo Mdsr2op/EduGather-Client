@@ -10,7 +10,15 @@
   }
 
   body {
-    @apply bg-dark-1 text-white min-h-screen font-[inter];
+    @apply bg-dark-1 text-white min-h-screen font-[inter] transition-colors duration-200;
+  }
+
+  .dark body {
+    @apply bg-dark-1 text-white;
+  }
+
+  .light body {
+    @apply bg-light-bg-2 text-light-text-1;
   }
 }
 
@@ -18,7 +26,7 @@
   /* SHADCN COMPONENTS */
   /* Form */
   .shad-form_label {
-    @apply text-white !important;
+    @apply text-white dark:text-white light:text-light-text-1 !important;
   }
 
   .shad-form_message {
@@ -26,24 +34,24 @@
   }
 
   .shad-input {
-    @apply h-12 bg-dark-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply h-12 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   .shad-textarea {
-    @apply h-36 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply h-36 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   /* Button */
   .shad-button_primary {
-    @apply bg-primary-500 hover:bg-primary-500 text-light-1 flex gap-2 !important;
+    @apply bg-primary-500 hover:bg-primary-500 text-light-1 dark:text-light-1 light:text-light-bg-1 flex gap-2 !important;
   }
 
   .shad-button_dark_4 {
-    @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
+    @apply h-12 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 px-5 text-light-1 dark:text-light-1 light:text-light-text-1 flex gap-2 !important;
   }
 
   .shad-button_ghost {
-    @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
+    @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white dark:hover:text-white light:hover:text-light-text-1 !important;
   }
 }
 
@@ -140,16 +148,34 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.5); /* Base color */
+  background-color: rgba(46, 46, 50, 0.5); /* dark-5 with 50% opacity */
   border-radius: 999px; /* Fully rounded */
   opacity: 0; /* Initially hidden */
   transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(46, 46, 50, 0.5); /* dark-5 with 50% opacity */
+}
+
+.light .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(209, 209, 205, 0.5); /* light-bg-5 with 50% opacity */
 }
 
 /* Show thumb on hover and while scrolling */
 .custom-scrollbar:hover::-webkit-scrollbar-thumb,
 .custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
   opacity: 1;
-  background-color: rgba(0, 0, 0, 0.8); /* Darker on hover */
+  background-color: rgba(61, 61, 66, 0.8); /* dark-6 with 80% opacity */
   transform: scale(1.1); /* Slight enlargement for visual feedback */
+}
+
+.dark .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.dark .custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
+  background-color: rgba(61, 61, 66, 0.8); /* dark-6 with 80% opacity */
+}
+
+.light .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.light .custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
+  background-color: rgba(194, 194, 189, 0.8); /* light-bg-6 with 80% opacity */
 }

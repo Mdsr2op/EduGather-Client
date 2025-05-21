@@ -18,13 +18,15 @@ const DeletedMessage = ({ message, isUserMessage, showTimestamp = false }: Delet
         {!isUserMessage && <MessageAvatar senderName={message.senderName} avatar={message.senderAvatar} />}
         <div className="mx-1">
           <div className={`py-2 px-3 rounded-xl ${
-            isUserMessage ? "bg-dark-3 text-gray-400" : "bg-dark-5 text-gray-400"
+            isUserMessage 
+              ? "bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 text-light-3 dark:text-light-3 light:text-light-text-3" 
+              : "bg-dark-5 dark:bg-dark-5 light:bg-light-bg-5 text-light-3 dark:text-light-3 light:text-light-text-3"
           }`}>
             <div className="italic text-sm">The Message has been removed</div>
           </div>
           
           {showTimestamp && (
-            <div className="flex items-center text-xs text-gray-400 mt-1">
+            <div className="flex items-center text-xs text-light-3 dark:text-light-3 light:text-light-text-3 mt-1">
               <MessageTimestamp
                 timestamp={message.timestamp}
                 isUserMessage={isUserMessage}

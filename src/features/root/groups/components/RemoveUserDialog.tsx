@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { GroupMember } from "./GroupMemberCard";
+import { useTheme } from "@/context/ThemeContext";
 
 interface RemoveUserDialogProps {
   open: boolean;
@@ -27,6 +28,8 @@ const RemoveUserDialog = ({
   isLoading,
   actionType,
 }: RemoveUserDialogProps) => {
+  const { theme } = useTheme();
+  
   const handleClose = () => {
     onOpenChange(false);
   };
@@ -55,25 +58,41 @@ const RemoveUserDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
+      <DialogContent className={`sm:max-w-md w-full p-6 rounded-lg shadow-lg border-none ${
+        theme === 'dark'
+          ? 'bg-dark-4 text-light-1'
+          : 'bg-light-bg-1 text-light-text-1'
+      }`}>
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             {title}
           </DialogTitle>
-          <DialogDescription className="text-sm text-light-4">
+          <DialogDescription className={`text-sm ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
             {description}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4 p-4 bg-dark-3 rounded-xl border border-dark-5">
-          <div className="text-sm text-light-2 mb-2">User:</div>
+        <div className={`mt-4 p-4 rounded-xl border ${
+          theme === 'dark'
+            ? 'bg-dark-3 border-dark-5'
+            : 'bg-light-bg-2 border-light-bg-3'
+        }`}>
+          <div className={`text-sm mb-2 ${
+            theme === 'dark' ? 'text-light-2' : 'text-light-text-2'
+          }`}>User:</div>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
               {member.username.charAt(0).toUpperCase()}
             </div>
             <div>
-              <div className="text-light-1 font-medium">{member.username}</div>
-              <div className="text-xs text-light-3 capitalize">{member.role}</div>
+              <div className={`font-medium ${
+                theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+              }`}>{member.username}</div>
+              <div className={`text-xs capitalize ${
+                theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+              }`}>{member.role}</div>
             </div>
           </div>
         </div>
@@ -82,7 +101,11 @@ const RemoveUserDialog = ({
           <DialogClose asChild>
             <Button
               variant="outline"
-              className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+              className={`rounded-full ${
+                theme === 'dark'
+                  ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                  : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-3'
+              }`}
               disabled={isLoading}
             >
               Cancel

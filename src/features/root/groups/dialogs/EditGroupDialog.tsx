@@ -26,6 +26,7 @@ import { useUpdateGroupMutation } from "../slices/groupApiSlice";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import FileUpload from "@/features/auth/components/FileUpload";
 import { toast } from "react-hot-toast";
+import { useTheme } from "@/context/ThemeContext";
 
 // Reuse the same schema as CreateGroup, but for editing:
 const editGroupSchema = z.object({
@@ -51,7 +52,7 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
   group,
   focusField,
 }) => {
-  console.log(group);
+  const { theme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateGroup] = useUpdateGroupMutation();
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -158,143 +159,195 @@ const EditGroupDialog: React.FC<EditGroupDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar"
+        className={`sm:max-w-3xl w-full p-6 rounded-lg shadow-lg border-none overflow-y-auto max-h-[80vh] custom-scrollbar ${
+          theme === 'dark'
+            ? 'bg-dark-3 text-light-1'
+            : 'bg-light-bg-2 text-light-text-1'
+        }`}
       >
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Edit Group
           </DialogTitle>
-          <DialogDescription className="text-sm text-light-4">
+          <DialogDescription className={`text-sm ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
             Update group information below.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
-            {/* Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className={focusField === 'name' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
-                  <FormLabel className="text-light-1">Group Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      ref={nameInputRef}
-                      placeholder="Enter group name"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-6">
+            {/* Header with group name and avatar */}
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
+              <div className="relative group">
+                <FormField
+                  control={form.control}
+                  name="avatar"
+                  render={({ field }) => (
+                    <FormItem className={focusField === 'avatar' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
+                      <FormControl>
+                        <div ref={avatarInputRef}>
+                          <FileUpload
+                            label="Avatar"
+                            onFileUpload={(file: File) => field.onChange([file])}
+                            preview={group?.avatar || null}
+                            accept={{ "image/*": [] }}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className={`w-full ${focusField === 'name' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}`}>
+                      <FormLabel className={`text-2xl md:text-3xl font-bold ${
+                        theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+                      }`}>
+                        Group Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          ref={nameInputRef}
+                          placeholder="Enter group name"
+                          className={`mt-1 block w-full border rounded-xl text-lg ${
+                            theme === 'dark'
+                              ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                              : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                          } focus:ring-primary-500 focus:border-primary-500`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className={focusField === 'description' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
-                  <FormLabel className="text-light-1">Description</FormLabel>
-                  <FormControl>
-                    <textarea
-                      {...field}
-                      ref={descriptionInputRef}
-                      placeholder="Group description"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl p-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Private */}
-            <FormField
-              control={form.control}
-              name="isJoinableExternally"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3">
-                  <FormLabel className="text-light-1 pt-2 cursor-pointer">
-                    Private
-                  </FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Avatar */}
-            <FormField
-              control={form.control}
-              name="avatar"
-              render={({ field }) => (
-                <FormItem className={focusField === 'avatar' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
-                  <FormLabel className="text-light-1">Change Avatar</FormLabel>
-                  <FormControl>
-                    <div ref={avatarInputRef}>
-                      <FileUpload
-                        label="Avatar"
-                        onFileUpload={(file: File) => field.onChange([file])}
-                        preview={group?.avatar || null}
-                        accept={{ "image/*": [] }}
+            {/* Description section */}
+            <div className={`mb-8 p-4 rounded-xl ${
+              theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+            }`}>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className={focusField === 'description' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
+                    <FormLabel className={`text-lg font-semibold ${
+                      theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+                    }`}>
+                      Description
+                    </FormLabel>
+                    <FormControl>
+                      <textarea
+                        {...field}
+                        ref={descriptionInputRef}
+                        placeholder="Group description"
+                        className={`mt-1 block w-full border rounded-xl p-2 min-h-[100px] ${
+                          theme === 'dark'
+                            ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                            : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                        } focus:ring-primary-500 focus:border-primary-500`}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            {/* Category Tags */}
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem className={focusField === 'categories' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
-                  <FormLabel className="text-light-1">Categories (comma separated)</FormLabel>
-                  <FormControl>
-                    <Input
-                     {...field}
-                      ref={categoryInputRef}
-                      placeholder="Enter tags (e.g., programming, science, math)"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
-                      value={field.value?.join(', ') || ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Split by comma and trim each value
-                        const tags = value
-                          .split(',')
-                          .map(tag => tag.trim())
-                          .filter(tag => tag !== '');
-                        field.onChange(tags);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Categories section */}
+            <div className={`mb-8 p-4 rounded-xl ${
+              theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+            }`}>
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem className={focusField === 'categories' ? 'ring-2 ring-primary-500 rounded-xl p-2' : ''}>
+                    <FormLabel className={`text-lg font-semibold ${
+                      theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+                    }`}>
+                      Categories
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        ref={categoryInputRef}
+                        placeholder="Enter tags (e.g., programming, science, math)"
+                        className={`mt-1 block w-full border rounded-xl ${
+                          theme === 'dark'
+                            ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                            : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                        } focus:ring-primary-500 focus:border-primary-500`}
+                        value={field.value?.join(', ') || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const tags = value
+                            .split(',')
+                            .map(tag => tag.trim())
+                            .filter(tag => tag !== '');
+                          field.onChange(tags);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Privacy settings */}
+            <div className={`mb-8 p-4 rounded-xl ${
+              theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+            }`}>
+              <FormField
+                control={form.control}
+                name="isJoinableExternally"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <div>
+                      <FormLabel className={`text-lg font-semibold ${
+                        theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+                      }`}>
+                        Privacy Settings
+                      </FormLabel>
+                      <p className={`text-sm ${
+                        theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+                      }`}>
+                        Allow external users to join this group
+                      </p>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Footer */}
             <DialogFooter className="flex justify-end space-x-2 pt-4">
               <DialogClose asChild>
                 <Button
                   variant="outline"
-                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                  className={`rounded-full ${
+                    theme === 'dark'
+                      ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                      : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-1'
+                  }`}
                   disabled={isSubmitting}
                 >
                   Cancel

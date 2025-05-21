@@ -33,7 +33,7 @@ const MessageInput = ({ message, setMessage, onEmojiSelect, onKeyPress }: Messag
   }, [message]);
 
   return (
-    <div className="flex-grow flex items-center bg-dark-2 rounded-full px-4 py-2 mr-2">
+    <div className="flex-grow flex items-center bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 rounded-full px-4 py-2 mr-2">
       <textarea
         ref={textareaRef}
         placeholder="Type a message..."
@@ -41,7 +41,7 @@ const MessageInput = ({ message, setMessage, onEmojiSelect, onKeyPress }: Messag
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={onKeyPress}
         rows={1}
-        className="flex-grow bg-transparent text-light-1 placeholder-light-3 focus:outline-none resize-none max-h-[120px]"
+        className="flex-grow bg-transparent text-light-1 dark:text-light-1 light:text-light-text-1 placeholder-light-3 dark:placeholder-light-3 light:placeholder-light-text-3 focus:outline-none resize-none max-h-[120px]"
       />
       <div className="mt-1">
         <EmojiPicker onSelectEmoji={onEmojiSelect} />

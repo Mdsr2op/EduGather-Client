@@ -15,6 +15,7 @@ import { useInviteToGroupMutation } from "../slices/groupApiSlice";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import { FiMail, FiLink, FiSend, FiUsers, FiCopy } from "react-icons/fi";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/context/ThemeContext";
 
 interface InviteToGroupDialogProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
   onClose,
   group,
 }) => {
+  const { theme } = useTheme();
   const [email, setEmail] = useState("");
   const [activeTab, setActiveTab] = useState<"link" | "email">("link");
   const [isAnimating, setIsAnimating] = useState(false);
@@ -80,27 +82,43 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-3 text-light-1 rounded-lg shadow-lg border-none">
+      <DialogContent className={`sm:max-w-lg w-full p-6 rounded-lg shadow-lg border-none ${
+        theme === 'dark' 
+          ? 'bg-dark-3 text-light-1' 
+          : 'bg-light-bg-2 text-light-text-1'
+      }`}>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center">
-            <div className="flex items-center mr-2 rounded-full bg-primary-500/20 p-2">
-              <FiUsers className="text-primary-500" size={20} />
+            <div className={`flex items-center mr-2 rounded-full p-2 ${
+              theme === 'dark' 
+                ? 'bg-primary-500/20' 
+                : 'bg-primary-600/10'
+            }`}>
+              <FiUsers className={theme === 'dark' ? 'text-primary-500' : 'text-primary-600'} size={20} />
             </div>
             Invite to {group?.name}
           </DialogTitle>
-          <DialogDescription className="text-sm text-light-4 mt-2">
+          <DialogDescription className={`text-sm mt-2 ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
             Invite others to join and collaborate in this group.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Tabs inspired by ViewUserProfile */}
-        <div className="flex border-b border-dark-4 mx-0 my-4">
+        {/* Tabs */}
+        <div className={`flex border-b mx-0 my-4 ${
+          theme === 'dark' ? 'border-dark-4' : 'border-light-bg-3'
+        }`}>
           <button
             className={cn(
               "flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors",
               activeTab === 'link' 
-                ? "border-primary-500 text-primary-500" 
-                : "border-transparent text-light-3 hover:text-light-2"
+                ? theme === 'dark'
+                  ? "border-primary-500 text-primary-500"
+                  : "border-primary-600 text-primary-600"
+                : theme === 'dark'
+                  ? "border-transparent text-light-3 hover:text-light-2"
+                  : "border-transparent text-light-text-3 hover:text-light-text-2"
             )}
             onClick={() => handleTabChange('link')}
           >
@@ -113,8 +131,12 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
             className={cn(
               "flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors",
               activeTab === 'email' 
-                ? "border-primary-500 text-primary-500" 
-                : "border-transparent text-light-3 hover:text-light-2"
+                ? theme === 'dark'
+                  ? "border-primary-500 text-primary-500"
+                  : "border-primary-600 text-primary-600"
+                : theme === 'dark'
+                  ? "border-transparent text-light-3 hover:text-light-2"
+                  : "border-transparent text-light-text-3 hover:text-light-text-2"
             )}
             onClick={() => handleTabChange('email')}
           >
@@ -134,19 +156,31 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
           )}>
             {activeTab === 'link' && !isAnimating && (
               <div className="space-y-4">
-                <div className="bg-dark-4/50 p-4 rounded-xl">
-                  <p className="text-sm text-light-2 mb-3">
+                <div className={`p-4 rounded-xl ${
+                  theme === 'dark' ? 'bg-dark-4/50' : 'bg-light-bg-4'
+                }`}>
+                  <p className={`text-sm mb-3 ${
+                    theme === 'dark' ? 'text-light-2' : 'text-light-text-2'
+                  }`}>
                     Share this link with others to invite them to join {group?.name}.
                   </p>
                   <div className="flex items-center gap-2">
                     <Input
                       readOnly
                       value={`${window.location.origin}/groups/join/${group?._id}`}
-                      className="bg-dark-2 border-dark-5 text-light-1 rounded-xl"
+                      className={`rounded-xl ${
+                        theme === 'dark'
+                          ? 'bg-dark-2 border-dark-5 text-light-1'
+                          : 'bg-light-bg-1 border-light-bg-3 text-light-text-1'
+                      }`}
                     />
                     <Button
                       onClick={handleCopyLink}
-                      className="bg-primary-500 hover:bg-primary-600 text-white flex-shrink-0 rounded-xl"
+                      className={`text-white flex-shrink-0 rounded-xl ${
+                        theme === 'dark'
+                          ? 'bg-primary-500 hover:bg-primary-600'
+                          : 'bg-primary-600 hover:bg-primary-700'
+                      }`}
                     >
                       <FiCopy className="mr-2" /> Copy
                     </Button>
@@ -157,7 +191,11 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
                   <Button
                     variant="ghost"
                     onClick={onClose}
-                    className="text-light-1 bg-dark-4 rounded-xl hover:bg-dark-5"
+                    className={`rounded-xl ${
+                      theme === 'dark'
+                        ? 'text-light-1 bg-dark-4 hover:bg-dark-5'
+                        : 'text-light-text-1 bg-light-bg-3 hover:bg-light-bg-4'
+                    }`}
                   >
                     Cancel
                   </Button>
@@ -174,16 +212,24 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
             {activeTab === 'email' && !isAnimating && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email" className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Email Address
+                  </Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                    className={`w-full rounded-xl ${
+                      theme === 'dark'
+                        ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                        : 'bg-light-bg-4 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                    } focus:ring-primary-500 focus:border-primary-500`}
                   />
-                  <p className="text-xs text-light-4">
+                  <p className={`text-xs ${
+                    theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+                  }`}>
                     We'll send an invitation link to this email address
                   </p>
                 </div>
@@ -192,14 +238,22 @@ const InviteToGroupDialog: React.FC<InviteToGroupDialogProps> = ({
                   <Button
                     variant="ghost"
                     onClick={onClose}
-                    className="text-light-1 bg-dark-4 rounded-xl hover:bg-dark-5"
+                    className={`rounded-xl ${
+                      theme === 'dark'
+                        ? 'text-light-1 bg-dark-4 hover:bg-dark-5'
+                        : 'text-light-text-1 bg-light-bg-3 hover:bg-light-bg-4'
+                    }`}
                   >
                     Cancel
                   </Button>
                   <Button 
                     onClick={handleInviteByEmail}
                     disabled={isLoading || !email.trim()}
-                    className="bg-primary-500 hover:bg-primary-600 text-white flex items-center gap-2 rounded-xl"
+                    className={`text-white flex items-center gap-2 rounded-xl ${
+                      theme === 'dark'
+                        ? 'bg-primary-500 hover:bg-primary-600'
+                        : 'bg-primary-600 hover:bg-primary-700'
+                    }`}
                   >
                     {isLoading ? "Sending..." : (
                       <>

@@ -18,7 +18,7 @@ import { useAppSelector } from "@/redux/hook";
 import { useSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/features/auth/slices/authSlice";
-
+import { useTheme } from "@/context/ThemeContext";
 
 type MenuItemProps = {
   icon: React.ComponentType<{ className?: string }>;
@@ -34,21 +34,32 @@ const MenuItem = ({
   onClick,
   isDanger = false,
   isLoading = false,
-}: MenuItemProps) => (
-  <button
-    className={`w-full text-left px-3 py-2 flex items-center gap-3 text-sm transition-colors hover:bg-dark-1
-       ${isDanger ? "text-red hover:text-red" : "text-light-1"}`}
-    onClick={onClick}
-    disabled={isLoading}
-  >
-    {isLoading ? (
-      <AiOutlineLoading3Quarters className="animate-spin text-light-3" />
-    ) : (
-      <Icon className={isDanger ? "text-red-400" : "text-light-3"} />
-    )}
-    <span>{label}</span>
-  </button>
-);
+}: MenuItemProps) => {
+  const { theme } = useTheme();
+  
+  return (
+    <button
+      className={`w-full text-left px-3 py-2 flex items-center gap-3 text-sm transition-colors ${
+        theme === 'dark'
+          ? 'hover:bg-dark-1'
+          : 'hover:bg-light-bg-2'
+      } ${
+        isDanger ? "text-red hover:text-red" : theme === 'dark' ? "text-light-1" : "text-light-text-1"
+      }`}
+      onClick={onClick}
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <AiOutlineLoading3Quarters className={`animate-spin ${
+          theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+        }`} />
+      ) : (
+        <Icon className={isDanger ? "text-red-400" : theme === 'dark' ? "text-light-3" : "text-light-text-3"} />
+      )}
+      <span>{label}</span>
+    </button>
+  );
+};
 
 interface RoleMenuProps {
   member: GroupMember;
@@ -82,6 +93,7 @@ const RoleMenu = ({
   const [isRequestingUpgrade, setIsRequestingUpgrade] = useState(false);
   const { socket } = useSocket();
   const user = useSelector(selectCurrentUser);
+  const { theme } = useTheme();
 
   const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
     skip: !groupId
@@ -211,10 +223,18 @@ const RoleMenu = ({
       {isOpen && (
         <div
           ref={menuRef}
-          className="absolute right-0 top-full mt-1 bg-dark-2 text-light-1 rounded-xl shadow-lg z-50 border border-dark-4 backdrop-blur-lg overflow-hidden min-w-[180px]"
+          className={`absolute right-0 top-full mt-1 rounded-xl shadow-lg z-50 border backdrop-blur-lg overflow-hidden min-w-[180px] ${
+            theme === 'dark'
+              ? 'bg-dark-2 text-light-1 border-dark-4'
+              : 'bg-light-bg-1 text-light-text-1 border-light-bg-3'
+          }`}
           style={{ animation: "menuFadeIn 0.15s ease-in-out" }}
         >
-          <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+          <div className={`px-3 py-2 border-b ${
+            theme === 'dark'
+              ? 'border-dark-4 bg-dark-3'
+              : 'border-light-bg-3 bg-light-bg-2'
+          }`}>
             <h3 className="text-sm font-medium truncate">
               Manage {member.username}
             </h3>

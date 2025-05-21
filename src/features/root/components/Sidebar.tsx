@@ -50,6 +50,7 @@ import Groups from "../groups/components/Groups";
 import UserAvatar from "./UserAvatar";
 import { selectUnreadCount, setUnreadCount, useGetNotificationsQuery } from "../notifications";
 import InviteToGroupDialog from "../groups/dialogs/InviteToGroupDialog";
+import { useTheme } from "@/context/ThemeContext";
 
 interface SidebarProps {
   onCloseDrawer?: () => void;
@@ -66,6 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Logged-in user
   const user = useSelector(
@@ -226,10 +228,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   // ----------------------------------
   if (isLoading) {
     return (
-      <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
+      <div className={`w-20 ${theme === 'dark' ? 'bg-dark-1' : 'bg-light-bg-1'} h-full p-3 flex flex-col items-center`}>
         <UserAvatar onClick={handleLogoClick} user={user} />
         <SidebarDivider />
-        <div className="text-light-3 mt-4">Loading your groups...</div>
+        <div className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} mt-4`}>Loading your groups...</div>
       </div>
     );
   }
@@ -237,7 +239,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   if (isError) {
     console.error(error);
     return (
-      <div className="w-20 bg-dark-1 h-full p-3 flex flex-col items-center">
+      <div className={`w-20 ${theme === 'dark' ? 'bg-dark-1' : 'bg-light-bg-1'} h-full p-3 flex flex-col items-center`}>
         <UserAvatar onClick={handleLogoClick} user={user} />
         <SidebarDivider />
         <div className="text-red mt-4">Error loading groups</div>
@@ -246,7 +248,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="w-full sm:w-60 md:w-32 bg-dark-1 h-full flex flex-col items-center overflow-hidden relative">
+    <div className={`w-full sm:w-60 md:w-32 ${theme === 'dark' ? 'bg-dark-1' : 'bg-light-bg-1'} h-full flex flex-col items-center overflow-hidden relative`}>
       <div className="mt-4 mb-2 transition-opacity duration-300 opacity-100">
         <UserAvatar onClick={handleLogoClick} user={user} />
       </div>
@@ -262,55 +264,55 @@ const Sidebar: React.FC<SidebarProps> = ({
           to="/home"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
+              isActive ? `${theme === 'dark' ? 'bg-dark-6' : 'bg-light-bg-4'} rounded-full p-0` : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/home')}
           title="Home"
         >
-          <FiHome size={20} className="text-light-3" />
+          <FiHome size={20} className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'}`} />
         </NavLink>
 
         <NavLink
           to="/discover-groups"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
+              isActive ? `${theme === 'dark' ? 'bg-dark-6' : 'bg-light-bg-4'} rounded-full p-0` : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/discover-groups')}
           title="Discover Groups"
         >
-          <FiUsers size={20} className="text-light-3" />
+          <FiUsers size={20} className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'}`} />
         </NavLink>
 
         <NavLink
           to="/scheduled-meetings"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
+              isActive ? `${theme === 'dark' ? 'bg-dark-6' : 'bg-light-bg-4'} rounded-full p-0` : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/scheduled-meetings')}
           title="Scheduled Meetings"
         >
-          <FiCalendar size={20} className="text-light-3" />
+          <FiCalendar size={20} className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'}`} />
         </NavLink>
 
         <NavLink
           to="/notifications"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
+              isActive ? `${theme === 'dark' ? 'bg-dark-6' : 'bg-light-bg-4'} rounded-full p-0` : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/notifications')}
           title="Notifications"
         >
           <div className="relative group p-1">
-            <FiBell size={20} className={`text-light-3 ${unreadCount > 0 ? 'text-yellow-500' : ''}`} />
+            <FiBell size={20} className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} ${unreadCount > 0 ? 'text-yellow-500 light:text-light-secondary-500' : ''}`} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 right-0 translate-x-1/2 bg-secondary-500 text-dark-1 font-bold text-xs rounded-full w-4 h-4 flex items-center justify-center shadow-md animate-pulse">
+              <span className="absolute -top-1 right-0 translate-x-1/2 p-[9px] bg-secondary-500 light:bg-light-secondary-500 text-dark-1 light:text-light-1 font-bold text-xs rounded-full w-4 h-4 flex items-center justify-center shadow-md animate-pulse">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
@@ -321,13 +323,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           to="/meeting-recordings"
           className={({ isActive }) =>
             `w-full py-4 flex flex-col items-center justify-center  transition-transform duration-300 ${
-              isActive ? "bg-dark-6 rounded-full p-0" : " hover:scale-110 md:hover:scale-150"
+              isActive ? `${theme === 'dark' ? 'bg-dark-6' : 'bg-light-bg-4'} rounded-full p-0` : " hover:scale-110 md:hover:scale-150"
             }`
           }
           onClick={() => handleNavigationClick('/meeting-recordings')}
           title="Meeting Recordings"
         >
-          <FiVideo size={20} className="text-light-3" />
+          <FiVideo size={20} className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'}`} />
         </NavLink>
       </nav>
 

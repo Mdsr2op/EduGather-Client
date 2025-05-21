@@ -5,6 +5,7 @@ import { SignInValidationSchema } from "../validations";
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useTheme } from '@/context/ThemeContext';
 
 import {
   Form,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FiLock, FiMail, FiLogIn } from "react-icons/fi";
+import { FiLock, FiMail, FiLogIn, FiSun, FiMoon } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useSignInMutation } from "../slices/authApiSlice";
 import { SignInFormValues } from "../types";
@@ -33,6 +34,7 @@ export function SignInForm() {
 
   const [signIn, { isLoading }] = useSignInMutation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const onSubmit: SubmitHandler<SignInFormValues> = async (data) => {
     try {
@@ -52,9 +54,16 @@ export function SignInForm() {
 
   return (
     <Form {...form}>
-      <div className="w-full max-w-3xl mx-auto bg-dark-3 rounded-2xl shadow-lg overflow-auto max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-dark-4 [&::-webkit-scrollbar-thumb]:bg-primary-500 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <div className="w-full max-w-3xl mx-auto bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-2xl shadow-lg overflow-auto max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-dark-4 dark:[&::-webkit-scrollbar-track]:bg-dark-4 light:[&::-webkit-scrollbar-track]:bg-light-bg-4 [&::-webkit-scrollbar-thumb]:bg-primary-500 [&::-webkit-scrollbar-thumb]:rounded-full">
         <div className="relative h-24 bg-gradient-to-r from-primary-500 to-primary-600 flex items-end">
-          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-dark-4 rounded-full p-3 shadow-md">
+          <button 
+            onClick={toggleTheme}
+            className="absolute top-4 right-4 h-8 w-8 rounded-full bg-dark-2/40 dark:bg-dark-2/40 light:bg-light-bg-2/40 flex items-center justify-center text-light-1 dark:text-light-1 light:text-light-text-1 backdrop-blur-sm transition-all hover:scale-110"
+            type="button"
+          >
+            {theme === 'dark' ? <FiSun size={16} /> : <FiMoon size={16} />}
+          </button>
+          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full p-3 shadow-md">
             <div className="h-14 w-14 rounded-full bg-primary-500 flex items-center justify-center">
               <FiLogIn className="text-light-1 text-2xl" />
             </div>
@@ -68,10 +77,10 @@ export function SignInForm() {
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-light-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1">
               Welcome Back
             </h2>
-            <p className="text-light-3 text-sm mt-2">
+            <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm mt-2">
               Sign in to continue to your account
             </p>
           </motion.div>
@@ -85,7 +94,7 @@ export function SignInForm() {
               <Button
                 type="button"
                 onClick={handleGoogleAuth}
-                className="w-full flex items-center justify-center gap-3 border border-dark-5 bg-dark-4 text-light-1 hover:bg-dark-5 py-6 rounded-xl shadow-sm transition-all duration-200"
+                className="w-full flex items-center justify-center gap-3 border border-dark-5 dark:border-dark-5 light:border-light-bg-5 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-light-1 dark:text-light-1 light:text-light-text-1 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5 py-6 rounded-xl shadow-sm transition-all duration-200"
               >
                 <FcGoogle size={22} />
                 <span className="font-medium">Continue with Google</span>
@@ -93,10 +102,10 @@ export function SignInForm() {
 
               <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-dark-5" />
+                  <div className="w-full border-t border-dark-5 dark:border-dark-5 light:border-light-bg-5" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-dark-3 text-light-3">
+                  <span className="px-3 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 text-light-3 dark:text-light-3 light:text-light-text-3">
                     Or sign in with email
                   </span>
                 </div>
@@ -118,7 +127,7 @@ export function SignInForm() {
                             type="text"
                             placeholder="Username or Email"
                             autoComplete="username"
-                            className="pl-10 py-6 rounded-xl bg-dark-4 border-dark-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 placeholder:text-gray-500"
+                            className="pl-10 py-6 rounded-xl bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder:text-gray-500"
                           />
                         </FormControl>
                         <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -140,7 +149,7 @@ export function SignInForm() {
                             type="password"
                             placeholder="Password"
                             autoComplete="current-password"
-                            className="pl-10 py-6 rounded-xl bg-dark-4 border-dark-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 placeholder:text-gray-500"
+                            className="pl-10 py-6 rounded-xl bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 focus:border-primary-500 focus:ring focus:ring-primary-500/20 transition-all duration-200 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder:text-gray-500"
                           />
                         </FormControl>
                         <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -176,7 +185,7 @@ export function SignInForm() {
                 </Button>
 
                 <div className="text-center mt-6">
-                  <p className="text-light-3 text-sm">
+                  <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm">
                     Don't have an account?{" "}
                     <Link
                       to="/sign-up"

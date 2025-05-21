@@ -140,17 +140,17 @@ const FilePreview: React.FC<FilePreviewProps> = ({
       onContextMenu={preventDefaultAction}
     >
       <div 
-        className="bg-dark-2 rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col"
+        className="bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col"
         onContextMenu={preventDefaultAction}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-dark-4">
-          <h3 className="text-light-1 text-lg font-medium">
+        <div className="flex justify-between items-center p-4 border-b border-dark-4 dark:border-dark-4 light:border-light-bg-4">
+          <h3 className="text-light-1 dark:text-light-1 light:text-light-text-1 text-lg font-medium">
             File Preview ({currentIndex + 1}/{files.length})
           </h3>
           <button 
             onClick={onCancel}
-            className="text-light-3 hover:text-light-1"
+            className="text-light-3 dark:text-light-3 light:text-light-text-3 hover:text-light-1 dark:hover:text-light-1 light:hover:text-light-text-1"
             aria-label="Close"
           >
             <FiX size={24} />
@@ -160,13 +160,13 @@ const FilePreview: React.FC<FilePreviewProps> = ({
         {/* Preview Area with Dropzone */}
         <div 
           {...getRootProps()} 
-          className={`flex-1 overflow-auto p-4 relative ${isDragActive ? 'bg-dark-4 border-2 border-dashed border-primary-500' : ''}`}
+          className={`flex-1 overflow-auto p-4 relative ${isDragActive ? 'bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-2 border-dashed border-primary-500' : ''}`}
           onContextMenu={preventDefaultAction}
         >
           <input {...getInputProps()} />
           {isDragActive && (
-            <div className="absolute inset-0 bg-dark-1 bg-opacity-70 flex items-center justify-center z-10">
-              <p className="text-light-1 text-xl">Drop to add more files (max 5)</p>
+            <div className="absolute inset-0 bg-dark-1 dark:bg-dark-1 light:bg-light-bg-1 bg-opacity-70 flex items-center justify-center z-10">
+              <p className="text-light-1 dark:text-light-1 light:text-light-text-1 text-xl">Drop to add more files (max 5)</p>
             </div>
           )}
           
@@ -177,7 +177,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
                 onClick={goToPrevious}
                 onMouseDown={(e) => e.preventDefault()}
                 disabled={currentIndex === 0}
-                className={`p-2 rounded-full ${currentIndex === 0 ? 'text-light-4 cursor-not-allowed' : 'text-light-1 hover:bg-dark-3'}`}
+                className={`p-2 rounded-full ${currentIndex === 0 ? 'text-light-4 dark:text-light-4 light:text-light-text-4 cursor-not-allowed' : 'text-light-1 dark:text-light-1 light:text-light-text-1 hover:bg-dark-3 dark:hover:bg-dark-3 light:hover:bg-light-bg-3'}`}
                 onContextMenu={preventDefaultAction}
               >
                 <FiChevronLeft size={24} />
@@ -197,7 +197,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
                 onClick={goToNext}
                 onMouseDown={(e) => e.preventDefault()}
                 disabled={currentIndex === files.length - 1}
-                className={`p-2 rounded-full ${currentIndex === files.length - 1 ? 'text-light-4 cursor-not-allowed' : 'text-light-1 hover:bg-dark-3'}`}
+                className={`p-2 rounded-full ${currentIndex === files.length - 1 ? 'text-light-4 dark:text-light-4 light:text-light-text-4 cursor-not-allowed' : 'text-light-1 dark:text-light-1 light:text-light-text-1 hover:bg-dark-3 dark:hover:bg-dark-3 light:hover:bg-light-bg-3'}`}
                 onContextMenu={preventDefaultAction}
               >
                 <FiChevronRight size={24} />
@@ -227,7 +227,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
                 className="py-8 flex flex-col items-center"
                 onContextMenu={preventDefaultAction}
               >
-                <div className="bg-dark-3 p-6 rounded-full mb-4">
+                <div className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-6 rounded-full mb-4">
                   {currentFile.type.includes('pdf') ? (
                     <IoDocumentOutline size={48} className="text-red-500" />
                   ) : currentFile.type.includes('word') || currentFile.type.includes('doc') ? (
@@ -239,17 +239,17 @@ const FilePreview: React.FC<FilePreviewProps> = ({
                   )}
                 </div>
                 <div className="text-center">
-                  <h4 className="text-light-1 text-lg font-medium truncate max-w-xs">{currentFile.name}</h4>
-                  <p className="text-light-3 text-sm">{fileSize} MB</p>
+                  <h4 className="text-light-1 dark:text-light-1 light:text-light-text-1 text-lg font-medium truncate max-w-xs">{currentFile.name}</h4>
+                  <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm">{fileSize} MB</p>
                 </div>
               </div>
             )}
             
             <div className="w-full mt-4">
-              <p className="text-light-3 text-sm mb-2">File details:</p>
-              <div className="bg-dark-3 p-3 rounded-lg">
-                <p className="text-light-1 truncate">{currentFile.name}</p>
-                <p className="text-light-3 text-sm">{fileSize} MB • {currentFile.type || 'Unknown type'}</p>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm mb-2">File details:</p>
+              <div className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-3 rounded-lg">
+                <p className="text-light-1 dark:text-light-1 light:text-light-text-1 truncate">{currentFile.name}</p>
+                <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm">{fileSize} MB • {currentFile.type || 'Unknown type'}</p>
               </div>
             </div>
             
@@ -266,7 +266,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                     onContextMenu={preventDefaultAction}
-                    className={`w-3 h-3 rounded-full ${index === currentIndex ? 'bg-primary-500' : 'bg-dark-4'}`}
+                    className={`w-3 h-3 rounded-full ${index === currentIndex ? 'bg-primary-500' : 'bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4'}`}
                     aria-label={`Go to file ${index + 1}`}
                   />
                 ))}
@@ -274,7 +274,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
             )}
             
             {files.length < 5 && (
-              <p className="text-light-3 text-sm mt-4">
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm mt-4">
                 Drag and drop more files here ({files.length}/5 selected)
               </p>
             )}
@@ -282,14 +282,14 @@ const FilePreview: React.FC<FilePreviewProps> = ({
         </div>
         
         {/* Caption Input */}
-        <div className="p-4 border-t border-dark-4">
-          <div className="flex items-center bg-dark-3 rounded-full px-4 py-2">
+        <div className="p-4 border-t border-dark-4 dark:border-dark-4 light:border-light-bg-4">
+          <div className="flex items-center bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-full px-4 py-2">
             <input
               type="text"
               placeholder="Add a caption for all files..."
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              className="flex-grow bg-transparent text-light-1 placeholder-light-3 focus:outline-none"
+              className="flex-grow bg-transparent text-light-1 dark:text-light-1 light:text-light-text-1 placeholder-light-3 dark:placeholder-light-3 light:placeholder-light-text-3 focus:outline-none"
             />
             <button
               onClick={handleSend}

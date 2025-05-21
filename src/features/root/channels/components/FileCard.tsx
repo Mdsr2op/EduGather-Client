@@ -56,16 +56,16 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-xl bg-dark-2 hover:bg-dark-2 transition-colors duration-200 border border-dark-4 w-full gap-3 sm:gap-0">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-xl bg-dark-2 dark:bg-dark-2 bg-light-2 light:bg-light-2 hover:bg-dark-2 dark:hover:bg-dark-2 hover:bg-light-bg-3 light:hover:bg-light-bg-3 transition-colors duration-200 border border-dark-4 dark:border-dark-4 border-light-bg-4 light:border-light-bg-4 w-full gap-3 sm:gap-0">
       <div className="flex items-center space-x-3 w-full sm:w-auto">
         <div className="text-primary-500 flex-shrink-0">
           {getFileIcon(file.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-medium text-light-1 text-sm sm:text-base truncate" title={file.name}>
+          <p className="font-medium text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1 text-sm sm:text-base truncate" title={file.name}>
             {truncateFilename(file.name, window.innerWidth < 640 ? 20 : 30)}
           </p>
-          <div className="flex flex-col xs:flex-row xs:items-center text-xs sm:text-sm text-light-3 gap-1 xs:gap-2">
+          <div className="flex flex-col xs:flex-row xs:items-center text-xs sm:text-sm text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4 gap-1 xs:gap-2">
             <span className="whitespace-nowrap">Size: {file.size}</span>
             <span className="hidden xs:inline-block">•</span>
             <span className="whitespace-nowrap">Date: {file.date}</span>
@@ -73,7 +73,7 @@ const FileCard: React.FC<FileCardProps> = ({ file }) => {
         </div>
       </div>
       <button
-        className="flex items-center justify-center space-x-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md bg-dark-3 hover:bg-dark-2 text-primary-500 transition-colors duration-200 w-full sm:w-auto"
+        className="flex items-center justify-center space-x-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md bg-dark-3 dark:bg-dark-3 bg-light-bg-3 light:bg-light-bg-3 hover:bg-dark-2 dark:hover:bg-dark-2 hover:bg-light-bg-4 light:hover:bg-light-bg-4 text-primary-500 transition-colors duration-200 w-full sm:w-auto"
         onClick={handleDownload}
       >
         <FiDownload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

@@ -61,22 +61,22 @@ const DiscoverGroups: React.FC = () => {
   );
 
   return (
-    <div className="p-3 sm:p-6 bg-dark-2 text-light-1 h-full overflow-auto custom-scrollbar">
+    <div className="p-3 sm:p-6 bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-1 dark:text-light-1 light:text-light-text-1 h-full overflow-auto custom-scrollbar transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
+          className="bg-gradient-to-r from-dark-4 to-dark-3 dark:from-dark-4 dark:to-dark-3 light:from-light-bg-4 light:to-light-bg-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5 dark:border-dark-5 light:border-light-bg-5"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2 flex items-center gap-2">
                 <RiTeamLine className="text-primary-500" size={28} />
                 Discover Learning Groups
               </h1>
-              <p className="text-light-3 text-sm sm:text-base max-w-xl">
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm sm:text-base max-w-xl">
                 Find and join groups that match your educational interests and goals. Connect with peers and expand your learning network.
               </p>
             </div>
@@ -85,7 +85,7 @@ const DiscoverGroups: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsCreateGroupDialogOpen(true)}
-              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-white px-5 py-3 rounded-xl transition-colors shadow-md w-full sm:w-auto"
             >
               <FiPlus size={18} />
               <span className="font-medium">Create Group</span>
@@ -94,23 +94,23 @@ const DiscoverGroups: React.FC = () => {
           
           {/* Stats Row */}
           <div className="flex flex-wrap mt-6 gap-4">
-            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+            <div className="bg-dark-4/70 dark:bg-dark-4/70 light:bg-light-bg-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
                 <FiUsers className="text-primary-500" size={16} />
               </div>
               <div>
-                <p className="text-xs text-light-3">Total Groups</p>
-                <p className="text-lg font-semibold text-light-1">{groups.length}</p>
+                <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Total Groups</p>
+                <p className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1">{groups.length}</p>
               </div>
             </div>
             
-            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+            <div className="bg-dark-4/70 dark:bg-dark-4/70 light:bg-light-bg-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-secondary-500/20 flex items-center justify-center">
                 <FiBook className="text-secondary-500" size={16} />
               </div>
               <div>
-                <p className="text-xs text-light-3">Education Groups</p>
-                <p className="text-lg font-semibold text-light-1">
+                <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Education Groups</p>
+                <p className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1">
                   {groups.filter(g => g.category && 
                     (typeof g.category === 'string' 
                       ? g.category === 'education'
@@ -120,13 +120,13 @@ const DiscoverGroups: React.FC = () => {
               </div>
             </div>
             
-            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+            <div className="bg-dark-4/70 dark:bg-dark-4/70 light:bg-light-bg-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
                 <FiGlobe className="text-primary-400" size={16} />
               </div>
               <div>
-                <p className="text-xs text-light-3">Open to Join</p>
-                <p className="text-lg font-semibold text-light-1">
+                <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Open to Join</p>
+                <p className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1">
                   {groups.filter(g => g.isJoinableExternally).length || "..."}
                 </p>
               </div>
@@ -139,26 +139,26 @@ const DiscoverGroups: React.FC = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-dark-3 rounded-xl p-4 mb-6 border border-dark-5 shadow-md"
+          className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl p-4 mb-6 border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-md"
         >
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             {/* Search Input */}
             <div className="relative flex-1">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3" size={18} />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3 dark:text-light-3 light:text-light-text-3" size={18} />
               <Input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Search groups by name or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11 bg-dark-4 border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner w-full"
+                className="pl-10 h-11 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder-light-3 dark:placeholder-light-3 light:placeholder-light-text-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner w-full"
               />
             </div>
             
             {/* Filter Button - Mobile */}
             <Button 
               variant="outline" 
-              className="sm:hidden flex items-center justify-center gap-2 border-dark-5 bg-dark-4 text-light-2 hover:bg-dark-5"
+              className="sm:hidden flex items-center justify-center gap-2 border-dark-5 dark:border-dark-5 light:border-light-bg-5 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-light-2 dark:text-light-2 light:text-light-text-2 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
               <FiFilter size={16} />
@@ -170,7 +170,7 @@ const DiscoverGroups: React.FC = () => {
           {/* Category Tabs - Desktop */}
           <div className="hidden sm:block mt-4">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-              <TabsList className="bg-dark-4 p-1 rounded-xl">
+              <TabsList className="bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 p-1 rounded-xl">
                 {categories.map((category) => (
                   <TabsTrigger
                     key={category.id}
@@ -196,7 +196,7 @@ const DiscoverGroups: React.FC = () => {
                 className="sm:hidden overflow-hidden mt-3"
               >
                 <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-                  <TabsList className="flex flex-col bg-dark-4 p-1 rounded-xl w-full">
+                  <TabsList className="flex flex-col bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 p-1 rounded-xl w-full">
                     {categories.map((category) => (
                       <TabsTrigger
                         key={category.id}
@@ -209,7 +209,7 @@ const DiscoverGroups: React.FC = () => {
                           <span>{category.name}</span>
                         </div>
                         {category.id === selectedCategory && (
-                          <div className="w-2 h-2 rounded-full bg-light-1"></div>
+                          <div className="w-2 h-2 rounded-full bg-light-1 dark:bg-light-1 light:bg-white"></div>
                         )}
                       </TabsTrigger>
                     ))}
@@ -227,17 +227,17 @@ const DiscoverGroups: React.FC = () => {
           transition={{ duration: 0.3, delay: 0.2 }}
           className="flex justify-between items-center mb-4 px-1"
         >
-          <div className="text-sm text-light-3">
+          <div className="text-sm text-light-3 dark:text-light-3 light:text-light-text-3">
             {isLoading ? (
               <span>Searching groups...</span>
             ) : (
-              <span>Showing <span className="text-light-1 font-medium">{filteredGroups.length}</span> groups</span>
+              <span>Showing <span className="text-light-1 dark:text-light-1 light:text-light-text-1 font-medium">{filteredGroups.length}</span> groups</span>
             )}
           </div>
           
-          <div className="flex items-center gap-2 text-sm text-light-3">
+          <div className="flex items-center gap-2 text-sm text-light-3 dark:text-light-3 light:text-light-text-3">
             <span>Sort by:</span>
-            <select className="bg-dark-3 text-light-2 rounded-xl border border-dark-4 py-1 px-2 text-sm">
+            <select className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 text-light-2 dark:text-light-2 light:text-light-text-2 rounded-xl border border-dark-4 dark:border-dark-4 light:border-light-bg-4 py-1 px-2 text-sm">
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
               <option value="members">Members</option>
@@ -250,24 +250,24 @@ const DiscoverGroups: React.FC = () => {
           {isLoading ? (
             <div className="flex flex-col justify-center items-center py-16">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
-              <p className="text-light-3 animate-pulse">Discovering groups for you...</p>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 animate-pulse">Discovering groups for you...</p>
             </div>
           ) : isError ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center p-8 bg-dark-3 rounded-xl border border-dark-5"
+              className="text-center p-8 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5"
             >
-              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FiInfo className="text-red-500" size={24} />
               </div>
-              <h3 className="text-lg font-semibold text-light-1 mb-2">Error Loading Groups</h3>
-              <p className="text-light-3 mb-6 max-w-md mx-auto">
+              <h3 className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2">Error Loading Groups</h3>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 mb-6 max-w-md mx-auto">
                 We encountered a problem loading the groups. Please try again later.
               </p>
               <Button 
                 onClick={() => window.location.reload()}
-                className="bg-primary-500 hover:bg-primary-600 text-light-1"
+                className="bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-white"
               >
                 Retry
               </Button>
@@ -276,20 +276,20 @@ const DiscoverGroups: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center p-8 bg-dark-3 rounded-xl border border-dark-5"
+              className="text-center p-8 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5"
             >
-              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiUsers className="text-light-3" size={24} />
+              <div className="w-16 h-16 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiUsers className="text-light-3 dark:text-light-3 light:text-light-text-3" size={24} />
               </div>
-              <h3 className="text-lg font-semibold text-light-1 mb-2">No Groups Found</h3>
-              <p className="text-light-3 mb-6 max-w-md mx-auto">
+              <h3 className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2">No Groups Found</h3>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 mb-6 max-w-md mx-auto">
                 {searchQuery
                   ? "No groups match your search criteria. Try adjusting your search terms."
                   : "No groups are available in this category yet. Check back later or create your own!"}
               </p>
               <Button 
                 onClick={() => setIsCreateGroupDialogOpen(true)}
-                className="bg-primary-500 hover:bg-primary-600 text-light-1 flex items-center gap-2"
+                className="bg-primary-500 hover:bg-primary-600 text-light-1 dark:text-light-1 light:text-white flex items-center gap-2"
               >
                 <FiPlus size={16} />
                 <span>Create Group</span>

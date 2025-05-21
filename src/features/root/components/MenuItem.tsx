@@ -1,5 +1,6 @@
 import React from 'react';
 import { IconType } from 'react-icons';
+import { useTheme } from '../../../context/ThemeContext';
 
 type MenuItemProps = {
   icon?: IconType;
@@ -17,18 +18,43 @@ const MenuItem: React.FC<MenuItemProps> = ({
   isDanger,
   className = "",
   disabled = false
-}) => (
-  <li
-    onClick={disabled ? undefined : onClick}
-    className={`flex items-center px-4 py-2.5 text-sm transition-colors duration-150 ${
-      disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-dark-3 cursor-pointer'
-    } ${
-      isDanger ? 'text-red hover:text-red' : 'text-light-1 hover:text-light-0'
-    } ${className}`}
-  >
-    {Icon && <Icon className={`mr-3 ${isDanger ? 'text-red-500' : 'text-light-3'}`} size={16} />}
-    <span className="font-medium">{label}</span>
-  </li>
-);
+}) => {
+  const { theme } = useTheme();
+  
+  return (
+    <li
+      onClick={disabled ? undefined : onClick}
+      className={`flex items-center px-4 py-2.5 text-sm transition-colors duration-150 ${
+        disabled 
+          ? 'cursor-not-allowed opacity-50' 
+          : `cursor-pointer ${
+              theme === 'dark' 
+                ? 'hover:bg-dark-3' 
+                : 'hover:bg-light-bg-2'
+            }`
+      } ${
+        isDanger 
+          ? 'text-red hover:text-red' 
+          : theme === 'dark'
+            ? 'text-light-1 hover:text-light-0'
+            : 'text-light-text-1 hover:text-light-text-2'
+      } ${className}`}
+    >
+      {Icon && (
+        <Icon 
+          className={`mr-3 ${
+            isDanger 
+              ? 'text-red-500' 
+              : theme === 'dark'
+                ? 'text-light-3'
+                : 'text-light-text-3'
+          }`} 
+          size={16} 
+        />
+      )}
+      <span className="font-medium">{label}</span>
+    </li>
+  );
+};
 
 export default MenuItem;

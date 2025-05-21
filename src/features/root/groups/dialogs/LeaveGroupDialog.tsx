@@ -9,8 +9,10 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
 import { useLeaveGroupMutation } from "../slices/groupApiSlice";
+import { useTheme } from "@/context/ThemeContext";
 
 interface LeaveGroupDialogProps {
   isOpen: boolean;
@@ -25,7 +27,9 @@ const LeaveGroupDialog: React.FC<LeaveGroupDialogProps> = ({
   groupId,
   groupName = "Awesome",
 }) => {
-  const [leaveGroup, { isLoading, error }] = useLeaveGroupMutation();
+  const { theme } = useTheme();
+  const [confirmationText, setConfirmationText] = useState<string>("");
+  const [leaveGroup, { error }] = useLeaveGroupMutation();
   const [localError, setLocalError] = useState<string | null>(null);
 
   const closeDialog = () => {
@@ -53,17 +57,35 @@ const LeaveGroupDialog: React.FC<LeaveGroupDialogProps> = ({
     ? (error as any)?.data?.message || (error as any)?.error || "An error occurred"
     : localError;
 
+  const isConfirmEnabled = confirmationText === groupName;
+
   return (
     <Dialog open={isOpen} onOpenChange={closeDialog}>
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
+      <DialogContent className={`sm:max-w-lg w-full p-6 rounded-lg shadow-lg border-none ${
+        theme === 'dark'
+          ? 'bg-dark-4 text-light-1'
+          : 'bg-light-bg-2 text-light-text-1'
+      }`}>
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Leave {groupName}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-light-4">
-            Are you sure you want to leave the group "{groupName}"? You will no longer receive messages from this group.
+          <DialogTitle className="text-lg font-semibold">Leave {groupName}</DialogTitle>
+          <DialogDescription className={`text-sm ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
+            Are you sure you want to leave the group '{groupName}'? This action cannot be undone. To confirm, type the group name below.
           </DialogDescription>
         </DialogHeader>
+        
+        <Input
+          type="text"
+          placeholder="Type group name to confirm"
+          value={confirmationText}
+          onChange={(e) => setConfirmationText(e.target.value)}
+          className={`mt-4 w-full rounded-xl ${
+            theme === 'dark'
+              ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+              : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+          } focus:ring-primary-500 focus:border-primary-500`}
+        />
 
         {errorMessage && (
           <div className="mt-4 p-2 bg-red-500 bg-opacity-20 rounded">
@@ -73,20 +95,25 @@ const LeaveGroupDialog: React.FC<LeaveGroupDialogProps> = ({
 
         <DialogFooter className="flex justify-end space-x-2 pt-4">
           <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
-              disabled={isLoading}
+            <Button 
+              variant="outline" 
+              className={`rounded-full ${
+                theme === 'dark'
+                  ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                  : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-3'
+              }`}
             >
               Cancel
             </Button>
           </DialogClose>
           <Button
             onClick={handleLeave}
-            className="bg-[#FF4C4C] hover:bg-[#e74e4e]   text-white rounded-full shadow-md"
-            disabled={isLoading}
+            disabled={!isConfirmEnabled}
+            className={`bg-[#FF4C4C] hover:bg-opacity-80 text-white rounded-full shadow-md ${
+              isConfirmEnabled ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
+            }`}
           >
-            {isLoading ? "Leaving..." : `Leave '${groupName}'`}
+            Leave '{groupName}'
           </Button>
         </DialogFooter>
       </DialogContent>

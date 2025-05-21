@@ -90,7 +90,7 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
         "relative w-full max-w-full xs:max-w-[85%] sm:max-w-[320px] md:max-w-[384px] rounded-xl overflow-hidden group",
         "mb-1 xs:mb-1.5 sm:mb-2 mt-0.5 sm:mt-1",
         "transition-all duration-300 shadow-md hover:shadow-lg",
-        "bg-dark-4",
+        "bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4",
         status === 'ended' && "opacity-85",
         isUserMessage && "ml-auto"
       )}
@@ -113,7 +113,7 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
           <div className="bg-primary-500/20 p-0.5 xs:p-1 sm:p-1.5 rounded-md xs:rounded-lg flex-shrink-0">
             <Video className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-primary-500" />
           </div>
-          <h3 className="font-bold text-[11px] xs:text-xs sm:text-sm truncate pr-10 xs:pr-12 sm:pr-16" title={title}>
+          <h3 className="font-bold text-[11px] xs:text-xs sm:text-sm truncate pr-10 xs:pr-12 sm:pr-16 text-light-1 dark:text-light-1 light:text-light-text-1" title={title}>
             {truncateTitle(title)}
           </h3>
         </div>
@@ -121,21 +121,21 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
         {/* Meeting details */}
         <div className="space-y-1 xs:space-y-1.5 sm:space-y-2 mb-1.5 xs:mb-2 sm:mb-3">
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <Calendar className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 flex-shrink-0" />
-            <span className="truncate">{format(new Date(startTime), 'EEE, MMM d, yyyy')}</span>
+            <Calendar className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 dark:text-light-3 light:text-light-text-3 flex-shrink-0" />
+            <span className="truncate text-light-3 dark:text-light-3 light:text-light-text-3">{format(new Date(startTime), 'EEE, MMM d, yyyy')}</span>
           </div>
           
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <Clock className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 flex-shrink-0" />
-            <span className="truncate">
+            <Clock className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 dark:text-light-3 light:text-light-text-3 flex-shrink-0" />
+            <span className="truncate text-light-3 dark:text-light-3 light:text-light-text-3">
               {format(new Date(startTime), 'h:mm a')}
               {endTime && ` - ${format(new Date(endTime), 'h:mm a')}`}
             </span>
           </div>
           
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <Users className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 flex-shrink-0" />
-            <span className="truncate">{participantsCount} {participantsCount === 1 ? 'participant' : 'participants'}</span>
+            <Users className="w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 text-light-3 dark:text-light-3 light:text-light-text-3 flex-shrink-0" />
+            <span className="truncate text-light-3 dark:text-light-3 light:text-light-text-3">{participantsCount} {participantsCount === 1 ? 'participant' : 'participants'}</span>
           </div>
         </div>
         
@@ -149,7 +149,7 @@ const MeetingAttachment: React.FC<MeetingAttachmentProps> = ({
             "focus:outline-none focus:ring-2 focus:ring-offset-1 active:scale-[0.98]",
             "touch-manipulation", // Improved touch handling on mobile
             status === 'ended'
-              ? "bg-gray-500/10 text-light-3 cursor-default"
+              ? "bg-gray-500/10 text-light-3 dark:text-light-3 light:text-light-text-3 cursor-default"
               : "bg-primary-500/10 hover:bg-primary-500/20 text-primary-500 focus:ring-primary-500/30 cursor-pointer"
           )}
           disabled={status === 'ended'}

@@ -37,24 +37,24 @@ const FilesPanel: React.FC<FilesPanelProps> = ({ onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="p-6 overflow-auto bg-dark-3 relative">
+      <div className="p-6 overflow-auto bg-dark-3 dark:bg-dark-3 bg-light-bg-2 light:bg-light-bg-2 relative">
         {onClose && (
           <button
-            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-dark-4 text-light-3"
+            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-dark-4 dark:hover:bg-dark-4 hover:bg-light-bg-3 light:hover:bg-light-bg-3 text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4"
             onClick={onClose}
             aria-label="Close"
           >
             <FiX size={20} />
           </button>
         )}
-        <h2 className="text-xl font-semibold mb-4">Files</h2>
-        <p className="text-light-3">Loading files...</p>
+        <h2 className="text-xl font-semibold mb-4 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1">Files</h2>
+        <p className="text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4">Loading files...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 overflow-auto bg-dark-3 relative">
+    <div className="p-6 overflow-auto bg-dark-3 dark:bg-dark-3 bg-light-bg-2 light:bg-light-bg-2 relative rounded-2xl">
      
 
       {/* Search Bar */}
@@ -64,7 +64,7 @@ const FilesPanel: React.FC<FilesPanelProps> = ({ onClose }) => {
           placeholder="Search files..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+          className="mt-1 block w-full bg-light-bg-1 dark:bg-dark-3 border border-light-bg-4 dark:border-dark-5 text-light-text-1 dark:text-light-1 placeholder-light-text-4 dark:placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
         />
       </div>
 
@@ -74,7 +74,7 @@ const FilesPanel: React.FC<FilesPanelProps> = ({ onClose }) => {
           <FileCard key={file.id} file={file} />
         ))}
         {filteredFiles.length === 0 && (
-          <p className="text-light-3">No files found.</p>
+          <p className="text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4">No files found.</p>
         )}
       </div>
     </div>

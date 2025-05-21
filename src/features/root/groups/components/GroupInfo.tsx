@@ -7,6 +7,7 @@ import { useState, useMemo, useRef } from 'react';
 import EditGroupDialog from '../dialogs/EditGroupDialog';
 import { toast } from 'react-hot-toast';
 import { UserJoinedGroups } from "../slices/groupSlice";
+import { useTheme } from '@/context/ThemeContext';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -156,9 +157,13 @@ const GroupInfo = () => {
     }
   };
 
+  const { theme } = useTheme();
+
   if (isLoading) return (
     <div className="flex justify-center items-center h-full">
-      <div className="animate-pulse text-light-3">Loading group information...</div>
+      <div className={`animate-pulse ${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'}`}>
+        Loading group information...
+      </div>
     </div>
   );
   
@@ -170,7 +175,9 @@ const GroupInfo = () => {
   );
 
   return (
-    <div className="p-6 md:p-8 bg-dark-3 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl">
+    <div className={`p-6 md:p-8 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl ${
+      theme === 'dark' ? 'bg-dark-3' : 'bg-light-bg-4'
+    }`}>
       {/* Header with group name and avatar */}
       <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
         <div className="relative group">
@@ -199,7 +206,11 @@ const GroupInfo = () => {
                   type="text" 
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
-                  className="bg-dark-1 text-2xl md:text-3xl font-bold text-light-1 border-b-2 border-primary-500 focus:outline-none p-1 rounded"
+                  className={`text-2xl md:text-3xl font-bold border-b-2 border-primary-500 focus:outline-none p-1 rounded ${
+                    theme === 'dark' 
+                      ? 'bg-dark-1 text-light-1' 
+                      : 'bg-light-bg-1 text-light-text-1'
+                  }`}
                   onBlur={() => handleInlineUpdate('name')}
                   onKeyDown={(e) => e.key === 'Enter' && handleInlineUpdate('name')}
                   aria-label="Edit group name"
@@ -213,37 +224,55 @@ const GroupInfo = () => {
                 </button>
               </div>
             ) : (
-              <h2 className="text-2xl md:text-3xl font-bold text-light-1">{groupDetails.name}</h2>
+              <h2 className={`text-2xl md:text-3xl font-bold ${
+                theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+              }`}>{groupDetails.name}</h2>
             )}
             
             {isAdmin && !isEditingName && (
               <button 
-                className="bg-dark-2 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
+                className={`p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary ${
+                  theme === 'dark' 
+                    ? 'bg-dark-2 hover:bg-dark-1' 
+                    : 'bg-light-bg-1 hover:bg-light-bg-3'
+                }`}
                 aria-label="Edit group name"
                 onClick={() => handleEditClick('name')}
               >
-                <MdEdit className="text-light-1 text-lg" />
+                <MdEdit className={`text-lg ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`} />
               </button>
             )}
           </div>
-          <p className="text-sm text-light-3 mb-1">
+          <p className={`text-sm mb-1 ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>
             Created on <span className="font-medium">{formatDate(groupDetails.createdAt)}</span> by <span className="font-medium">{groupDetails.createdBy.username}</span>
           </p>
-          <p className="text-sm text-light-3">{groupDetails.members?.length} members</p>
+          <p className={`text-sm ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>{groupDetails.members?.length} members</p>
         </div>
       </div>
 
       {/* Description section */}
-      <div className="mb-8 bg-dark-2 p-4 rounded-lg">
+      <div className={`mb-8 p-4 rounded-xl ${
+        theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+      }`}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-light-1">Description</h3>
+          <h3 className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+          }`}>Description</h3>
           {isAdmin && !isEditingDescription && (
             <button 
-              className="bg-dark-3 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
+              className={`p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary ${
+                theme === 'dark' 
+                  ? 'bg-dark-3 hover:bg-dark-1' 
+                  : 'bg-light-bg-2 hover:bg-light-bg-3'
+              }`}
               aria-label="Edit description"
               onClick={() => handleEditClick('description')}
             >
-              <MdEdit className="text-light-1 text-lg" />
+              <MdEdit className={`text-lg ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`} />
             </button>
           )}
         </div>
@@ -254,13 +283,21 @@ const GroupInfo = () => {
               ref={descriptionInputRef}
               value={editedDescription}
               onChange={(e) => setEditedDescription(e.target.value)}
-              className="bg-dark-1 text-light-3 leading-relaxed border-2 border-primary-500/30 focus:border-primary-500 focus:outline-none p-2 rounded resize-none min-h-[100px]"
+              className={`leading-relaxed border-2 border-primary-500/30 focus:border-primary-500 focus:outline-none p-2 rounded resize-none min-h-[100px] ${
+                theme === 'dark' 
+                  ? 'bg-dark-1 text-light-3' 
+                  : 'bg-light-bg-2 text-light-text-3'
+              }`}
               placeholder="Enter group description"
             />
             <div className="flex justify-end gap-2">
               <button 
                 onClick={() => setIsEditingDescription(false)}
-                className="bg-dark-3 text-light-1 px-3 py-1 rounded hover:bg-dark-1"
+                className={`px-3 py-1 rounded ${
+                  theme === 'dark' 
+                    ? 'bg-dark-3 text-light-1 hover:bg-dark-1' 
+                    : 'bg-light-bg-2 text-light-text-1 hover:bg-light-bg-3'
+                }`}
                 disabled={isUpdating}
               >
                 Cancel
@@ -275,7 +312,9 @@ const GroupInfo = () => {
             </div>
           </div>
         ) : (
-          <p className="text-light-3 leading-relaxed">
+          <p className={`leading-relaxed ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>
             {groupDetails.description || "No description provided."}
           </p>
         )}
@@ -283,16 +322,24 @@ const GroupInfo = () => {
 
       {/* Categories/Tags Section */}
       {groupDetails.category && groupDetails.category.length > 0 && (
-        <div className="mb-8 bg-dark-2 p-4 rounded-lg">
+        <div className={`mb-8 p-4 rounded-xl ${
+          theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+        }`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-light-1">Categories</h3>
+            <h3 className={`text-lg font-semibold ${
+              theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+            }`}>Categories</h3>
             {isAdmin && (
               <button 
-                className="bg-dark-3 hover:bg-dark-1 p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary"
+                className={`p-2 rounded-full transition-colors duration-200 focus:ring-2 focus:ring-primary ${
+                  theme === 'dark' 
+                    ? 'bg-dark-3 hover:bg-dark-1' 
+                    : 'bg-light-bg-2 hover:bg-light-bg-3'
+                }`}
                 aria-label="Edit categories"
                 onClick={() => handleEditClick('categories')}
               >
-                <MdEdit className="text-light-1 text-lg" />
+                <MdEdit className={`text-lg ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`} />
               </button>
             )}
           </div>
@@ -310,11 +357,17 @@ const GroupInfo = () => {
       )}
 
       {/* Members section */}
-      <div className="bg-dark-2 rounded-lg p-4 shadow-lg">
-        <h3 className="text-lg font-semibold text-light-1 mb-4">Members</h3>
+      <div className={`rounded-xl p-4 shadow-lg ${
+        theme === 'dark' ? 'bg-dark-2' : 'bg-light-bg-1'
+      }`}>
+        <h3 className={`text-lg font-semibold mb-4 ${
+          theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+        }`}>Members</h3>
         
         {/* Scrollable container for members */}
-        <div className="bg-dark-4/30 rounded-lg shadow-inner h-60 overflow-y-auto custom-scrollbar p-3">
+        <div className={`rounded-xl shadow-inner h-60 overflow-y-auto custom-scrollbar p-3 ${
+          theme === 'dark' ? 'bg-dark-4/30' : 'bg-light-bg-2/30'
+        }`}>
           {groupDetails.members?.length ? (
             groupDetails.members.map((member) => (
               <GroupMemberCard 
@@ -326,14 +379,18 @@ const GroupInfo = () => {
               />
             ))
           ) : (
-            <div className="flex justify-center items-center h-full text-light-3">
+            <div className={`flex justify-center items-center h-full ${
+              theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+            }`}>
               No members found
             </div>
           )}
         </div>
         
         <div className="flex justify-between items-center mt-3">
-          <p className="text-xs text-light-3">
+          <p className={`text-xs ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>
             Total Members: <span className="font-medium">{groupDetails.members?.length}</span>
           </p>
           {isAdmin && (

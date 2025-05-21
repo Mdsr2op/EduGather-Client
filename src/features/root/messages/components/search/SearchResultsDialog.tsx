@@ -86,15 +86,15 @@ const SearchResultsDialog: React.FC<SearchResultsDialogProps> = ({
       />
       
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-2xl w-full max-h-[80vh] p-0 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-hidden">
-          <DialogHeader className="p-4 border-b border-dark-3 sticky top-0 bg-dark-4 z-10 flex flex-row items-center">
+        <DialogContent className="sm:max-w-2xl w-full max-h-[80vh] p-0 bg-dark-4 dark:bg-dark-4 bg-light-2 light:bg-light-2 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1 rounded-lg shadow-lg border-none overflow-hidden">
+          <DialogHeader className="p-4 border-b border-dark-3 dark:border-dark-3 border-light-bg-4 light:border-light-bg-4 sticky top-0 bg-dark-4 dark:bg-dark-4 bg-light-2 light:bg-light-2 z-10 flex flex-row items-center">
             <DialogTitle className="flex items-center gap-2 text-xl">
               <FiSearch className="text-primary-500" />
               <span>Search Results: {searchQuery}</span>
             </DialogTitle>
             <button 
               onClick={() => onOpenChange(false)} 
-              className="ml-auto p-2 rounded-full hover:bg-dark-3 text-light-3 hover:text-light-1 transition-colors"
+              className="ml-auto p-2 rounded-full hover:bg-dark-3 dark:hover:bg-dark-3 hover:bg-light-bg-3 light:hover:bg-light-bg-3 text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4 hover:text-light-1 dark:hover:text-light-1 hover:text-light-text-1 light:hover:text-light-text-1 transition-colors"
             >
               <FiX size={18} />
             </button>
@@ -106,19 +106,19 @@ const SearchResultsDialog: React.FC<SearchResultsDialogProps> = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-500"></div>
               </div>
             ) : isError ? (
-              <div className="flex flex-col items-center justify-center h-40 text-light-3">
+              <div className="flex flex-col items-center justify-center h-40 text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4">
                 <p className="text-lg text-red-500">Error searching messages</p>
                 <p className="text-sm mt-2">{(error as any)?.data?.message || 'An unexpected error occurred'}</p>
               </div>
             ) : results.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-40 text-light-3">
-                <FiSearch size={36} className="mb-4 text-light-4" />
+              <div className="flex flex-col items-center justify-center h-40 text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4">
+                <FiSearch size={36} className="mb-4 text-light-4 dark:text-light-4 text-light-text-4 light:text-light-text-4" />
                 <p className="text-base">No messages found for "{searchQuery}"</p>
                 <p className="text-sm mt-2">Try a different search term</p>
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-light-3 text-sm mb-4">
+                <p className="text-light-3 dark:text-light-3 text-light-text-4 light:text-light-text-4 text-sm mb-4">
                   {searchResults?.pagination?.total || 0} message{searchResults?.pagination?.total !== 1 ? 's' : ''} found
                 </p>
                 
@@ -137,7 +137,7 @@ const SearchResultsDialog: React.FC<SearchResultsDialogProps> = ({
                       variant="outline"
                       onClick={handleLoadMore}
                       disabled={isFetching}
-                      className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full px-4"
+                      className="border-dark-5 dark:border-dark-5 border-light-bg-4 light:border-light-bg-4 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1 hover:bg-dark-5 dark:hover:bg-dark-5 hover:bg-light-bg-3 light:hover:bg-light-bg-3 rounded-full px-4"
                     >
                       {isFetching ? 'Loading...' : 'Load More'}
                     </Button>

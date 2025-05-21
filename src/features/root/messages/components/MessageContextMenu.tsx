@@ -126,7 +126,7 @@ const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-[rgba(31,31,34,0.95)] text-white rounded-md shadow-lg border border-dark-4 animate-in fade-in zoom-in duration-150"
+      className="fixed z-50 bg-dark-3/95 dark:bg-dark-3/95 light:bg-light-bg-3/95 text-light-1 dark:text-light-1 light:text-light-text-1 rounded-md shadow-lg border border-dark-4 dark:border-dark-4 light:border-light-bg-4 animate-in fade-in zoom-in duration-150"
       style={{ 
         top: menuPos.y, 
         left: menuPos.x, 

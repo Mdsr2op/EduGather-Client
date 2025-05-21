@@ -5,6 +5,7 @@ import { FaEye, FaEdit, FaTrash, FaPlus, FaSignOutAlt, FaUserPlus } from "react-
 import MenuItem from "../../components/MenuItem";
 import { UserJoinedGroups } from "../slices/groupSlice";
 import { useSelector } from "react-redux";
+import { useTheme } from "../../../../context/ThemeContext";
 
 type GroupContextMenuProps = {
   group: UserJoinedGroups;
@@ -20,7 +21,7 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
   onAction,
 }) => {
   const currentUserId = useSelector((state: any) => state.auth.user._id);
-
+  const { theme } = useTheme();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,7 +65,11 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 bg-dark-2 text-light-1 rounded-xl shadow-lg border border-dark-4 backdrop-blur-lg overflow-hidden"
+      className={`fixed z-50 rounded-xl shadow-lg border backdrop-blur-lg overflow-hidden ${
+        theme === 'dark' 
+          ? 'bg-dark-2 text-light-1 border-dark-4' 
+          : 'bg-light-bg-1 text-light-text-1 border-light-bg-4'
+      }`}
       style={{ 
         top: position.y, 
         left: position.x, 
@@ -72,7 +77,11 @@ const GroupContextMenu: React.FC<GroupContextMenuProps> = ({
         animation: "fadeIn 0.15s ease-in-out"
       }}
     >
-      <div className="px-3 py-2 border-b border-dark-4 bg-dark-3">
+      <div className={`px-3 py-2 border-b ${
+        theme === 'dark' 
+          ? 'border-dark-4 bg-dark-3' 
+          : 'border-light-bg-4 bg-light-bg-2'
+      }`}>
         <h3 className="text-sm font-medium truncate">{group.name}</h3>
       </div>
       <ul className="py-1">

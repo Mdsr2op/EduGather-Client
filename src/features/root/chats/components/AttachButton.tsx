@@ -67,7 +67,7 @@ const AttachButton = ({ onFileSelect, isUploading = false }: AttachButtonProps) 
   return (
     <>
       <button
-        className={`${isUploading ? 'text-primary-500 animate-pulse' : 'text-light-3 hover:text-light-1'} flex-shrink-0 mr-2`}
+        className={`${isUploading ? 'text-primary-500 animate-pulse' : 'text-light-3 dark:text-light-3 light:text-light-text-3 hover:text-light-1 dark:hover:text-light-1 light:hover:text-light-text-1'} flex-shrink-0 mr-2`}
         aria-label="Attach File"
         onClick={handleAttachmentClick}
         disabled={isUploading}

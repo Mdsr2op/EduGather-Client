@@ -38,6 +38,7 @@ import { useSocket } from "@/lib/socket";
 import { useGetGroupDetailsQuery } from "@/features/root/groups/slices/groupApiSlice";
 import { useGetChannelDetailsQuery } from "@/features/root/channels/slices/channelApiSlice";
 import { MAX_MEETING_DURATION_SECONDS } from "@/config/meetingConfig";
+import { useTheme } from "@/context/ThemeContext";
 
 // Define the validation schema using Zod
 const meetingSchema = z.object({
@@ -69,6 +70,7 @@ const StartVideoCallDialog: React.FC = () => {
   const user = useSelector(selectCurrentUser);
   const { groupId, channelId } = useParams();
   const { socket } = useSocket();
+  const { theme } = useTheme();
 
   // Get group and channel details from Redux store
   const { data: groupDetails } = useGetGroupDetailsQuery(groupId || "", {
@@ -317,21 +319,29 @@ const StartVideoCallDialog: React.FC = () => {
           className={`p-2 rounded-full transition-all duration-200 ${
             isOpen 
               ? 'bg-primary-500/20 text-primary-500' 
-              : 'hover:bg-dark-4 hover:text-light-1'
+              : theme === 'dark'
+                ? 'hover:bg-dark-4'
+                : 'hover:bg-light-bg-2'
           }`}
           onClick={() => setIsOpen(true)}
           title="Start Video Call"
         >
-          <FiVideo size={18} className="text-current" />
+          <FiVideo size={18} className={theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} />
         </button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none">
+      <DialogContent className={`sm:max-w-lg w-full p-6 rounded-lg shadow-lg border-none ${
+        theme === 'dark'
+          ? 'bg-dark-4 text-light-1'
+          : 'bg-light-bg-2 text-light-text-1'
+      }`}>
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Create a Meeting
           </DialogTitle>
-          <DialogDescription className="text-sm text-light-4">
+          <DialogDescription className={`text-sm ${
+            theme === 'dark' ? 'text-light-4' : 'text-light-text-3'
+          }`}>
             Schedule a new video meeting or start one now.
           </DialogDescription>
         </DialogHeader>
@@ -360,7 +370,7 @@ const StartVideoCallDialog: React.FC = () => {
         <div className="mb-4 mt-2">
           <Button
             type="button"
-            className="w-full bg-primary-500 hover:bg-primary-600 text-light-1 rounded-xl shadow-md"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-light-1 rounded-xl shadow-md"
             onClick={handleStartInstantMeeting}
             disabled={isSubmitting || isActiveMeetingInChannel}
           >
@@ -373,9 +383,15 @@ const StartVideoCallDialog: React.FC = () => {
         </div>
         
         <div className="relative flex items-center py-2">
-          <div className="flex-grow border-t border-dark-5"></div>
-          <span className="flex-shrink mx-4 text-light-3">or schedule for later</span>
-          <div className="flex-grow border-t border-dark-5"></div>
+          <div className={`flex-grow border-t ${
+            theme === 'dark' ? 'border-dark-5' : 'border-light-bg-3'
+          }`}></div>
+          <span className={`flex-shrink mx-4 ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>or schedule for later</span>
+          <div className={`flex-grow border-t ${
+            theme === 'dark' ? 'border-dark-5' : 'border-light-bg-3'
+          }`}></div>
         </div>
 
         <Form {...form}>
@@ -389,12 +405,18 @@ const StartVideoCallDialog: React.FC = () => {
               name="meetingTitle"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Meeting Title</FormLabel>
+                  <FormLabel className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Meeting Title
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter meeting title"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      className={`mt-1 block w-full rounded-xl ${
+                        theme === 'dark'
+                          ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                          : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                      } focus:ring-primary-500 focus:border-primary-500`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -408,7 +430,9 @@ const StartVideoCallDialog: React.FC = () => {
               name="dateTime"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Date and Time</FormLabel>
+                  <FormLabel className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Date and Time
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <DatePicker
@@ -417,14 +441,20 @@ const StartVideoCallDialog: React.FC = () => {
                         showTimeSelect
                         dateFormat="dd/MM/yyyy hh:mm aa"
                         className={cn(
-                          "mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl p-2 pl-10",
+                          `mt-1 block w-full rounded-xl p-2 pl-10 ${
+                            theme === 'dark'
+                              ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                              : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                          } focus:ring-primary-500 focus:border-primary-500`,
                           form.formState.errors.dateTime &&
                             "border-red-500 focus:ring-red-500"
                         )}
                       />
                       <FiCalendar
                         size={20}
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3"
+                        className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                          theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+                        }`}
                       />
                     </div>
                   </FormControl>
@@ -439,12 +469,18 @@ const StartVideoCallDialog: React.FC = () => {
               name="agenda"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Agenda</FormLabel>
+                  <FormLabel className={theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}>
+                    Agenda
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       placeholder="Enter meeting agenda"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl"
+                      className={`mt-1 block w-full rounded-xl ${
+                        theme === 'dark'
+                          ? 'bg-dark-3 border-dark-5 text-light-1 placeholder-light-3'
+                          : 'bg-light-bg-1 border-light-bg-3 text-light-text-1 placeholder-light-text-3'
+                      } focus:ring-primary-500 focus:border-primary-500`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -457,7 +493,11 @@ const StartVideoCallDialog: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                className={`rounded-full ${
+                  theme === 'dark'
+                    ? 'border-dark-5 text-light-1 hover:bg-dark-5'
+                    : 'border-light-bg-3 text-light-text-1 hover:bg-light-bg-3'
+                }`}
                 disabled={isSubmitting}
                 onClick={() => setIsOpen(false)}
               >
@@ -465,7 +505,7 @@ const StartVideoCallDialog: React.FC = () => {
               </Button>
               <Button
                 type="submit"
-                className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
+                className="bg-primary-600 hover:bg-primary-700 text-light-1 rounded-full shadow-md"
                 disabled={isSubmitting || isActiveMeetingInChannel}
               >
                 {isSubmitting && meetingType === "isScheduleMeeting" ? "Creating..." : "Schedule Meeting"}

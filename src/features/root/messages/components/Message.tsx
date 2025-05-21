@@ -188,7 +188,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
     const baseClasses = `py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl cursor-pointer transition-all ${
       isUserMessage 
         ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500 text-light-1 shadow-md" 
-        : "bg-dark-4 text-light-1 hover:bg-dark-5"
+        : "bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-light-1 dark:text-light-1 light:text-light-text-1 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5"
     } ${message.pinned ? "border-2 border-yellow-500" : ""}`;
     
     // Add appropriate border radius for reply
@@ -271,7 +271,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
             )}
             
             {showTimestamp && (
-              <div className={`flex items-center text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 ${
+              <div className={`flex items-center text-[10px] sm:text-xs text-gray-400 dark:text-gray-400 light:text-gray-500 mt-0.5 sm:mt-1 ${
                 isMeetingAttachment && isUserMessage ? 'justify-end' : ''
               }`}>
                 <MessageTimestamp
@@ -279,10 +279,10 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
                   isUserMessage={isUserMessage}
                 />
                 {isEdited && (
-                  <span className="ml-1 text-gray-400">(edited)</span>
+                  <span className="ml-1 text-gray-400 dark:text-gray-400 light:text-gray-500">(edited)</span>
                 )}
                 {message.forwardedFrom && message.forwardedFrom.messageId && (
-                  <span className="ml-1 text-gray-400">(forwarded)</span>
+                  <span className="ml-1 text-gray-400 dark:text-gray-400 light:text-gray-500">(forwarded)</span>
                 )}
                 {message.pinned && (
                   <span className="ml-2 text-yellow-500">📌 Pinned</span>
@@ -299,7 +299,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.1 }}
-              className="bg-dark-3 p-1.5 rounded-full text-gray-400 hover:text-primary-500 hover:bg-dark-4 transition-all"
+              className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-1.5 rounded-full text-gray-400 dark:text-gray-400 light:text-gray-500 hover:text-primary-500 hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-all"
               onClick={() => handleMessageAction("reply")}
               title="Reply"
             >
@@ -310,7 +310,7 @@ const Message = ({ message, isUserMessage, showTimestamp = false }: MessageProps
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ scale: 1.1 }}
-                className="bg-dark-3 p-1.5 rounded-full text-gray-400 hover:text-primary-500 hover:bg-dark-4 transition-all"
+                className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 p-1.5 rounded-full text-gray-400 dark:text-gray-400 light:text-gray-500 hover:text-primary-500 hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-all"
                 onClick={() => handleMessageAction("edit")}
                 title="Edit"
                 disabled={!canEditMessage(message)}

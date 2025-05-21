@@ -1,6 +1,7 @@
 import React from "react";
 import { FaCircle } from "react-icons/fa";
 import { UserJoinedGroups } from "../slices/groupSlice";
+import { useTheme } from "@/context/ThemeContext";
 
 interface GroupsProps {
   joinedGroups: UserJoinedGroups[];
@@ -17,18 +18,20 @@ const Groups: React.FC<GroupsProps> = ({
   onGroupContextMenu,
   onCloseContextMenu,
 }) => {
+  const { theme } = useTheme();
+
   if (!joinedGroups || joinedGroups.length === 0) {
-    return <div className="text-light-3 text-center p-3">You have not joined any groups yet.</div>;
+    return <div className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-center p-3`}>You have not joined any groups yet.</div>;
   }
 
   return (
     <div 
-      className="flex flex-col space-y-3 w-full overflow-y-auto custom-scrollbar max-h-72 p-3 
-                rounded-xl border-2 border-dark-4 bg-gradient-to-b from-dark-2 to-dark-3 
-                shadow-md scrollbar-thin scrollbar-thumb-dark-4 scrollbar-track-dark-2" 
+      className={`flex flex-col space-y-3 w-full overflow-y-auto custom-scrollbar max-h-72 p-3 
+                rounded-xl border-2 ${theme === 'dark' ? 'border-dark-4 bg-gradient-to-b from-dark-2 to-dark-3 scrollbar-thumb-dark-4 scrollbar-track-dark-2' : 'border-light-bg-4 bg-gradient-to-b from-light-bg-2 to-light-bg-3 scrollbar-thumb-light-bg-4 scrollbar-track-light-bg-2'} 
+                shadow-md scrollbar-thin`} 
       onClick={onCloseContextMenu}
     >
-      <div className="text-xs font-medium text-light-3  text-center uppercase tracking-wider px-1 mb-1">Groups</div>
+      <div className={`text-xs font-medium ${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-center uppercase tracking-wider px-1 mb-1`}>Groups</div>
       {joinedGroups.map((group) => (
         <div
           key={group._id}

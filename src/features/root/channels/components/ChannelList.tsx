@@ -27,7 +27,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
   if (channels.length === 0) {
     return (
       <div className="flex-1 flex items-center">
-        <div className="text-center py-8 px-4 text-light-3 bg-dark-4 rounded-md w-full my-auto">
+        <div className="text-center py-8 px-4 text-light-3 dark:text-light-3 light:text-light-text-3 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-md w-full my-auto">
           <p className="text-lg mb-4">No channels available.</p>
           <div className="my-6 text-primary-500">
             <p className="text-md mb-4">Click the + button below to create a channel</p>

@@ -7,8 +7,8 @@ const NotificationSettingsPanel: React.FC = () => {
   // Additional toggles can be added here
 
   return (
-    <div className="p-6 overflow-auto">
-      <h2 className="text-xl font-semibold mb-4">Notification Settings</h2>
+    <div className="p-6 overflow-auto bg-dark-3 dark:bg-dark-3 bg-light-2 light:bg-light-2">
+      <h2 className="text-xl font-semibold mb-4 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1">Notification Settings</h2>
       
       <div className="flex items-center mb-4">
         <input
@@ -18,7 +18,7 @@ const NotificationSettingsPanel: React.FC = () => {
           checked={muteAll}
           onChange={() => setMuteAll(!muteAll)}
         />
-        <label htmlFor="muteAll" className="cursor-pointer">
+        <label htmlFor="muteAll" className="cursor-pointer text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1">
           Mute all notifications
         </label>
       </div>
@@ -31,7 +31,7 @@ const NotificationSettingsPanel: React.FC = () => {
           checked={muteMentions}
           onChange={() => setMuteMentions(!muteMentions)}
         />
-        <label htmlFor="muteMentions" className="cursor-pointer">
+        <label htmlFor="muteMentions" className="cursor-pointer text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1">
           Mute mentions
         </label>
       </div>

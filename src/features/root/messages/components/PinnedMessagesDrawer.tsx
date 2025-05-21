@@ -96,16 +96,16 @@ const PinnedMessagesDrawer: React.FC<PinnedMessagesDrawerProps> = ({
       
       {/* Pinned messages drawer */}
       <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <SheetContent side="right" className="w-full sm:w-96 bg-dark-2 text-light-1 p-0 border-l border-dark-4">
-          <SheetHeader className="px-6 py-4 border-b border-dark-4">
+        <SheetContent side="right" className="w-full sm:w-96 bg-dark-2 dark:bg-dark-2 bg-light-2 light:bg-light-2 text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1 p-0 border-l border-dark-4 dark:border-dark-4 border-light-bg-4 light:border-light-bg-4">
+          <SheetHeader className="px-6 py-4 border-b border-dark-4 dark:border-dark-4 border-light-bg-4 light:border-light-bg-4">
             <div className="flex items-center">
               <button 
                 onClick={onClose}
-                className="mr-4 text-light-2 hover:text-light-1 md:hidden"
+                className="mr-4 text-light-2 dark:text-light-2 text-light-text-3 light:text-light-text-3 hover:text-light-1 dark:hover:text-light-1 hover:text-light-text-1 light:hover:text-light-text-1 md:hidden"
               >
                 <FaArrowLeft />
               </button>
-              <SheetTitle className="flex items-center text-light-1">
+              <SheetTitle className="flex items-center text-light-1 dark:text-light-1 text-light-text-1 light:text-light-text-1">
                 <FaThumbtack className="mr-2 text-yellow-500" />
                 Pinned Messages in {channelName}
               </SheetTitle>

@@ -122,13 +122,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const getTypeColor = () => {
     switch (notification.type) {
       case 'channel_message':
-        return 'bg-blue-600';
+        return 'bg-blue-600 dark:bg-blue-600 light:bg-blue-600';
       case 'meeting_created':
-        return 'bg-green-600';
+        return 'bg-green-600 dark:bg-green-600 light:bg-green-600';
       case 'role_upgrade_requested':
-        return 'bg-purple-600';
+        return 'bg-purple-600 dark:bg-purple-600 light:bg-purple-600';
       default:
-        return 'bg-gray-600';
+        return 'bg-gray-600 dark:bg-gray-600 light:bg-gray-600';
     }
   };
 
@@ -146,15 +146,15 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleClick}
-      className={`relative p-4 sm:p-5 cursor-pointer overflow-hidden group ${notification.isRead ? '' : 'border-l-2 border-l-secondary-500'}`}
+      className={`relative p-4 sm:p-5 cursor-pointer overflow-hidden group ${notification.isRead ? '' : 'border-l-2 border-l-secondary-500 dark:border-l-secondary-500 light:border-l-light-secondary-500'}`}
     >
       {notification.isRead ? null : (
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary-500"></div>
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary-500 dark:bg-secondary-500 light:bg-light-secondary-500"></div>
       )}
       
       <div className="flex items-start gap-3">
         {/* Left side icon */}
-        <div className={`flex-shrink-0 w-12 h-12 rounded-xl ${getTypeColor()} shadow-lg flex items-center justify-center text-light-1`}>
+        <div className={`flex-shrink-0 w-12 h-12 rounded-xl ${getTypeColor()} shadow-lg flex items-center justify-center text-light-1 dark:text-light-1 light:text-white`}>
           {renderIcon()}
         </div>
         
@@ -162,24 +162,24 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         <div className="flex-1 min-w-0">
           {/* Header with title and timestamp */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
-            <h3 className={`font-semibold ${notification.isRead ? 'text-light-2' : 'text-light-1'} truncate`}>
+            <h3 className={`font-semibold ${notification.isRead ? 'text-light-2 dark:text-light-2 light:text-light-text-2' : 'text-light-1 dark:text-light-1 light:text-light-text-1'} truncate`}>
               {notification.title}
             </h3>
-            <div className="flex items-center text-xs text-light-4 whitespace-nowrap">
+            <div className="flex items-center text-xs text-light-4 dark:text-light-4 light:text-light-text-4 whitespace-nowrap">
               <FiClock className="mr-1" size={12} />
               {formattedTime}
             </div>
           </div>
           
           {/* Message content */}
-          <p className="text-light-3 text-sm mb-3 line-clamp-2">
+          <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm mb-3 line-clamp-2">
             {notification.type === 'meeting_created' ? notification.content : notification.message}
           </p>
           
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 mt-1">
             {/* Type tag */}
-            <span className={`px-2 py-0.5 text-xs font-medium rounded-full text-light-1 ${getTypeColor()}`}>
+            <span className={`px-2 py-0.5 text-xs font-medium rounded-full text-light-1 dark:text-light-1 light:text-white ${getTypeColor()}`}>
               {getTypeLabel()}
             </span>
             
@@ -187,13 +187,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             {['channel_message', 'meeting_created'].includes(notification.type) && (
               <>
                 {groupName && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 dark:bg-dark-5 light:bg-light-bg-5 text-light-2 dark:text-light-2 light:text-light-text-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
                     {groupName}
                   </span>
                 )}
                 
                 {channelName && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 dark:bg-dark-5 light:bg-light-bg-5 text-light-2 dark:text-light-2 light:text-light-text-2 overflow-hidden text-ellipsis max-w-[140px] whitespace-nowrap">
                     # {channelName}
                   </span>
                 )}
@@ -202,7 +202,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             
             {/* Sender tag for role requests */}
             {notification.type === 'role_upgrade_requested' && notification.senderName && (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 text-light-2">
+              <span className="px-2 py-0.5 text-xs rounded-full bg-dark-5 dark:bg-dark-5 light:bg-light-bg-5 text-light-2 dark:text-light-2 light:text-light-text-2">
                 {notification.senderName}
               </span>
             )}
@@ -216,14 +216,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={markReadWithoutNavigation}
-              className="p-1.5 bg-dark-5 hover:bg-dark-4 rounded-full text-light-3 hover:text-light-1 transition-colors"
+              className="p-1.5 bg-dark-5 dark:bg-dark-5 light:bg-light-bg-5 hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 rounded-full text-light-3 dark:text-light-3 light:text-light-text-3 hover:text-light-1 dark:hover:text-light-1 light:hover:text-light-text-1 transition-colors"
               aria-label="Mark as read"
             >
               <FiCheck size={14} />
             </motion.button>
           ) : (
             <div className="p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <FiChevronRight size={16} className="text-light-3" />
+              <FiChevronRight size={16} className="text-light-3 dark:text-light-3 light:text-light-text-3" />
             </div>
           )}
         </div>

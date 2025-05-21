@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { Switch } from "@/components/ui/switch";
 import { useLogoutMutation } from '../slices/authApiSlice';
 import EditUserProfile from './EditUserProfile';
+import { useTheme } from '@/context/ThemeContext';
 
 type ViewUserProfileProps = {
   isOpen: boolean;
@@ -25,6 +26,7 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
   const [isAnimating, setIsAnimating] = useState(false);
   const [logout] = useLogoutMutation();
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   
   if (!user) return null;
 
@@ -50,7 +52,7 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md w-full p-0 bg-gradient-to-b from-dark-2 to-dark-3 text-light-1 rounded-xl shadow-xl border border-dark-4 overflow-hidden max-h-[80vh]">
+        <DialogContent className="sm:max-w-md w-full p-0 bg-gradient-to-b from-dark-2 to-dark-3 dark:from-dark-2 dark:to-dark-3 light:from-light-bg-2 light:to-light-bg-3 text-light-1 dark:text-light-1 light:text-light-text-1 rounded-xl shadow-xl border border-dark-4 dark:border-dark-4 light:border-light-bg-4 overflow-hidden max-h-[80vh]">
           <DialogHeader className="p-5 pb-1">
             <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary-500 to-purple-500 bg-clip-text text-transparent">
               User Profile
@@ -66,36 +68,36 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                     <img
                       src={user.avatar}
                       alt={`${user.username}'s avatar`}
-                      className="w-full h-full rounded-full object-cover border-2 border-dark-3"
+                      className="w-full h-full rounded-full object-cover border-2 border-dark-3 dark:border-dark-3 light:border-light-bg-3"
                     />
                   </div>
-                  <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-3"></div>
+                  <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-3 dark:border-dark-3 light:border-light-bg-3"></div>
                 </div>
               ) : (
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-r from-primary-500 to-purple-500">
-                    <div className="w-full h-full rounded-full bg-dark-2 flex items-center justify-center text-light-1 text-3xl font-bold">
+                    <div className="w-full h-full rounded-full bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 flex items-center justify-center text-light-1 dark:text-light-1 light:text-light-text-1 text-3xl font-bold">
                       {user.fullName ? user.fullName.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
                     </div>
                   </div>
-                  <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-3"></div>
+                  <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-3 dark:border-dark-3 light:border-light-bg-3"></div>
                 </div>
               )}
               
               <div className="text-center">
-                <h2 className="text-xl font-bold text-light-1 mb-1">{user.fullName || user.username}</h2>
-                <span className="px-3 py-0.5 bg-dark-4/50 rounded-full text-xs text-light-3">@{user.username}</span>
+                <h2 className="text-xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1 mb-1">{user.fullName || user.username}</h2>
+                <span className="px-3 py-0.5 bg-dark-4/50 dark:bg-dark-4/50 light:bg-light-bg-4/50 rounded-full text-xs text-light-3 dark:text-light-3 light:text-light-text-3">@{user.username}</span>
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-dark-4 mx-4 mb-3">
+            <div className="flex border-b border-dark-4 dark:border-dark-4 light:border-light-bg-4 mx-4 mb-3">
               <button
                 className={cn(
                   "flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors",
                   activeTab === 'profile' 
                     ? "border-primary-500 text-primary-500" 
-                    : "border-transparent text-light-3 hover:text-light-2"
+                    : "border-transparent text-light-3 dark:text-light-3 light:text-light-text-3 hover:text-light-2 dark:hover:text-light-2 light:hover:text-light-text-2"
                 )}
                 onClick={() => handleTabChange('profile')}
               >
@@ -109,7 +111,7 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                   "flex-1 py-2 px-4 text-sm font-medium border-b-2 transition-colors",
                   activeTab === 'settings' 
                     ? "border-primary-500 text-primary-500" 
-                    : "border-transparent text-light-3 hover:text-light-2"
+                    : "border-transparent text-light-3 dark:text-light-3 light:text-light-text-3 hover:text-light-2 dark:hover:text-light-2 light:hover:text-light-text-2"
                 )}
                 onClick={() => handleTabChange('settings')}
               >
@@ -129,25 +131,25 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
               )}>
                 {activeTab === 'profile' && !isAnimating && (
                   <div className="space-y-3">
-                    <div className="bg-dark-4/50 p-3 rounded-xl flex items-center gap-3 backdrop-blur-sm hover:bg-dark-4 transition-colors">
+                    <div className="bg-dark-4/50 dark:bg-dark-4/50 light:bg-light-bg-4/50 p-3 rounded-xl flex items-center gap-3 backdrop-blur-sm hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors">
                       <div className="bg-primary-500/20 p-2 rounded-full">
                         <MdEmail className="text-primary-500 text-xl" />
                       </div>
                       <div>
-                        <p className="text-xs text-light-3 mb-0.5">Email</p>
-                        <p className="text-light-1 text-sm font-medium">{user.email}</p>
+                        <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 mb-0.5">Email</p>
+                        <p className="text-light-1 dark:text-light-1 light:text-light-text-1 text-sm font-medium">{user.email}</p>
                       </div>
                     </div>
 
-                    <div className="bg-dark-4/50 p-3 rounded-xl flex items-center gap-3 backdrop-blur-sm hover:bg-dark-4 transition-colors">
+                    <div className="bg-dark-4/50 dark:bg-dark-4/50 light:bg-light-bg-4/50 p-3 rounded-xl flex items-center gap-3 backdrop-blur-sm hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors">
                       <div className="bg-primary-500/20 p-2 rounded-full">
                         <MdInfo className="text-primary-500 text-xl" />
                       </div>
                       <div>
-                        <p className="text-xs text-light-3 mb-0.5">Account Status</p>
+                        <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 mb-0.5">Account Status</p>
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                          <p className="text-light-1 text-sm font-medium">Active</p>
+                          <p className="text-light-1 dark:text-light-1 light:text-light-text-1 text-sm font-medium">Active</p>
                         </div>
                       </div>
                     </div>
@@ -163,39 +165,39 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                 {activeTab === 'settings' && !isAnimating && (
                   <div className="space-y-4 w-full">
                     {/* Account Settings Section */}
-                    <div className="bg-dark-4/30 rounded-lg overflow-hidden">
-                      <div className="bg-dark-4/60 px-3 py-2">
-                        <h3 className="text-sm font-medium text-light-2">Account Settings</h3>
+                    <div className="bg-dark-4/30 dark:bg-dark-4/30 light:bg-light-bg-4/30 rounded-lg overflow-hidden">
+                      <div className="bg-dark-4/60 dark:bg-dark-4/60 light:bg-light-bg-4/60 px-3 py-2">
+                        <h3 className="text-sm font-medium text-light-2 dark:text-light-2 light:text-light-text-2">Account Settings</h3>
                       </div>
                       <div className="p-2">
                         <button 
-                          className="w-full py-2 px-3 rounded-md flex items-center gap-3 hover:bg-dark-4 transition-colors text-left"
+                          className="w-full py-2 px-3 rounded-md flex items-center gap-3 hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors text-left"
                           onClick={() => setShowEditProfile(true)}
                         >
                           <div className="bg-primary-500/10 p-1.5 rounded-full flex-shrink-0">
                             <MdEdit className="text-primary-500 text-lg" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-light-1">Edit Profile</p>
-                            <p className="text-xs text-light-3">Update your personal information</p>
+                            <p className="text-sm font-medium text-light-1 dark:text-light-1 light:text-light-text-1">Edit Profile</p>
+                            <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Update your personal information</p>
                           </div>
                         </button>
-                        <button className="w-full py-2 px-3 rounded-md flex items-center gap-3 hover:bg-dark-4 transition-colors text-left mt-1">
+                        <button className="w-full py-2 px-3 rounded-md flex items-center gap-3 hover:bg-dark-4 dark:hover:bg-dark-4 light:hover:bg-light-bg-4 transition-colors text-left mt-1">
                           <div className="bg-primary-500/10 p-1.5 rounded-full flex-shrink-0">
                             <MdVpnKey className="text-primary-500 text-lg" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-light-1">Change Password</p>
-                            <p className="text-xs text-light-3">Update your security credentials</p>
+                            <p className="text-sm font-medium text-light-1 dark:text-light-1 light:text-light-text-1">Change Password</p>
+                            <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Update your security credentials</p>
                           </div>
                         </button>
                       </div>
                     </div>
 
                     {/* Notification Settings */}
-                    <div className="bg-dark-4/30 rounded-lg overflow-hidden">
-                      <div className="bg-dark-4/60 px-3 py-2">
-                        <h3 className="text-sm font-medium text-light-2">Notification Settings</h3>
+                    <div className="bg-dark-4/30 dark:bg-dark-4/30 light:bg-light-bg-4/30 rounded-lg overflow-hidden">
+                      <div className="bg-dark-4/60 dark:bg-dark-4/60 light:bg-light-bg-4/60 px-3 py-2">
+                        <h3 className="text-sm font-medium text-light-2 dark:text-light-2 light:text-light-text-2">Notification Settings</h3>
                       </div>
                       <div className="p-3">
                         <div className="flex items-center justify-between w-full">
@@ -204,8 +206,8 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                               <MdNotifications className="text-primary-500 text-lg" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-light-1 truncate">Email Notifications</p>
-                              <p className="text-xs text-light-3 truncate">Receive activity notifications</p>
+                              <p className="text-sm font-medium text-light-1 dark:text-light-1 light:text-light-text-1 truncate">Email Notifications</p>
+                              <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 truncate">Receive activity notifications</p>
                             </div>
                           </div>
                           <div className="flex-shrink-0">
@@ -216,9 +218,9 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                     </div>
 
                     {/* Appearance Settings */}
-                    <div className="bg-dark-4/30 rounded-lg overflow-hidden">
-                      <div className="bg-dark-4/60 px-3 py-2">
-                        <h3 className="text-sm font-medium text-light-2">Appearance</h3>
+                    <div className="bg-dark-4/30 dark:bg-dark-4/30 light:bg-light-bg-4/30 rounded-lg overflow-hidden">
+                      <div className="bg-dark-4/60 dark:bg-dark-4/60 light:bg-light-bg-4/60 px-3 py-2">
+                        <h3 className="text-sm font-medium text-light-2 dark:text-light-2 light:text-light-text-2">Appearance</h3>
                       </div>
                       <div className="p-3">
                         <div className="flex items-center justify-between w-full">
@@ -227,12 +229,16 @@ const ViewUserProfile: React.FC<ViewUserProfileProps> = ({ isOpen, onClose, user
                               <MdBrightness4 className="text-primary-500 text-lg" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-light-1 truncate">Dark Mode</p>
-                              <p className="text-xs text-light-3 truncate">Toggle between light and dark</p>
+                              <p className="text-sm font-medium text-light-1 dark:text-light-1 light:text-light-text-1 truncate">Dark Mode</p>
+                              <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3 truncate">Toggle between light and dark</p>
                             </div>
                           </div>
                           <div className="flex-shrink-0">
-                            <Switch defaultChecked id="dark-mode" />
+                            <Switch 
+                              checked={theme === 'dark'} 
+                              onCheckedChange={toggleTheme}
+                              id="dark-mode" 
+                            />
                           </div>
                         </div>
                       </div>

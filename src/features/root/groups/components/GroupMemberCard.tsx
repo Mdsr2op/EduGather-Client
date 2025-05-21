@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { MdSettings } from 'react-icons/md';
 import RoleMenu from './RoleMenu';
 import { useAppSelector } from '@/redux/hook';
+import { useTheme } from '@/context/ThemeContext';
 
 interface GroupMember {
   _id: string;
@@ -24,6 +25,7 @@ const GroupMemberCard = ({
   groupId,
   currentUserRole = 'member'
 }: GroupMemberCardProps) => {
+  const { theme } = useTheme();
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   
@@ -50,7 +52,11 @@ const GroupMemberCard = ({
   
   return (
     <div 
-      className="flex items-center justify-between mb-3 p-3 rounded-lg transition-all hover:bg-dark-1/40 border border-transparent hover:border-dark-1"
+      className={`flex items-center justify-between mb-3 p-3 rounded-xl transition-all border border-transparent ${
+        theme === 'dark'
+          ? 'hover:bg-dark-1/40 hover:border-dark-1'
+          : 'hover:bg-light-bg-4/40 hover:border-light-bg-4'
+      }`}
     >
       <div className="flex items-center gap-3">
         <div className="relative">
@@ -60,7 +66,7 @@ const GroupMemberCard = ({
             className={`w-10 h-10 rounded-full object-cover ring-1 ${
               isAdminMember ? 'ring-primary-500' : 
               isModeratorMember ? 'ring-purple-500' : 
-              'ring-dark-1'
+              theme === 'dark' ? 'ring-dark-1' : 'ring-light-bg-4'
             }`}
           />
           {isAdminMember && (
@@ -76,10 +82,16 @@ const GroupMemberCard = ({
         </div>
         
         <div>
-          <p className="text-sm font-semibold text-light-1 flex items-center gap-1">
-            {member.username}{isCurrentUser && <span className="text-light-1 text-xs font-normal">(You)</span>}
+          <p className={`text-sm font-semibold flex items-center gap-1 ${
+            theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+          }`}>
+            {member.username}{isCurrentUser && <span className={`text-xs font-normal ${
+              theme === 'dark' ? 'text-light-1' : 'text-light-text-1'
+            }`}>(You)</span>}
           </p>
-          <p className="text-xs text-light-3 truncate max-w-[180px]">{member.email}</p>
+          <p className={`text-xs truncate max-w-[180px] ${
+            theme === 'dark' ? 'text-light-3' : 'text-light-text-3'
+          }`}>{member.email}</p>
         </div>
       </div>
       
@@ -87,7 +99,11 @@ const GroupMemberCard = ({
         <div className="relative">
           <button 
             ref={buttonRef}
-            className="p-2 rounded-full transition-all duration-200 hover:bg-dark-2 text-light-2 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+            className={`p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${
+              theme === 'dark'
+                ? 'hover:bg-dark-2 text-light-2 hover:text-primary-500'
+                : 'hover:bg-light-bg-4 text-light-text-2 hover:text-primary-500'
+            }`}
             aria-label="Manage member"
             onClick={handleToggleMenu}
           >

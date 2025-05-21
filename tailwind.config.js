@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   darkMode: ['class'],
@@ -35,6 +36,17 @@ module.exports = {
   			'light-2': '#EFEFEF',
   			'light-3': '#7978A3',
   			'light-4': '#5C5C78',
+			'light-secondary-500': '#ff4720',
+  			'light-bg-1': '#FFFFFF',
+  			'light-bg-2': '#b5b4cc',
+  			'light-bg-3': '#EFEFED',
+  			'light-bg-4': '#E0E0DD',
+  			'light-bg-5': '#D1D1CD',
+  			'light-bg-6': '#C2C2BD',
+  			'light-text-1': '#000000',
+  			'light-text-2': '#09090A',
+  			'light-text-3': '#4D4D57',
+  			'light-text-4': '#7A7A89',
   			'off-white': '#D0DFFF',
   			'red': '#FF5A5A',
   			background: 'hsl(var(--background))',
@@ -129,5 +141,11 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    plugin(function({ addVariant }) {
+      // Add a 'light' variant for light mode styling
+      addVariant('light', ':root:not(.dark) &');
+    }),
+  ],
 };

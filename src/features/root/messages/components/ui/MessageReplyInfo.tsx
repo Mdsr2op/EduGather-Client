@@ -18,7 +18,7 @@ const MessageReplyInfo: React.FC<MessageReplyInfoProps> = ({ replyTo }) => {
 
   return (
     <div 
-      className="px-3 py-2 mb-1 text-sm text-gray-200 bg-dark-3 rounded-t-lg flex items-start border-l-2 border-primary-500 hover:bg-dark-2 transition-colors cursor-pointer"
+      className="px-3 py-2 mb-1 text-sm text-light-2 dark:text-light-2 light:text-light-text-2 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-t-lg flex items-start border-l-2 border-primary-500 hover:bg-dark-2 dark:hover:bg-dark-2 light:hover:bg-light-bg-2 transition-colors cursor-pointer"
       onClick={handleReplyClick}
       title="Click to see original message"
     >
@@ -36,7 +36,7 @@ const MessageReplyInfo: React.FC<MessageReplyInfoProps> = ({ replyTo }) => {
           )}
           <span className="font-semibold text-primary-400">@{replyTo.senderName}</span>
         </div>
-        <p className="text-gray-300 truncate pl-5">
+        <p className="text-light-3 dark:text-light-3 light:text-light-text-3 truncate pl-5">
           {replyTo.text.substring(0, 120)}
           {replyTo.text.length > 120 ? '...' : ''}
         </p>

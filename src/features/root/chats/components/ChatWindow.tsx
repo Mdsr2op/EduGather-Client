@@ -184,7 +184,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col h-full justify-center items-center text-light-3"
+        className="flex flex-col h-full justify-center items-center text-light-3 dark:text-light-3 light:text-light-text-3"
       >
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
         <p className="animate-pulse">Loading messages...</p>
@@ -199,7 +199,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
         animate={{ opacity: 1 }}
         className="flex flex-col h-full justify-center items-center text-red-500 p-6"
       >
-        <div className="mb-4 w-16 h-16 rounded-full bg-dark-4 flex items-center justify-center text-red-500">
+        <div className="mb-4 w-16 h-16 rounded-full bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 flex items-center justify-center text-red-500">
           <FiRefreshCw size={24} />
         </div>
         <p className="mb-4 text-lg">Failed to load messages</p>
@@ -207,7 +207,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => refetch()}
-          className="px-4 py-2 bg-dark-4 hover:bg-dark-5 text-light-1 rounded-xl flex items-center gap-2"
+          className="px-4 py-2 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5 text-light-1 dark:text-light-1 light:text-light-text-1 rounded-xl flex items-center gap-2"
         >
           <FiRefreshCw size={16} />
           <span>Retry</span>
@@ -221,7 +221,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
       <div 
         id="scrollableDiv"
         ref={scrollableDivRef}
-        className="flex-1 overflow-y-auto custom-scrollbar px-2 sm:px-4 pt-2 sm:pt-4 flex flex-col-reverse bg-dark-3 rounded-xl"
+        className="flex-1 overflow-y-auto custom-scrollbar px-2 sm:px-4 pt-2 sm:pt-4 flex flex-col-reverse bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl"
         onScroll={handleScroll}
       >
         <InfiniteScroll
@@ -239,7 +239,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={loadMoreMessages}
-                className="px-3 sm:px-4 py-2 bg-dark-4 hover:bg-dark-5 text-primary-500 hover:text-primary-400 transition-colors rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-sm"
+                className="px-3 sm:px-4 py-2 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5 text-primary-500 hover:text-primary-400 transition-colors rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-sm"
                 disabled={isLoadingMore}
               >
                 {isLoadingMore ? (
@@ -279,7 +279,7 @@ const ChatWindow = ({ userId }: ChatWindowProps) => {
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="fixed bottom-20 right-6 sm:right-8 bg-primary-500 text-white rounded-full w-10 h-10 shadow-lg z-10 flex items-center justify-center"
+            className="fixed bottom-20 right-6 sm:right-8 bg-primary-500 text-white dark:text-white light:text-white rounded-full w-10 h-10 shadow-lg z-10 flex items-center justify-center"
             onClick={scrollToBottom}
             aria-label="Scroll to bottom"
           >

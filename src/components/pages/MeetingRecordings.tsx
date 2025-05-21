@@ -105,22 +105,22 @@ const MeetingRecordings: React.FC = () => {
   );
 
   return (
-    <div className="p-3 sm:p-6 bg-dark-2 text-light-1 h-full overflow-auto custom-scrollbar">
+    <div className="p-3 sm:p-6 bg-dark-2 dark:bg-dark-2 light:bg-light-bg-2 text-light-1 dark:text-light-1 light:text-light-text-1 h-full overflow-auto custom-scrollbar transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-gradient-to-r from-dark-4 to-dark-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5"
+          className="bg-gradient-to-r from-dark-4 to-dark-3 dark:from-dark-4 dark:to-dark-3 light:from-light-bg-4 light:to-light-bg-3 rounded-2xl p-6 sm:p-8 mb-6 shadow-lg border border-dark-5 dark:border-dark-5 light:border-light-bg-5"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 mb-2 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2 flex items-center gap-2">
                 <FiVideo className="text-primary-500" size={28} />
                 Meeting Recordings
               </h1>
-              <p className="text-light-3 text-sm sm:text-base max-w-xl">
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 text-sm sm:text-base max-w-xl">
                 Access and manage your recorded meetings for future reference
               </p>
             </div>
@@ -129,13 +129,13 @@ const MeetingRecordings: React.FC = () => {
           
           {/* Stats Row */}
           <div className="flex flex-wrap mt-6 gap-4">
-            <div className="bg-dark-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
+            <div className="bg-dark-4/70 dark:bg-dark-4/70 light:bg-light-bg-4/70 px-4 py-2 rounded-xl flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary-500/20 flex items-center justify-center">
                 <FiVideo className="text-primary-500" size={16} />
               </div>
               <div>
-                <p className="text-xs text-light-3">Total Recordings</p>
-                <p className="text-lg font-semibold text-light-1">{recordings.length}</p>
+                <p className="text-xs text-light-3 dark:text-light-3 light:text-light-text-3">Total Recordings</p>
+                <p className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1">{recordings.length}</p>
               </div>
             </div>
           </div>
@@ -146,37 +146,37 @@ const MeetingRecordings: React.FC = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-dark-3 rounded-xl p-4 mb-6 border border-dark-5 shadow-md"
+          className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl p-4 mb-6 border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-md"
         >
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             {/* Search Input */}
             <div className="relative flex-1">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3" size={18} />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-3 dark:text-light-3 light:text-light-text-3" size={18} />
               <input
                 type="text"
                 placeholder="Search recordings..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11 w-full bg-dark-4 border-dark-5 text-light-1 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner"
+                className="pl-10 h-11 w-full bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 border-dark-5 dark:border-dark-5 light:border-light-bg-5 text-light-1 dark:text-light-1 light:text-light-text-1 placeholder-light-3 dark:placeholder-light-3 light:placeholder-light-text-3 focus:ring-primary-500 focus:border-primary-500 rounded-xl text-sm shadow-inner"
               />
             </div>
             
             {/* Filter & View Toggles */}
             <div className="flex gap-2">
-              <button className="px-3 py-2 bg-dark-4 hover:bg-dark-5 text-light-2 rounded-xl flex items-center gap-2">
+              <button className="px-3 py-2 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 hover:bg-dark-5 dark:hover:bg-dark-5 light:hover:bg-light-bg-5 text-light-2 dark:text-light-2 light:text-light-text-2 rounded-xl flex items-center gap-2">
                 <FiFilter size={16} />
                 <span className="text-sm">Filter</span>
               </button>
               
-              <div className="flex rounded-xl overflow-hidden border border-dark-4">
+              <div className="flex rounded-xl overflow-hidden border border-dark-4 dark:border-dark-4 light:border-light-bg-4">
                 <button 
-                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'grid' ? 'bg-primary-500 text-light-1' : 'bg-dark-4 text-light-3'}`}
+                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'grid' ? 'bg-primary-500 text-light-1 dark:text-light-1 light:text-white' : 'bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-light-3 dark:text-light-3 light:text-light-text-3'}`}
                   onClick={() => setViewMode('grid')}
                 >
                   <FiGrid size={16} />
                 </button>
                 <button 
-                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'list' ? 'bg-primary-500 text-light-1' : 'bg-dark-4 text-light-3'}`}
+                  className={`px-3 py-2 flex items-center gap-1 ${viewMode === 'list' ? 'bg-primary-500 text-light-1 dark:text-light-1 light:text-white' : 'bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 text-light-3 dark:text-light-3 light:text-light-text-3'}`}
                   onClick={() => setViewMode('list')}
                 >
                   <FiList size={16} />
@@ -195,7 +195,7 @@ const MeetingRecordings: React.FC = () => {
               className="flex flex-col justify-center items-center py-16"
             >
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mb-4"></div>
-              <p className="text-light-3 animate-pulse">Loading meeting recordings...</p>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 animate-pulse">Loading meeting recordings...</p>
             </motion.div>
           ) : filteredRecordings.length > 0 ? (
             <motion.div
@@ -204,13 +204,13 @@ const MeetingRecordings: React.FC = () => {
               transition={{ duration: 0.4 }}
             >
               <div className="flex justify-between items-center mb-4 px-1">
-                <div className="text-sm text-light-3">
-                  <span>Showing <span className="text-light-1 font-medium">{filteredRecordings.length}</span> recordings</span>
+                <div className="text-sm text-light-3 dark:text-light-3 light:text-light-text-3">
+                  <span>Showing <span className="text-light-1 dark:text-light-1 light:text-light-text-1 font-medium">{filteredRecordings.length}</span> recordings</span>
                 </div>
                 
-                <div className="flex items-center gap-2 text-sm text-light-3">
+                <div className="flex items-center gap-2 text-sm text-light-3 dark:text-light-3 light:text-light-text-3">
                   <span>Sort by:</span>
-                  <select className="bg-dark-3 text-light-2 rounded-xl border border-dark-4 py-1 px-2 text-sm">
+                  <select className="bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 text-light-2 dark:text-light-2 light:text-light-text-2 rounded-xl border border-dark-4 dark:border-dark-4 light:border-light-bg-4 py-1 px-2 text-sm">
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
                     <option value="size">Size</option>
@@ -240,13 +240,13 @@ const MeetingRecordings: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center p-10 bg-dark-3 rounded-xl border border-dark-5 shadow-sm flex flex-col items-center"
+              className="text-center p-10 bg-dark-3 dark:bg-dark-3 light:bg-light-bg-3 rounded-xl border border-dark-5 dark:border-dark-5 light:border-light-bg-5 shadow-sm flex flex-col items-center"
             >
-              <div className="w-16 h-16 bg-dark-4 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiVideo className="text-light-3" size={24} />
+              <div className="w-16 h-16 bg-dark-4 dark:bg-dark-4 light:bg-light-bg-4 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiVideo className="text-light-3 dark:text-light-3 light:text-light-text-3" size={24} />
               </div>
-              <h3 className="text-lg font-semibold text-light-1 mb-2">No Recordings Found</h3>
-              <p className="text-light-3 mb-6 max-w-md">
+              <h3 className="text-lg font-semibold text-light-1 dark:text-light-1 light:text-light-text-1 mb-2">No Recordings Found</h3>
+              <p className="text-light-3 dark:text-light-3 light:text-light-text-3 mb-6 max-w-md">
                 {searchQuery ? 
                   "No recordings match your search. Try adjusting your search terms." : 
                   "You don't have any meeting recordings yet. Recordings will appear here after meetings are completed."}

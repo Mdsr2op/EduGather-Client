@@ -6,11 +6,11 @@ const AuthLayout = () => {
   const user = useAppSelector(selectCurrentUser);
   const isAuthenticated = !!user;
 
-  console.log(isAuthenticated);
+  // Removed console log
   return isAuthenticated ? (
     <Navigate to="/home" />
   ) : (
-    <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden">
+    <section className="flex flex-1 justify-center items-center flex-col py-6 px-4 overflow-hidden bg-dark-1 dark:bg-dark-1 light:bg-light-bg-2 min-h-screen w-full transition-colors duration-200">
       <Outlet />
     </section>
   );
