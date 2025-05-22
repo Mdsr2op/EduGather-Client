@@ -484,8 +484,31 @@ export function setupSocket(io) {
 
             // For mic rotation - scoped to the specific channel
             socket.on("rotateMicStatus", (data) => {
-                // Broadcast to all clients in the channel except the sender
-                io.to(socket.channelId).emit("rotateMicStatus", data);
+                try {
+                    // Get the meetingId from the data payload
+                    const { meetingId } = data;
+                    
+                    if (meetingId) {
+                        // If meetingId is provided, broadcast to all sockets with this meetingId
+                        // Find all sockets that might be in this meeting
+                        for (const [socketId, connectedSocket] of io.sockets.sockets.entries()) {
+                            // Skip the sender
+                            if (socketId === socket.id) continue;
+                            
+                            // Send to this socket
+                            io.to(socketId).emit("rotateMicStatus", data);
+                        }
+                        console.log(`Broadcasting rotateMicStatus to all users for meeting ${meetingId}`);
+                    } else {
+                        // Fallback to channel-based broadcasting if no meetingId
+                        io.to(socket.channelId).emit("rotateMicStatus", data);
+                        console.log(`Broadcasting rotateMicStatus to channel ${socket.channelId}`);
+                    }
+                } catch (error) {
+                    console.error("Error broadcasting rotateMicStatus:", error);
+                    // Still attempt to broadcast to the channel as fallback
+                    io.to(socket.channelId).emit("rotateMicStatus", data);
+                }
             });
 
             // For meeting ended notification

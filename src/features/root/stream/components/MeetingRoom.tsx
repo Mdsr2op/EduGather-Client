@@ -139,16 +139,17 @@ const MeetingRoom = () => {
     if (validParticipants.length <= 1) return;
     setCurrentSpeakerIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % validParticipants.length;
-      if (isHost && socket) {
+      if (isHost && socket && call) {
         socket.emit("rotateMicStatus", {
           isRotatingMicEnabled,
           rotateMicMinutes,
           currentSpeakerIndex: nextIndex,
+          meetingId: call.id,
         });
       }
       return nextIndex;
     });
-  }, [validParticipants, isHost, isRotatingMicEnabled, rotateMicMinutes, socket]);
+  }, [validParticipants, isHost, isRotatingMicEnabled, rotateMicMinutes, socket, call]);
 
   // Handle duplicate participants using server-side implementation
   useEffect(() => {
@@ -404,11 +405,12 @@ const MeetingRoom = () => {
                 onChange={(e) => {
                   const enabled = e.target.checked;
                   setIsRotatingMicEnabled(enabled);
-                  if (isHost && socket) {
+                  if (isHost && socket && call) {
                     socket.emit("rotateMicStatus", {
                       isRotatingMicEnabled: enabled,
                       rotateMicMinutes,
                       currentSpeakerIndex,
+                      meetingId: call.id,
                     });
                   }
                 }}
@@ -425,11 +427,12 @@ const MeetingRoom = () => {
                 onChange={(e) => {
                   const minutes = parseInt(e.target.value);
                   setRotateMicMinutes(minutes);
-                  if (isHost && socket) {
+                  if (isHost && socket && call) {
                     socket.emit("rotateMicStatus", {
                       isRotatingMicEnabled,
                       rotateMicMinutes: minutes,
                       currentSpeakerIndex,
+                      meetingId: call.id,
                     });
                   }
                 }}
