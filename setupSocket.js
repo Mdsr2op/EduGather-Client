@@ -76,6 +76,223 @@ export function setupSocket(io) {
             });
         }
 
+        // Handle new notifications for messages - moved outside channel-specific section
+        socket.on("create_notification", async (data) => {
+            console.log("[NOTIFICATION_EVENT] Received create_notification event:", JSON.stringify(data));
+            try {
+                const { type, groupId, channelId, senderId, content } = data;
+                console.log(`[NOTIFICATION_EVENT] Processing notification - Type: ${type}, GroupID: ${groupId}, ChannelID: ${channelId}, SenderID: ${senderId}`);
+                
+                // Get all members of the group instead of just message senders
+                console.log(`[NOTIFICATION_EVENT] Looking up group with ID: ${groupId}`);
+                // Populate members to get the full GroupMembership objects
+                const group = await Group.findById(groupId).populate('members');
+                
+                if (!group) {
+                    console.error(`[NOTIFICATION_EVENT] Group not found for notification: ${groupId}`);
+                    return;
+                }
+                console.log(`[NOTIFICATION_EVENT] Found group: ${group.name} with ${group.members.length} members`);
+                
+                // Get message sender user data for notification display
+                console.log(`[NOTIFICATION_EVENT] Looking up sender with ID: ${senderId}`);
+                const sender = await User.findById(senderId).select('username avatar');
+                console.log(`[NOTIFICATION_EVENT] Found sender: ${sender ? sender.username : 'unknown'}`);
+                
+                // Get channel details for better notification info - only if channelId is provided
+                let channel = null;
+                if (channelId) {
+                    console.log(`[NOTIFICATION_EVENT] Looking up channel with ID: ${channelId}`);
+                    channel = await Channel.findById(channelId).select('channelName');
+                    console.log(`[NOTIFICATION_EVENT] Found channel: ${channel ? channel.channelName : 'unknown'}`);
+                } else {
+                    console.log(`[NOTIFICATION_EVENT] No channelId provided, skipping channel lookup`);
+                }
+                
+                
+                // Extract all user IDs from the group memberships
+                console.log(`[NOTIFICATION_EVENT] Fetching user IDs from group memberships`);
+                let recipients = [];
+                
+                if (type === 'role_upgrade_requested') {
+                    // For role upgrade requests, only notify admins
+                    console.log(`[NOTIFICATION_EVENT] Role upgrade requested - will notify only group admins`);
+                    
+                    if (group.members.length > 0 && group.members[0].userId) {
+                        // If members are already populated with userId
+                        recipients = group.members
+                            .filter(membership => membership.role === 'admin')
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    } else {
+                        // Fallback: Fetch all admin memberships for this group
+                        const memberships = await GroupMembership.find({ 
+                            groupId: groupId,
+                            role: 'admin'
+                        });
+                        console.log(`[NOTIFICATION_EVENT] Found ${memberships.length} admin memberships`);
+                        recipients = memberships
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    }
+                } else {
+                    // For other notification types, notify all members except sender
+                    if (group.members.length > 0 && group.members[0].userId) {
+                        // If members are already populated with userId
+                        recipients = group.members
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    } else {
+                        // Fallback: Fetch all group memberships for this group and extract userIds
+                        const memberships = await GroupMembership.find({ groupId: groupId });
+                        console.log(`[NOTIFICATION_EVENT] Found ${memberships.length} group memberships`);
+                        recipients = memberships
+                            .map(membership => membership.userId.toString())
+                            .filter(id => id !== senderId.toString());
+                    }
+                }
+                
+                console.log(`[NOTIFICATION_EVENT] Will create notifications for ${recipients.length} recipients`);
+                
+                // Create notifications for all recipients
+                const notifications = [];
+                let title, message;
+
+                // Notification type configuration for easier scaling
+                const notificationConfig = {
+                    'role_upgrade_requested': {
+                        // Only admins should receive these notifications (already filtered in recipients)
+                        getTitle: (sender, group, channel) => 
+                            `Role upgrade requested by ${sender ? sender.username : 'unknown'}`,
+                        getMessage: (content, sender, group) => 
+                            `Role upgrade requested by ${sender ? sender.username : 'unknown'} in ${group ? group.name : 'group'}`,
+                        // Define which fields should be saved/sent for this notification type
+                        requiredFields: {
+                            channelId: false,  // Don't save or send channelId
+                            channelName: false // Don't send channelName
+                        }
+                    },
+                    'channel_message': {
+                        // All group members should receive these (filtered in recipients)
+                        getTitle: (sender, group, channel) => 
+                            `New message by ${sender ? sender.username : 'unknown'} in ${channel ? channel.channelName : 'channel'}`,
+                        getMessage: (content) => 
+                            content && content.length > 100 ? `${content.substring(0, 100)}...` : content,
+                        requiredFields: {
+                            channelId: true,
+                            channelName: true
+                        }
+                    },
+                    'meeting_created': {
+                        // All group members should receive these (filtered in recipients)
+                        getTitle: (sender, group, channel) => 
+                            `New meeting created by ${sender ? sender.username : 'unknown'} in ${channel ? channel.channelName : 'channel'}`,
+                        getMessage: (content) => 
+                            content && content.length > 100 ? `${content.substring(0, 100)}...` : content,
+                        requiredFields: {
+                            channelId: true,
+                            channelName: true
+                        }
+                    }
+                    // New notification types can be added here following the same pattern
+                };
+
+                // Get notification formatting from config or use defaults
+                if (notificationConfig[type]) {
+                    title = notificationConfig[type].getTitle(sender, group, channel);
+                    message = notificationConfig[type].getMessage(content, sender, group, channel);
+                } else {
+                    // Default fallback for any new types without specific configuration
+                    title = `New notification from ${sender ? sender.username : 'unknown'}`;
+                    message = content && content.length > 100 ? `${content.substring(0, 100)}...` : content;
+                    console.log(`[NOTIFICATION_EVENT] Warning: No configuration found for notification type: ${type}`);
+                }
+
+                for (const recipientId of recipients) {
+                    console.log(`[NOTIFICATION_EVENT] Creating notification for recipient: ${recipientId}`);
+                    
+                    // Get field requirements from config or use defaults
+                    const fieldConfig = notificationConfig[type]?.requiredFields || { 
+                        channelId: true, 
+                        channelName: true 
+                    };
+                    
+                    // Create notification with or without channelId based on the notification type
+                    const notificationData = {
+                        type,
+                        title,
+                        message,
+                        isRead: false,
+                        groupId,
+                        senderId,
+                        recipient: recipientId
+                    };
+                    
+                    // Only include channelId if required for this notification type
+                    if (fieldConfig.channelId && channelId) {
+                        notificationData.channelId = channelId;
+                    }
+                    
+                    const notification = new Notification(notificationData);
+                    
+                    await notification.save();
+                    console.log(`[NOTIFICATION_EVENT] Saved notification with ID: ${notification._id}`);
+                    notifications.push(notification);
+                    
+                    // Emit individual notification to the recipient
+                    const notificationEmitData = {
+                        _id: notification._id.toString(),
+                        type: notification.type,
+                        title: notification.title,
+                        message: notification.message,
+                        isRead: notification.isRead,
+                        groupId: notification.groupId.toString(),
+                        senderId: notification.senderId.toString(),
+                        recipient: notification.recipient.toString(),
+                        createdAt: notification.createdAt.toISOString(),
+                        updatedAt: notification.updatedAt.toISOString(),
+                        groupName: group ? group.name : undefined,
+                        senderName: sender ? sender.username : undefined
+                    };
+                    
+                    // Only include channelId and channelName if required and available
+                    if (fieldConfig.channelId && notification.channelId) {
+                        notificationEmitData.channelId = notification.channelId.toString();
+                    }
+                    
+                    if (fieldConfig.channelName && channel) {
+                        notificationEmitData.channelName = channel.channelName;
+                    }
+                    
+                    // Try to send to the notification-specific socket if available
+                    if (notificationUsers.has(recipientId)) {
+                        console.log(`[NOTIFICATION_EVENT] Emitting to notification socket for user ${recipientId}`);
+                        const socketId = notificationUsers.get(recipientId);
+                        io.to(socketId).emit("notification_created", notificationEmitData);
+                    } else {
+                        // Otherwise, look for any socket this user might be connected with
+                        let recipientFound = false;
+                        for (const [socketId, connectedSocket] of io.sockets.sockets.entries()) {
+                            if (connectedSocket.userId === recipientId) {
+                                console.log(`[NOTIFICATION_EVENT] Found socket ${socketId} for recipient ${recipientId}`);
+                                io.to(socketId).emit("notification_created", notificationEmitData);
+                                recipientFound = true;
+                            }
+                        }
+                        
+                        if (!recipientFound) {
+                            console.log(`[NOTIFICATION_EVENT] No active socket found for recipient ${recipientId}`);
+                        }
+                    }
+                }
+                
+                console.log(`[NOTIFICATION_EVENT] Successfully created ${notifications.length} notifications for all members in group ${groupId}`);
+            } catch (error) {
+                console.error("[NOTIFICATION_EVENT] Error creating notifications:", error);
+                console.error("[NOTIFICATION_EVENT] Error stack:", error.stack);
+            }
+        });
+
         // Handle channel-based functionality if this is a channel connection
         if (socket.handshake.auth.type === 'channel') {
             // Join the channel room
@@ -623,121 +840,6 @@ export function setupSocket(io) {
                 } catch (error) {
                     console.error("Error handling attachment message notification:", error);
                     socket.emit("error", { message: "Failed to notify about attachment message" });
-                }
-            });
-
-            // Handle new notifications for messages
-            socket.on("create_notification", async (data) => {
-                console.log("[NOTIFICATION_EVENT] Received create_notification event:", JSON.stringify(data));
-                try {
-                    const { type, groupId, channelId, senderId, content } = data;
-                    console.log(`[NOTIFICATION_EVENT] Processing notification - Type: ${type}, GroupID: ${groupId}, ChannelID: ${channelId}, SenderID: ${senderId}`);
-                    
-                    // Get all members of the group instead of just message senders
-                    console.log(`[NOTIFICATION_EVENT] Looking up group with ID: ${groupId}`);
-                    // Populate members to get the full GroupMembership objects
-                    const group = await Group.findById(groupId).populate('members');
-                    
-                    if (!group) {
-                        console.error(`[NOTIFICATION_EVENT] Group not found for notification: ${groupId}`);
-                        return;
-                    }
-                    console.log(`[NOTIFICATION_EVENT] Found group: ${group.name} with ${group.members.length} members`);
-                    
-                    // Get message sender user data for notification display
-                    console.log(`[NOTIFICATION_EVENT] Looking up sender with ID: ${senderId}`);
-                    const sender = await User.findById(senderId).select('username avatar');
-                    console.log(`[NOTIFICATION_EVENT] Found sender: ${sender ? sender.username : 'unknown'}`);
-                    
-                    // Get channel details for better notification info
-                    console.log(`[NOTIFICATION_EVENT] Looking up channel with ID: ${channelId}`);
-                    const channel = await Channel.findById(channelId).select('channelName');
-                    console.log(`[NOTIFICATION_EVENT] Found channel: ${channel ? channel.channelName : 'unknown'}`);
-                    
-                    
-                    // Extract all user IDs from the group memberships
-                    console.log(`[NOTIFICATION_EVENT] Fetching user IDs from group memberships`);
-                    let recipients = [];
-                    
-                    if (group.members.length > 0 && group.members[0].userId) {
-                        // If members are already populated with userId
-                        recipients = group.members
-                            .map(membership => membership.userId.toString())
-                            .filter(id => id !== senderId.toString());
-                    } else {
-                        // Fallback: Fetch all group memberships for this group and extract userIds
-                        const memberships = await GroupMembership.find({ groupId: groupId });
-                        console.log(`[NOTIFICATION_EVENT] Found ${memberships.length} group memberships`);
-                        recipients = memberships
-                            .map(membership => membership.userId.toString())
-                            .filter(id => id !== senderId.toString());
-                    }
-                    
-                    console.log(`[NOTIFICATION_EVENT] Will create notifications for ${recipients.length} recipients`);
-                    
-                    // Create notifications for all recipients
-                    const notifications = [];
-                    for (const recipientId of recipients) {
-                        console.log(`[NOTIFICATION_EVENT] Creating notification for recipient: ${recipientId}`);
-                        const notification = new Notification({
-                            type: 'channel_message',
-                            title: `New message in ${channel ? channel.channelName : 'channel'}`,
-                            message: content.length > 100 ? `${content.substring(0, 100)}...` : content,
-                            isRead: false,
-                            groupId,
-                            channelId,
-                            senderId,
-                            recipient: recipientId
-                        });
-                        
-                        await notification.save();
-                        console.log(`[NOTIFICATION_EVENT] Saved notification with ID: ${notification._id}`);
-                        notifications.push(notification);
-                        
-                        // Emit individual notification to the recipient
-                        const notificationData = {
-                            _id: notification._id.toString(),
-                            type: notification.type,
-                            title: notification.title,
-                            message: notification.message,
-                            isRead: notification.isRead,
-                            groupId: notification.groupId.toString(),
-                            channelId: notification.channelId.toString(),
-                            senderId: notification.senderId.toString(),
-                            recipient: notification.recipient.toString(),
-                            createdAt: notification.createdAt.toISOString(),
-                            updatedAt: notification.updatedAt.toISOString(),
-                            groupName: group ? group.name : undefined,
-                            channelName: channel ? channel.channelName : undefined,
-                            senderName: sender ? sender.username : undefined
-                        };
-                        
-                        // Try to send to the notification-specific socket if available
-                        if (notificationUsers.has(recipientId)) {
-                            console.log(`[NOTIFICATION_EVENT] Emitting to notification socket for user ${recipientId}`);
-                            const socketId = notificationUsers.get(recipientId);
-                            io.to(socketId).emit("notification_created", notificationData);
-                        } else {
-                            // Otherwise, look for any socket this user might be connected with
-                            let recipientFound = false;
-                            for (const [socketId, connectedSocket] of io.sockets.sockets.entries()) {
-                                if (connectedSocket.userId === recipientId) {
-                                    console.log(`[NOTIFICATION_EVENT] Found socket ${socketId} for recipient ${recipientId}`);
-                                    io.to(socketId).emit("notification_created", notificationData);
-                                    recipientFound = true;
-                                }
-                            }
-                            
-                            if (!recipientFound) {
-                                console.log(`[NOTIFICATION_EVENT] No active socket found for recipient ${recipientId}`);
-                            }
-                        }
-                    }
-                    
-                    console.log(`[NOTIFICATION_EVENT] Successfully created ${notifications.length} notifications for all members in group ${groupId}`);
-                } catch (error) {
-                    console.error("[NOTIFICATION_EVENT] Error creating notifications:", error);
-                    console.error("[NOTIFICATION_EVENT] Error stack:", error.stack);
                 }
             });
         }

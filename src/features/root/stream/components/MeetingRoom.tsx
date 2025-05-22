@@ -237,15 +237,13 @@ const MeetingRoom = () => {
         return;
     }
     
-    // For non-hosts, set up the listener
-    if (!isHost) {
-      socket.on("rotateMicStatus", (data) => {
-        console.log("rotateMicStatus", data);
-        setIsRotatingMicEnabled(data.isRotatingMicEnabled);
-        setRotateMicMinutes(data.rotateMicMinutes);
-        setCurrentSpeakerIndex(data.currentSpeakerIndex);
-      });
-    }
+    // Set up the listener for all participants, not just non-hosts
+    socket.on("rotateMicStatus", (data) => {
+      console.log("rotateMicStatus", data);
+      setIsRotatingMicEnabled(data.isRotatingMicEnabled);
+      setRotateMicMinutes(data.rotateMicMinutes);
+      setCurrentSpeakerIndex(data.currentSpeakerIndex);
+    });
 
     // Listen for meeting end event
     socket.on("meetingEnded", () => {
@@ -258,7 +256,7 @@ const MeetingRoom = () => {
         socket.off("meetingEnded");
       }
     };
-  }, [isHost, socket, navigate]);
+  }, [socket, navigate]);
   
   // Update meeting status to "ongoing" when joined
   useEffect(() => {
