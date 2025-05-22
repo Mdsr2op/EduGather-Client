@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface FAQItem {
   question: string;
@@ -52,6 +53,7 @@ const faqs: FAQItem[] = [
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
+  const { theme } = useTheme();
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -60,13 +62,13 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="w-full bg-dark-3 text-light-1 py-16"
+      className={`w-full ${theme === 'dark' ? 'bg-dark-3 text-light-1' : 'bg-light-bg-2 text-light-text-1'} py-16`}
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-6 sm:px-8">
         <h2
           id="faq-heading"
-          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-light-1 mb-10"
+          className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} mb-10`}
         >
           Frequently Asked Questions
         </h2>
@@ -75,22 +77,24 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`border border-dark-5 rounded-xl shadow-md overflow-hidden transition-all duration-2000 ease-in-out transform  `}
+              className={`border ${theme === 'dark' ? 'border-dark-5' : 'border-light-bg-3'} rounded-xl shadow-md overflow-hidden transition-all duration-2000 ease-in-out transform`}
             >
               <button
                 onClick={() => toggleFAQ(index)}
                 className={`w-full flex justify-between items-center px-6 py-4 transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                   openIndex === index
                     ? "bg-gradient-to-r from-primary-500 via-primary-600 to-blue-500"
-                    : "bg-gradient-to-r from-dark-5 to-dark-4"
+                    : theme === 'dark' 
+                      ? "bg-gradient-to-r from-dark-5 to-dark-4" 
+                      : "bg-gradient-to-r from-light-bg-3 to-light-bg-2"
                 }`}
                 aria-expanded={openIndex === index}
               >
-                <span className="text-left text-light-1 font-semibold text-lg">
+                <span className={`text-left ${openIndex === index ? 'text-light-1' : theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} font-semibold text-lg`}>
                   {faq.question}
                 </span>
                 <ChevronDown
-                  className={`h-6 w-6 text-light-1 transition-transform duration-500 ease-in-out ${
+                  className={`h-6 w-6 ${openIndex === index ? 'text-light-1' : theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} transition-transform duration-500 ease-in-out ${
                     openIndex === index ? "rotate-180" : ""
                   }`}
                 />
@@ -101,13 +105,13 @@ export function FAQ() {
                 }`}
               >
                 <div
-                  className="px-6 py-4 bg-dark-3 border-t border-dark-5"
+                  className={`px-6 py-4 ${theme === 'dark' ? 'bg-dark-3 border-dark-5' : 'bg-light-bg-2 border-light-bg-3'} border-t`}
                   role="region"
                   aria-labelledby={`faq-question-${index}`}
                 >
                   <p
                     id={`faq-question-${index}`}
-                    className="text-light-3 text-base leading-relaxed"
+                    className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-base leading-relaxed`}
                   >
                     {faq.answer}
                   </p>

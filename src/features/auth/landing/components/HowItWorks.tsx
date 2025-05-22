@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { UserPlus, Users, MessageCircle, Calendar } from 'lucide-react';
+import { useTheme } from "@/context/ThemeContext";
 
 interface Step {
   icon: React.ReactNode;
@@ -36,16 +37,18 @@ const steps: Step[] = [
 ];
 
 export function HowItWorks() {
+  const { theme } = useTheme();
+  
   return (
     <section
       id="how-it-works"
-      className="w-full bg-dark-1 text-light-1 py-16"
+      className={`w-full ${theme === 'dark' ? 'bg-dark-1 text-light-1' : 'bg-light-bg-1 text-light-text-1'} py-16`}
       aria-labelledby="how-it-works-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2
           id="how-it-works-heading"
-          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-light-1 mb-12 text-center"
+          className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} mb-12 text-center`}
         >
           How It Works
         </h2>
@@ -67,18 +70,18 @@ export function HowItWorks() {
               <div className="flex-1 text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start space-x-2 mb-4">
                   {step.icon}
-                  <h3 className="text-2xl font-semibold text-light-1">
+                  <h3 className={`text-2xl font-semibold ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}>
                     {step.title}
                   </h3>
                 </div>
-                <p className="text-light-3 text-sm sm:text-base">
+                <p className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-sm sm:text-base`}>
                   {step.description}
                 </p>
               </div>
 
               {/* Image */}
               <div className="flex-1">
-                <div className="relative w-full max-w-md mx-auto lg:mx-0 aspect-video bg-dark-4 rounded-lg overflow-hidden shadow-lg">
+                <div className={`relative w-full max-w-md mx-auto lg:mx-0 aspect-video ${theme === 'dark' ? 'bg-dark-4' : 'bg-light-bg-3'} rounded-lg overflow-hidden shadow-lg`}>
                   <img
                     src={step.imageSrc}
                     alt={`${step.title} Image`}

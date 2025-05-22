@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { MessageCircle, Video, File, Users } from 'lucide-react';
+import { useTheme } from "@/context/ThemeContext";
 
 interface Feature {
   icon: React.ReactNode;
@@ -31,16 +32,18 @@ const features: Feature[] = [
 ];
 
 export function Features() {
+  const { theme } = useTheme();
+  
   return (
     <section
       id="features"
-      className="w-full bg-dark-3 text-light-1 py-16 border-t border-dark-1"
+      className={`w-full ${theme === 'dark' ? 'bg-dark-3 text-light-1 border-dark-1' : 'bg-light-bg-2 text-light-text-1 border-light-bg-1'} py-16 border-t`}
       aria-labelledby="features-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2
           id="features-heading"
-          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-light-1 mb-8"
+          className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} mb-8`}
         >
           Features Designed for Effective Collaboration
         </h2>
@@ -49,15 +52,15 @@ export function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex flex-col items-start p-6 bg-dark-4 rounded-xl transition-transform transform hover:scale-110"
+              className={`flex flex-col items-start p-6 ${theme === 'dark' ? 'bg-dark-4' : 'bg-light-bg-3'} rounded-xl transition-transform transform hover:scale-110`}
             >
               <div className="mb-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold text-light-1 mb-2">
+              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'} mb-2`}>
                 {feature.title}
               </h3>
-              <p className="text-light-3 text-sm sm:text-base">
+              <p className={`${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-sm sm:text-base`}>
                 {feature.description}
               </p>
             </div>

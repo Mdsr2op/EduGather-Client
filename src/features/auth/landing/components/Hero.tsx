@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 export function Hero() {
+  const { theme } = useTheme();
+  
   return (
     <section
       id="home"
-      className="w-full bg-dark-1 text-light-1 py-16"
+      className={`w-full ${theme === 'dark' ? 'bg-dark-1 text-light-1' : 'bg-light-bg-1 text-light-text-1'} py-16`}
       aria-labelledby="hero-heading"
     >
       <div className="lg:mx-5 flex w-full flex-col-reverse justify-between items-center gap-8 px-4 sm:px-6 lg:flex-row lg:px-8  ">
@@ -14,12 +17,12 @@ export function Hero() {
         <div className="flex-1 flex flex-col items-start">
           <h1
             id="hero-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-light-1"
+            className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight ${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}
           >
             Collaborate, Learn, and Grow with{" "}
             <span className="text-primary-500">EduGather</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-light-3 text-base sm:text-lg">
+          <p className={`mt-4 max-w-2xl ${theme === 'dark' ? 'text-light-3' : 'text-light-text-3'} text-base sm:text-lg`}>
             A platform built for real-time study group collaboration—persistent
             text chat, video conferencing, file sharing, and study group
             management all in one place.
@@ -38,21 +41,21 @@ export function Hero() {
           <ul className="mt-8 space-y-3">
             <li className="flex items-center space-x-3">
               <CheckCircle className="h-5 w-5 text-primary-500" />
-              <span className="text-light-1">Persistent Text Chat</span>
+              <span className={`${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}>Persistent Text Chat</span>
             </li>
             <li className="flex items-center space-x-3">
               <CheckCircle className="h-5 w-5 text-primary-500" />
-              <span className="text-light-1">Video Conferencing</span>
+              <span className={`${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}>Video Conferencing</span>
             </li>
             <li className="flex items-center space-x-3">
               <CheckCircle className="h-5 w-5 text-primary-500" />
-              <span className="text-light-1">
+              <span className={`${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}>
                 File Sharing &amp; Management
               </span>
             </li>
             <li className="flex items-center space-x-3">
               <CheckCircle className="h-5 w-5 text-primary-500" />
-              <span className="text-light-1">
+              <span className={`${theme === 'dark' ? 'text-light-1' : 'text-light-text-1'}`}>
                 Study Group Creation &amp; Management
               </span>
             </li>
@@ -61,7 +64,7 @@ export function Hero() {
 
         {/* Right Content: Hero Image/Illustration */}
         <div className="flex-1 flex justify-end items-center">
-          <div className="relative w-full max-w-md aspect-video lg:aspect-auto  bg-dark-4 rounded-xl overflow-hidden">
+          <div className={`relative w-full max-w-md aspect-video lg:aspect-auto ${theme === 'dark' ? 'bg-dark-4' : 'bg-light-bg-3'} rounded-xl overflow-hidden`}>
             <img
               src="/Hero.png"
               alt="Students collaborating online"
