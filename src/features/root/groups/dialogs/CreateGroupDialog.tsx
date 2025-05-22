@@ -144,12 +144,12 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-lg w-full p-6 bg-dark-4 text-light-1 rounded-lg shadow-lg border-none overflow-y-auto custom-scrollbar max-h-[80vh]">
+      <DialogContent className="sm:max-w-lg w-full p-6 bg-white dark:bg-dark-4 text-gray-900 dark:text-light-1 rounded-lg shadow-lg border-none overflow-y-auto custom-scrollbar max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Create a New Group
           </DialogTitle>
-          <DialogDescription className="text-sm text-light-4">
+          <DialogDescription className="text-sm text-gray-500 dark:text-light-4">
             Set up a new group by providing the necessary details.
           </DialogDescription>
         </DialogHeader>
@@ -162,14 +162,14 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Group Name</FormLabel>
+                  <FormLabel className="text-gray-900 dark:text-light-1">Group Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter group name"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
+                      className="mt-1 block w-full bg-gray-50 dark:bg-dark-3 border border-gray-200 dark:border-dark-5 
+                               text-gray-900 dark:text-light-1 placeholder-gray-400 dark:placeholder-light-3 
+                               focus:ring-primary-500 focus:border-primary-500 rounded-xl"
                     />
                   </FormControl>
                   <FormMessage />
@@ -183,14 +183,14 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               name="description"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Description</FormLabel>
+                  <FormLabel className="text-gray-900 dark:text-light-1">Description</FormLabel>
                   <FormControl>
                     <textarea
                       {...field}
                       placeholder="Enter group description"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl p-2"
+                      className="mt-1 block w-full bg-gray-50 dark:bg-dark-3 border border-gray-200 dark:border-dark-5 
+                               text-gray-900 dark:text-light-1 placeholder-gray-400 dark:placeholder-light-3 
+                               focus:ring-primary-500 focus:border-primary-500 rounded-xl p-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -204,17 +204,16 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               name="category"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Categories (comma separated)</FormLabel>
+                  <FormLabel className="text-gray-900 dark:text-light-1">Categories (comma separated)</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter tags (e.g., programming, science, math)"
-                      className="mt-1 block w-full bg-dark-3 border border-dark-5 text-light-1 
-                                 placeholder-light-3 focus:ring-primary-500 focus:border-primary-500 
-                                 rounded-xl"
+                      className="mt-1 block w-full bg-gray-50 dark:bg-dark-3 border border-gray-200 dark:border-dark-5 
+                               text-gray-900 dark:text-light-1 placeholder-gray-400 dark:placeholder-light-3 
+                               focus:ring-primary-500 focus:border-primary-500 rounded-xl"
                       value={field.value?.join(', ') || ''}
                       onChange={(e) => {
                         const value = e.target.value;
-                        // Split by comma and trim each value
                         const tags = value
                           .split(',')
                           .map(tag => tag.trim())
@@ -234,7 +233,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               name="isJoinableExternally"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center space-x-3">
-                  <FormLabel className="text-light-1 pt-2 cursor-pointer">
+                  <FormLabel className="text-gray-900 dark:text-light-1 pt-2 cursor-pointer">
                     Private
                   </FormLabel>
                   <FormControl>
@@ -254,7 +253,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               name="avatar"
               render={({ field }) => (
                 <FormItem className="rounded-lg">
-                  <FormLabel className="text-light-1">Avatar (optional)</FormLabel>
+                  <FormLabel className="text-gray-900 dark:text-light-1">Avatar (optional)</FormLabel>
                   <FormControl>
                     <FileUpload
                       label="Avatar"
@@ -272,7 +271,8 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               <DialogClose asChild>
                 <Button
                   variant="outline"
-                  className="border-dark-5 text-light-1 hover:bg-dark-5 rounded-full"
+                  className="border-gray-200 dark:border-dark-5 text-gray-900 dark:text-light-1 
+                           hover:bg-gray-100 dark:hover:bg-dark-5 rounded-full"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -280,7 +280,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
               </DialogClose>
               <Button
                 type="submit"
-                className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full shadow-md"
+                className="bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-md"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Creating..." : "Create Group"}
